@@ -127,6 +127,8 @@ for symbol in STATIC ASH SH_IS_ASH ASH_JOB_CONTROL ASH_ECHO ASH_PRINTF ASH_TEST 
   INSMOD LSMOD MODPROBE RMMOD; do
   "$kernel_src/scripts/config" --file "$busybox_out/.config" --enable "$symbol"
 done
+"$kernel_src/scripts/config" --file "$busybox_out/.config" --set-str DEFAULT_MODULES_DIR '/lib/modules'
+"$kernel_src/scripts/config" --file "$busybox_out/.config" --set-str DEFAULT_DEPMOD_FILE 'modules.dep'
 make -C "$busybox_src" O="$busybox_out" oldconfig </dev/null
 make -C "$busybox_src" O="$busybox_out" -j"$jobs"
 make -C "$busybox_src" O="$busybox_out" CONFIG_PREFIX="$ramdisk_root" install

@@ -19,6 +19,7 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y shellcheck pacman-package-manager lua5.4
       - name: Check Shield build scripts
         run: |
+          python3 ports/shield/validate-inputs.py
           shellcheck bin/omarchy-hw-aarch64-shield ports/shield/*.sh ports/shield/tools/*.sh ports/shield/omarchy-shield/lifecycle test/shell.d/shield-platform-test.sh
           shellcheck -s sh ports/shield/diagnostic/*.sh ports/shield/ramdisk/init
           python3 - <<'PY'

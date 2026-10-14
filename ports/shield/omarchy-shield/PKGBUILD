@@ -7,7 +7,7 @@ license=('MIT')
 depends=('bash' 'kmod' 'python' 'omarchy' 'linux-shield')
 source=('lifecycle' 'collect-shield-linux.py' 'hardware.json')
 sha256sums=('28a2af6cdf824f8111e9ff43746b775157318bed558a2a04817a15840f503a45'
-  'c7d321aaec4eb5a8c7f47f2039e91d138ad2406a07d07ed9a1b295d868181136'
+  '9b0578ef21d7cd93dba6b1313db3fad0f00f40059b35818cfbb36a473a59d1e6'
   'd91cbc584a8a4c2de03c57f918e91969758a847034cd15055a2579ea758d893a')
 
 package() {

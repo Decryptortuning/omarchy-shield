@@ -10,12 +10,14 @@ kernel=${SHIELD_DIST_DIR:-$port/build/kernel}
 (( EUID == 0 )) || { echo 'Run as WSL root' >&2; exit 1; }
 [[ $build_root != / && ! -L $build_root ]]
 [[ -f $rootfs/var/lib/shield-linux/sources.lock.json ]]
+cmp -s "$kernel/Image" "$rootfs/usr/lib/omarchy/shield/kernel/Image" || { echo 'VM kernel differs from the installed linux-shield package' >&2; exit 1; }
+cmp -s "$kernel/kernel-release.txt" "$rootfs/usr/lib/omarchy/shield/kernel/kernel-release.txt" || exit 1
 [[ ! -e $guest && ! -e $image ]] || { echo 'Preserve or remove the previous owned QEMU build first' >&2; exit 1; }
 mkdir "$guest"
 rsync -aHAX --numeric-ids --exclude=/build --exclude=/var/cache/pacman/pkg \
   --exclude=/etc/pacman.d/gnupg --exclude=/root/.gnupg --exclude=/home/portbuild \
   "$rootfs/" "$guest/"
-tar --zstd -xf "$kernel/kernel-modules.tar.zst" -C "$guest/usr"
+# Preserve the package-owned modules already installed in this filesystem.
 cp "$kernel/kernel-release.txt" "$guest/var/lib/shield-linux/kernel-release.txt"
 install -m 0755 "$port/tools/qemu-userspace-selftest.sh" "$guest/var/lib/shield-linux/qemu-userspace-selftest.sh"
 install -m 0755 "$port/tools/qemu-usb-test.sh" "$guest/var/lib/shield-linux/qemu-usb-test.sh"
