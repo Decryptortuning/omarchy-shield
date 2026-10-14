@@ -1,0 +1,140 @@
+{
+  "date": "2026-10-14",
+  "target": "NVIDIA Shield TV Pro 2019 / mdarcy / Tegra210B01",
+  "runtime_settings_source_commit": "5ece262609cd4eacdbc1c99f005a455986a6fc1e",
+  "upstream_packaging_commit": "c505828452be1e9d95c28183889ee4c922b4d7da",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "kernel_release": "7.1.0-shield-bringup",
+  "platform_recipe_adjustment": "Collector checksum corrected before the successful package build; content is unchanged from the recorded source commit.",
+  "packages": [
+    {
+      "filename": "linux-shield-7.1.0-2-aarch64.pkg.tar.xz",
+      "bytes": 42203328,
+      "sha256": "3e7831857af996a6ce604d682aa3ea932c73f0ada773c9f1e3fb08c2efa9b5cf",
+      "pkgname": "linux-shield",
+      "pkgver": "7.1.0-2",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "ee44bf9e4d3851625d8e35c01264ba1a5cf3b346d85923b5eb43a8618b75a7a7"
+    },
+    {
+      "filename": "omarchy-4.0.0.alpha-99.2-aarch64.pkg.tar.xz",
+      "bytes": 163231492,
+      "sha256": "eb6b7e2db9675c9e04157bb6da465980f0e2dac15df01b56dbc97d2306c45a08",
+      "pkgname": "omarchy",
+      "pkgver": "4.0.0.alpha-99.2",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "f616fbbe61a614646916e3f1263c528ce0d68bcbae2f6ef3d22a82016bd3c7fc"
+    },
+    {
+      "filename": "omarchy-settings-4.0.0.alpha-99.2-aarch64.pkg.tar.xz",
+      "bytes": 1370876,
+      "sha256": "4a277726f60c8df8ce5c699530333fd14ef954f2468928f5379644f07cbe693a",
+      "pkgname": "omarchy-settings",
+      "pkgver": "4.0.0.alpha-99.2",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "5578a508bfea8c63c18948743592b68a86dc13bd5d8ceed3a3546de5a35b394d"
+    },
+    {
+      "filename": "omarchy-shield-0.1.0-3-aarch64.pkg.tar.xz",
+      "bytes": 14432,
+      "sha256": "2b880e4795d115893221710141d743d05d1be4bee04526a4472519938868c941",
+      "pkgname": "omarchy-shield",
+      "pkgver": "0.1.0-3",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "e90f7b05a555f039fa8669a826bf952c847806db66cbde075e8d6e04d4765a86"
+    }
+  ],
+  "installed_package_count": 890,
+  "whole_filesystem_vm": {
+    "result": "pass",
+    "machine": "virt",
+    "cpu": "cortex-a57",
+    "cpus": 4,
+    "memory_mib": 3072,
+    "network_adapter": false,
+    "disposable_snapshot": true,
+    "kernel_matches_installed_package": true,
+    "success_marker": "SHIELD_OMARCHY_QEMU_USERSPACE_PASS",
+    "checks": [
+      "systemd PID 1",
+      "package dependency database and required packages",
+      "matching driver module metadata and dependency resolution",
+      "pressure-stall reporting and systemd-oomd",
+      "zstd zram swap",
+      "virtual CDC ACM enumeration and bidirectional data",
+      "systemd user manager",
+      "desktop and peripheral userspace version commands",
+      "user defaults and Omarchy session assets",
+      "LUKS2 encrypted loop device",
+      "Btrfs independent snapshot data",
+      "Snapper independent snapshot data",
+      "installed Hyprland configuration verification"
+    ]
+  },
+  "elf_audit": {
+    "target_elf_machine": 183,
+    "elf_files_by_machine": {
+      "183": 7822,
+      "0": 350,
+      "247": 9
+    },
+    "non_cpu_elf_containers": {
+      "guile_bytecode": 350,
+      "bpf_objects": 9
+    },
+    "scanned_trees": [
+      "usr",
+      "opt"
+    ],
+    "foreign_executable_or_shared_library": [],
+    "unreadable_paths": [],
+    "all_cpu_elf_payloads_aarch64": true,
+    "excluded": [
+      "device firmware",
+      "symlink duplicates",
+      "PE/.NET assemblies"
+    ],
+    "scope": "ELF machine headers only; CPU instructions, application behavior and physical hardware remain unqualified"
+  },
+  "usb_diagnostic": {
+    "qemu_boot": "pass",
+    "busybox_module_dependency_resolution": "pass",
+    "usb_console_opt_in": "shield.usb-console=1",
+    "physical_enumeration_tested": false,
+    "checksums": {
+      "Image": "8dfd56c802cf7577139b10ea31b3c69c598505f1a905174f11fec01389219ccd",
+      "Image.gz": "33f085360ce8ab39fc2e1dd0033c9fe66aacfaea86ad36e49d150c2504f595fc",
+      "initramfs.cpio.gz": "8b35b3bdf33a93a338e6cf13ac4b6b71af7348cea9ad716dc970a680504409c2",
+      "tegra210b01-p2894-2551-b00.dtb": "f55354de7c859417b2afdb56dcfaaab56c4bc8424b537933128adf695035954e",
+      "kernel.config": "d37483162a4fc47e4542fa777227329d00f0ddeff21725ce2e94795c1bfb6434",
+      "busybox.config": "a5af78212d65d5a88b64340b28c0db3aa4c3d08afdf9396bd87a9b00774a4dc1",
+      "sources.lock.json": "16569c900cc206d5a0f49bd35b9d1a5ef1e1200b7ecd61959a976a96dbdeab47",
+      "compiler.txt": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53",
+      "ramdisk-profile.json": "c91561c586ab20f6daef268d9388f7a843be7197c343f23dd1f8b37bb7a90ff9",
+      "source-verification.json": "b63dc9928194a1ed444471c1082761e54e5ee41857ede10212d984df7146e5fe",
+      "applied-patches.json": "e567aaf6d1b75d4e92be0f3d2ed4b5f22b7ad86ffc6af9d280efe421e72d3bf5",
+      "device-tree-overlays.json": "f5b5758823018a05572a8bcad7b85b4634e578de7c188bbff7d3c11991908a81",
+      "kernel-release.txt": "b9cf517bf62a6d338d261cac6eac2bccd5f3f04415f85748f623af937ffee44c",
+      "kernel-modules.tar.zst": "5efc7b199913979f1224c5d9b5540c5d433fcacb351c3c90c0357d4c0707a1dc"
+    }
+  },
+  "physical_acceptance_entries": 19,
+  "physical_passes": 0,
+  "physical_shield_boot_tested": false,
+  "native_graphics_tested": false,
+  "flashable_image": false,
+  "virtual_graphics_attempt": {
+    "result": "incomplete",
+    "device": "virtio-gpu-pci (2D, no virgl)",
+    "software_rendering_requested": true,
+    "hyprland_starts": true,
+    "monitor_query_succeeded": true,
+    "queried_resolution": [
+      1280,
+      800
+    ],
+    "usable_desktop_rendered": false,
+    "observed_failure": "Aquamarine cannot match an EGL rendering device; renderer-state updates fail. Screenshots remain black.",
+    "physical_gpu_qualified": false
+  }
+}

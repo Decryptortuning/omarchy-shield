@@ -2,6 +2,8 @@
 
 This is an experimental Omarchy platform port for `mdarcy` / Tegra210B01. Full hardware support is the acceptance goal, and outstanding capabilities stay visible in [hardware.json](hardware.json). No physical Shield boot or peripheral test has passed yet. There is no flashable installer.
 
+The [pre-USB validation report](VALIDATION.md) records four successfully built ARM packages and the passing custom-kernel/Omarchy filesystem VM test, including encrypted snapshots, config verification and virtual USB serial data. Package hashes and exact provenance are in [validation.json](validation.json).
+
 ## Current implementation
 
 - The `aarch64-shield` detector recognizes the verified A08 and B00 mainline board compatibles together with Tegra210B01. Older Shields, Switches and Jetsons do not select this platform. The physical unit's board revision remains unconfirmed.
