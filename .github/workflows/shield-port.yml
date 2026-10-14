@@ -16,10 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Install check tools
-        run: sudo apt-get update -qq && sudo apt-get install -y shellcheck pacman-package-manager
+        run: sudo apt-get update -qq && sudo apt-get install -y shellcheck pacman-package-manager lua5.4
       - name: Check Shield build scripts
         run: |
           shellcheck bin/omarchy-hw-aarch64-shield ports/shield/*.sh ports/shield/tools/*.sh ports/shield/omarchy-shield/lifecycle test/shell.d/shield-platform-test.sh
+          shellcheck -s sh ports/shield/diagnostic/*.sh ports/shield/ramdisk/init
           python3 - <<'PY'
           import ast, json
           from pathlib import Path
@@ -30,6 +31,6 @@ jobs:
           PY
       - name: Exercise platform integration
         run: |
-          for suite in shield-platform hw-platform platform-packages pacman-templates lifecycle-dispatch image-target-platform image-deferred-hardware; do
+          for suite in shield-platform hw-platform platform-packages pacman-templates lifecycle-dispatch image-target-platform image-deferred-hardware hyprland-startup-cursor; do
             bash "test/shell.d/$suite-test.sh"
           done

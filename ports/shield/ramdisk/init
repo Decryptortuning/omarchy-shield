@@ -37,6 +37,12 @@ case " $(cat /proc/cmdline) " in
         ;;
 esac
 
+if [ -r /usb-console-start.sh ]; then
+    # Installed only in the optional USB diagnostic profile.
+    # shellcheck disable=SC1091
+    . /usb-console-start.sh
+fi
+
 echo 'Diagnostic shell. No persistent filesystem has been mounted.'
 echo 'HDMI, USB, cooling, networking and storage need hardware validation.'
 while true; do

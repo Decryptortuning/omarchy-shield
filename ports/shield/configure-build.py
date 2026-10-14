@@ -36,7 +36,7 @@ def main():
   state = rootfs / 'var/lib/shield-linux'
   # Build these four locally; repository packages supply all their dependencies.
   built = {'omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'}
-  names = sorted({item['name'][0] for requested, item in audit['resolved'].items() if requested not in built})
+  names = sorted({'omarchy-keyring'} | {item['name'][0] for requested, item in audit['resolved'].items() if requested not in built})
   (state / 'repository-packages.txt').write_text('\n'.join(names) + '\n')
   shutil.copy2(port / 'bootstrap-packages.sh', state / 'bootstrap-packages.sh')
   templates = port.parent.parent / 'default/pacman/aarch64-shield'

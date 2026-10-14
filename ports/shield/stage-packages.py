@@ -63,7 +63,7 @@ def main():
       destination = build / package
       shutil.copytree(staged / 'pkgbuilds' / package, destination)
       recipe = destination / 'PKGBUILD'
-      replacements = {'pkgver': version, 'pkgrel': '99.1', '_commit': repr(commit), '_tag': "''"}
+      replacements = {'pkgver': version, 'pkgrel': '99.2', '_commit': repr(commit), '_tag': "''"}
       lines = []
       for line in recipe.read_text().splitlines():
         key = line.split('=', 1)[0]
@@ -79,7 +79,7 @@ def main():
     shutil.copy2(exported / 'ports/shield' / script, rootfs / 'var/lib/shield-linux' / destination)
   provenance = {
     'omarchy_commit': commit, 'packaging_commit': recipe_commit,
-    'pkgver': version, 'pkgrel': '99.1', 'architecture': 'aarch64',
+    'pkgver': version, 'pkgrel': '99.2', 'architecture': 'aarch64',
     'package_names': ['omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'],
     'kernel_source_commit': json.loads((kernel / 'sources.lock.json').read_text())['kernel']['commit'],
     'physical_shield_tested': False, 'flashable_image': False,

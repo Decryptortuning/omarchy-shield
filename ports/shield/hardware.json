@@ -10,7 +10,8 @@
         "CONFIG_ARM64",
         "CONFIG_ARM_TEGRA124_CPUFREQ",
         "CONFIG_ZRAM",
-        "CONFIG_ZRAM_BACKEND_ZSTD"
+        "CONFIG_ZRAM_BACKEND_ZSTD",
+        "CONFIG_PSI"
       ],
       "modules": [
         "zram"
@@ -61,10 +62,14 @@
       "name": "Convertible USB device/debug port",
       "config": [
         "CONFIG_USB_TEGRA_XUDC",
-        "CONFIG_USB_CONFIGFS"
+        "CONFIG_USB_CONFIGFS",
+        "CONFIG_USB_CONFIGFS_ACM",
+        "CONFIG_USB_CONFIGFS_NCM"
       ],
       "modules": [
-        "tegra-xudc"
+        "tegra-xudc",
+        "usb-f-acm",
+        "usb-f-ncm"
       ],
       "firmware_patterns": [],
       "acceptance": "Test host/device role switching and USB gadget enumeration on the PC.",

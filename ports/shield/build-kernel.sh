@@ -52,6 +52,10 @@ fi
 busybox_src="$build_root/sources/busybox-$busybox_version"
 busybox_out="$build_root/busybox-out"
 ramdisk_root="$build_root/ramdisk"
+if [[ ${SHIELD_USB_CONSOLE:-0} == 1 ]]; then
+  [[ $SHIELD_BUILD_MODULES == 1 ]] || { echo 'USB diagnostics require matching modules' >&2; exit 1; }
+  ramdisk_root=$(mktemp -d "$build_root/ramdisk-usb-console.XXXXXX")
+fi
 mkdir -p "$build_root/sources" "$build_root/downloads" "$kernel_out" "$busybox_out" "$dist"
 
 # Archive the locked commit, independent of checkout state or local modifications.
@@ -119,7 +123,8 @@ for symbol in STATIC ASH SH_IS_ASH ASH_JOB_CONTROL ASH_ECHO ASH_PRINTF ASH_TEST 
   FEATURE_PREFER_APPLETS FEATURE_SH_STANDALONE CAT CHMOD CLEAR CP CUT DF DMESG \
   ECHO ENV FALSE FIND FREE GREP HEAD ID KILL LN LS MKDIR MKNOD MOUNT MV \
   POWEROFF PRINTF PS PWD READLINK REBOOT RM RMDIR SED SETSID CTTYHACK SLEEP \
-  STAT SYNC TAIL TEE TEST TRUE TR TTY UMOUNT UNAME WC XARGS; do
+  STAT SYNC TAIL TEE TEST TRUE TR TTY UMOUNT UNAME WC XARGS \
+  INSMOD LSMOD MODPROBE RMMOD; do
   "$kernel_src/scripts/config" --file "$busybox_out/.config" --enable "$symbol"
 done
 make -C "$busybox_src" O="$busybox_out" oldconfig </dev/null
@@ -127,6 +132,33 @@ make -C "$busybox_src" O="$busybox_out" -j"$jobs"
 make -C "$busybox_src" O="$busybox_out" CONFIG_PREFIX="$ramdisk_root" install
 mkdir -p "$ramdisk_root"/{dev,proc,sys,run,tmp,etc}
 install -m 0755 "$port_dir/ramdisk/init" "$ramdisk_root/init"
+if [[ ${SHIELD_USB_CONSOLE:-0} == 1 ]]; then
+  install -m 0644 "$port_dir/diagnostic/usb-gadget.sh" "$ramdisk_root/usb-gadget.sh"
+  install -m 0644 "$port_dir/diagnostic/usb-console-start.sh" "$ramdisk_root/usb-console-start.sh"
+  mkdir -p "$ramdisk_root/lib/modules/$release"
+  for module in tegra_xudc usb_f_acm; do
+    dependencies=$(modprobe -C /dev/null -d "$module_root" -S "$release" --show-depends "$module")
+    while IFS= read -r dependency; do
+      [[ $dependency == 'insmod '* ]] || continue
+      file=${dependency#insmod }
+      file=${file%"${file##*[![:space:]]}"}
+      [[ $file == "$module_root/"* && -f $file ]] || { echo 'Invalid module dependency path' >&2; exit 1; }
+      install -Dm644 "$file" "$ramdisk_root/${file#"$module_root/"}"
+    done <<< "$dependencies"
+  done
+  for metadata in modules.dep modules.alias modules.softdep modules.builtin; do
+    cp "$module_root/lib/modules/$release/$metadata" "$ramdisk_root/lib/modules/$release/"
+  done
+fi
+python3 - "$dist/ramdisk-profile.json" "${SHIELD_USB_CONSOLE:-0}" <<'PY'
+import json, sys
+usb = sys.argv[2] == '1'
+with open(sys.argv[1], 'w') as output:
+    json.dump({'kind': 'diagnostic', 'usb_console_included': usb,
+               'usb_console_requires_cmdline': 'shield.usb-console=1' if usb else None,
+               'physical_enumeration_tested': False, 'flashable_image': False}, output, indent=2)
+    output.write('\n')
+PY
 (
   cd "$kernel_out"
   "$kernel_src/usr/gen_initramfs.sh" -o "$dist/initramfs.cpio" -u squash -g squash \
@@ -155,6 +187,7 @@ fi
   cd "$dist"
   sha256sum Image Image.gz initramfs.cpio.gz "$(basename -- "$dtb")" \
     kernel.config busybox.config sources.lock.json compiler.txt > SHA256SUMS
+  sha256sum ramdisk-profile.json >> SHA256SUMS
   if [[ -f source-verification.json ]]; then
     sha256sum source-verification.json >> SHA256SUMS
   fi

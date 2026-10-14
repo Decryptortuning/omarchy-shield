@@ -18,6 +18,8 @@ rsync -aHAX --numeric-ids --exclude=/build --exclude=/var/cache/pacman/pkg \
 tar --zstd -xf "$kernel/kernel-modules.tar.zst" -C "$guest/usr"
 cp "$kernel/kernel-release.txt" "$guest/var/lib/shield-linux/kernel-release.txt"
 install -m 0755 "$port/tools/qemu-userspace-selftest.sh" "$guest/var/lib/shield-linux/qemu-userspace-selftest.sh"
+install -m 0755 "$port/tools/qemu-usb-test.sh" "$guest/var/lib/shield-linux/qemu-usb-test.sh"
+install -m 0644 "$port/diagnostic/usb-gadget.sh" "$guest/var/lib/shield-linux/usb-gadget.sh"
 # Lock inherited development accounts; the test user has no password.
 mknod -m 0666 "$guest/dev/null" c 1 3
 usermod --root "$guest" --lock root
@@ -29,8 +31,8 @@ rm -f "$guest/etc/ssh/ssh_host_"*
 cat > "$guest/etc/systemd/system/shield-qemu-selftest.service" <<'UNIT'
 [Unit]
 Description=Shield port userspace test on QEMU virtual hardware
-Requires=basic.target
-After=basic.target
+Requires=basic.target systemd-user-sessions.service
+After=basic.target systemd-user-sessions.service
 SuccessAction=poweroff
 FailureAction=poweroff
 [Service]

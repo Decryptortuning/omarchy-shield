@@ -11,7 +11,7 @@ This is an experimental Omarchy platform port for `mdarcy` / Tegra210B01. Full h
 - The B00 device-tree overlay enables the CEC controller on the inherited P2894 CEC pinmux. Firmware matching and all physical behavior remain untested.
 - The kernel profile includes Omarchy's zstd compressed swap and encrypted-root driver requirements. `linux-shield` owns the custom kernel modules without installing a boot image. Btrfs and Snapper are included; native snapshot boot integration remains unfinished.
 
-The current firmware audit finds GM20B ACR firmware and VIC firmware in the signed Linux firmware packages. The Tegra210B01 XUSB blob, Bluetooth HCD files, and NVDEC/NVENC blobs are absent. Generic Tegra210 firmware is not a replacement for the B01 XUSB blob. Board-specific Wi-Fi calibration also needs stock-device evidence. These are unresolved input/qualification gaps, not supported hardware claims.
+The current firmware audit finds GM20B ACR firmware and VIC firmware in the signed Linux firmware packages. The Tegra210B01 XUSB blob, Bluetooth HCD files, and NVDEC/NVENC blobs are absent. Generic Tegra210 firmware is not a replacement for the B01 XUSB blob. Board-specific Wi-Fi calibration also needs stock-device evidence. These remain unresolved runtime/qualification gaps. Checksum-pinned inactive XUSB, Bluetooth and video candidates have been extracted from NVIDIA's L4T 32.2.1 archive through `fetch-firmware-candidates.py`; none is enabled or physically qualified.
 
 ## Boot design
 
@@ -29,7 +29,7 @@ The initial target keeps native kernel/boot-image installation outside desktop u
 - [BUILD.md](BUILD.md): checked build tools for the kernel/modules, signed ARM filesystem, four local packages, and isolated whole-filesystem QEMU tests.
 - [collect-shield-linux.py](collect-shield-linux.py): bounded evidence collection on the actual Tegra210B01 system. Run `sudo python3 collect-shield-linux.py --output hardware-report.json` after a native boot and basic cooling verification. `--graphics` additionally initializes EGL/Vulkan. Generated device reports must be reviewed before publishing.
 
-The source branch reports `4.0.0.alpha`. Local paired packages use that source version with release `99.1`; do not mix the fork's runtime with settings built from another source commit. The upstream MIT license applies to Omarchy; the copied kernel patch and device-tree inputs retain their stated GPL licenses.
+The source branch reports `4.0.0.alpha`. Local paired packages use that source version with release `99.2`; do not mix the fork's runtime with settings built from another source commit. The upstream MIT license applies to Omarchy; the copied kernel patch and device-tree inputs retain their stated GPL licenses.
 
 ## Qualification
 

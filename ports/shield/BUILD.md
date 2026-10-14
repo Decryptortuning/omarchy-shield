@@ -43,7 +43,7 @@ sudo bash ports/shield/chroot.sh "$build_root/rootfs" \
   /bin/bash /var/lib/shield-linux/build-target-packages.sh
 ```
 
-The bootstrap installs the complete repository package set from the pinned sync databases. The four fork packages are built locally: `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Paired runtime/settings packages use the exported source version and numeric package release `99.1`. Local package installation validates dependencies together and replaces the generic ALARM kernel through its declared package conflict. `linux-shield` owns its modules and stores kernel/DTB inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes the hardware matrix and evidence collector.
+The bootstrap installs the complete repository package set from the pinned sync databases. The four fork packages are built locally: `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Paired runtime/settings packages use the exported source version and numeric package release `99.2`. Local package installation validates dependencies together and replaces the generic ALARM kernel through its declared package conflict. `linux-shield` owns its modules and stores kernel/DTB inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes the hardware matrix and evidence collector.
 
 The chroot uses private mount/PID namespaces, temporary device nodes and Cortex-A57 user emulation. It serializes its temporary binfmt registration, exposes no host block devices or sysfs tree, and starts no host daemons. Pacman signature validation stays enabled. Its sandbox exception applies to this emulated build command because Landlock is unavailable through QEMU user emulation; the installed configuration keeps normal sandbox settings. Fork packages are ignored by repository upgrades until a tested Shield release/update path exists.
 
@@ -59,3 +59,19 @@ python3 ports/shield/audit-hardware.py --kernel-dir "$build_root/kernel" \
 ```
 
 The VM boots the custom kernel with the installed filesystem, disconnected from networking and with a disposable disk snapshot. It checks systemd, package dependencies, matching modules, zstd compressed swap, desktop binary startup, user/session assets and an encrypted loop filesystem with independent Btrfs snapshot data. The emulated board must remain plain `aarch64`; no virtual test changes the physical acceptance matrix. This is development coverage, separate from native Hyprland rendering, physical firmware matching, USB SSD boot and cooling qualification.
+
+The current test also starts the systemd user manager and memory-pressure service, verifies the installed Hyprland configuration, exercises Snapper, and checks USB CDC ACM enumeration/data through a virtual `dummy_hcd` controller. That USB check deliberately binds a virtual UDC, never a physical controller. `audit-userspace.py --rootfs "$build_root/rootfs" --output "$build_root/userspace-abi-audit.json"` separately checks native ELF payloads under `usr` and `opt`; it does not prove application behavior or CPU instruction compatibility.
+
+## Firmware candidates and USB-only diagnostics
+
+```sh
+python3 ports/shield/fetch-firmware-candidates.py --build-root "$build_root"
+SHIELD_BUILD_ROOT="$build_root/kernel-cache" SHIELD_DIST_DIR="$build_root/usb-diagnostic" \\
+  SHIELD_USB_CONSOLE=1 bash ports/shield/build-kernel.sh
+```
+
+The firmware tool extracts checksum-pinned files from NVIDIA's original L4T 32.2.1 archive and retains its license. It validates the B01 XUSB header, Falcon v1 video containers and HCD command framing. These are inactive candidates for comparison with the actual stock device; it does not rename files into the runtime firmware path or execute any BSP install/flash utility. Container checks do not establish firmware command ABI, chip identity or physical behavior.
+
+The optional diagnostic ramdisk includes only the USB serial module dependencies in addition to BusyBox. Its root USB shell requires the explicit kernel parameter `shield.usb-console=1`, a supported Tegra210B01 board, and its Tegra UDC. It stays off without that parameter and is never enabled by the desktop. This is an unauthenticated physical debugging console for bring-up, not a production login configuration. Physical enumeration on Windows remains untested. The bundle is still raw components; the actual Shield boot header and recovery route must be established before booting it.
+
+On Windows, `ports/shield/inspect-usb.ps1` performs bounded read-only ADB/fastboot inventory. Its default report lives under the ignored `ports/shield/build` directory. It never reboots, unlocks or flashes, and it refuses Android property inspection after a device identifies as something other than `mdarcy`.

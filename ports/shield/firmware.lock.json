@@ -1,0 +1,57 @@
+{
+  "purpose": "Inactive vendor firmware candidates for stock-device comparison; not installed into the runtime firmware search path",
+  "source": {
+    "page": "https://developer.nvidia.com/embedded/linux-tegra-r3221",
+    "url": "https://developer.download.nvidia.com/embedded/L4T/r32-2-1_Release_v1.0/T210/Jetson-210_Linux_R32.2.1_aarch64.tbz2",
+    "filename": "Jetson-210_Linux_R32.2.1_aarch64.tbz2",
+    "bytes": 195896637,
+    "sha256": "afef694c04137065691012bf9a68bb2a2a75400677712a27ee952ea24bb7037d"
+  },
+  "outer_files": [
+    {
+      "path": "Linux_for_Tegra/lib/firmware/tegra210b01_xusb_firmware",
+      "sha256": "39e0730801cb3fabdcd002e92bf0dd2bb038fd7b320b8315e8b0ab10c55fb1bb",
+      "bytes": 124416,
+      "format": "xusb"
+    },
+    {
+      "path": "Linux_for_Tegra/nv_tegra/LICENSE",
+      "sha256": "bd28b0c5aeeb00eb11d3ec6f6f3449d4b3a40100914258332734a53527997526",
+      "bytes": 6121
+    },
+    {
+      "path": "Linux_for_Tegra/nv_tegra/nvidia_drivers.tbz2",
+      "sha256": "6a69a7d4d86b957d738d20d7913a81cebe59d376814634f1d0329cb464ca1364",
+      "bytes": 42174197
+    }
+  ],
+  "inner_files": [
+    {
+      "path": "lib/firmware/tegra21x/nvhost_nvdec020_ns.fw",
+      "sha256": "f030eab423039621edea74be4460aa7ce0401ad383a421f85cc0102ee8c32e9a",
+      "bytes": 130304,
+      "format": "falcon"
+    },
+    {
+      "path": "lib/firmware/tegra21x/nvhost_nvenc050.fw",
+      "sha256": "2c52a6d805387dc532aadfd7e1962b5fbc5091604527177aa54c995c4c126d56",
+      "bytes": 121344,
+      "format": "falcon"
+    },
+    {
+      "path": "lib/firmware/bcm4354.hcd",
+      "sha256": "b0a48a0bf196386cf2345dbe261127fb33ef00f698fcfa563629b1d96bb889a9",
+      "bytes": 64552,
+      "format": "hcd"
+    }
+  ],
+  "license": "NVIDIA vendor license retained beside the extracted inputs; no binary redistribution in this repository",
+  "hardware_qualified": false,
+  "install_into_runtime": false,
+  "remaining": [
+    "Compare the actual Shield firmware and board revision",
+    "Verify driver request names and runtime command ABI",
+    "Determine Bluetooth chip/firmware name and Wi-Fi calibration",
+    "Validate native USB, codec and Bluetooth behavior"
+  ]
+}

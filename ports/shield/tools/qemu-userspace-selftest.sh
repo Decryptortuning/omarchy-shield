@@ -5,6 +5,12 @@ finish() {
   result=$?
   if (( result != 0 )); then
     echo "SHIELD_OMARCHY_QEMU_USERSPACE_FAIL status=$result"
+    journalctl -b -u "user@${test_uid:-1002}.service" --no-pager || true
+    systemctl --failed --no-pager || true
+    coredumpctl --no-pager info Hyprland || true
+    if [[ -n ${test_uid:-} ]]; then
+      find "/run/user/$test_uid/hypr" /home/qemutest/.cache/hyprland -name '*.log' -type f -exec tail -n 50 {} \; 2>/dev/null || true
+    fi
   fi
 }
 trap finish EXIT
@@ -14,6 +20,10 @@ grep -q 'shield.qemu-userspace-test=1' /proc/cmdline
 [[ $(uname -r) == $(cat /var/lib/shield-linux/kernel-release.txt) ]]
 [[ $(getconf PAGESIZE) == 4096 ]]
 echo 'CHECK: custom ARM kernel and systemd PID 1'
+[[ -r /proc/pressure/memory ]]
+systemctl start systemd-oomd
+systemctl is-active systemd-oomd
+echo 'CHECK: pressure stall reporting and Omarchy memory-pressure service'
 systemctl is-active systemd-zram-setup@zram0.service dev-zram0.swap
 grep -q '\[zstd\]' /sys/block/zram0/comp_algorithm
 swapon --show
@@ -31,9 +41,14 @@ for module in nouveau brcmfmac r8152 hci_uart tegra_cec snd_hda_tegra tegra_xudc
   modprobe --dry-run "$module"
 done
 echo 'CHECK: matching driver metadata and dependency resolution'
+/bin/bash /var/lib/shield-linux/qemu-usb-test.sh
+systemctl start systemd-user-sessions
 test_uid=$(id -u qemutest)
 test_gid=$(id -g qemutest)
 install -d -m 0700 -o "$test_uid" -g "$test_gid" "/run/user/$test_uid"
+loginctl enable-linger qemutest
+systemctl start "user@$test_uid.service"
+systemctl is-active "user@$test_uid.service"
 runuser -u qemutest -- env XDG_RUNTIME_DIR="/run/user/$test_uid" timeout 30 Hyprland --version
 runuser -u qemutest -- env XDG_RUNTIME_DIR="/run/user/$test_uid" timeout 30 qs --version
 timeout 30 pipewire --version
@@ -71,12 +86,21 @@ mount /dev/mapper/shield-filesystem-test "$test_mount"
 btrfs subvolume create "$test_mount/active"
 printf 'original data\n' > "$test_mount/active/payload"
 btrfs subvolume snapshot -r "$test_mount/active" "$test_mount/checkpoint"
+snapper --no-dbus -c shield-selftest create-config "$test_mount/active"
+snapshot=$(snapper --no-dbus -c shield-selftest create --print-number --description 'Disposable QEMU test')
+[[ $snapshot =~ ^[0-9]+$ ]]
 printf 'changed data\n' > "$test_mount/active/payload"
 grep -qx 'original data' "$test_mount/checkpoint/payload"
+grep -qx 'original data' "$test_mount/active/.snapshots/$snapshot/snapshot/payload"
 grep -qx 'changed data' "$test_mount/active/payload"
+snapper --no-dbus -c shield-selftest delete "$snapshot"
+snapper --no-dbus -c shield-selftest delete-config
 umount "$test_mount"
 cryptsetup close shield-filesystem-test
 losetup --detach "$loop"
 rm -f "$test_image" "$test_key"
-echo 'CHECK: encrypted loop storage and independent Btrfs snapshot data'
+echo 'CHECK: encrypted loop storage, Btrfs and Snapper snapshot data'
+runuser -u qemutest -- env XDG_RUNTIME_DIR="/run/user/$test_uid" OMARCHY_PATH=/usr/share/omarchy \
+  timeout 45 Hyprland --verify-config --config /home/qemutest/.config/hypr/hyprland.lua
+echo 'CHECK: installed Omarchy Hyprland configuration'
 echo SHIELD_OMARCHY_QEMU_USERSPACE_PASS
