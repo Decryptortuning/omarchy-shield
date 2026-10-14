@@ -31,7 +31,7 @@ pass "older hardware and contradictory device trees are refused"
 
 fake_platform "$work/board" aarch64-shield
 defaults=$(omarchy-pkg-defaults)
-for package in hyprland quickshell omarchy-shield openssh mesa-utils linux-firmware-nvidia; do
+for package in hyprland quickshell omarchy-shield linux-shield snapper openssh mesa-utils linux-firmware-nvidia; do
   grep -qxF "$package" <<<"$defaults" || fail "Shield includes $package"
 done
 ! grep -qxF omarchy-mac <<<"$defaults" || fail "Shield excludes the Mac platform package"
@@ -41,6 +41,7 @@ source "$ROOT/install/helpers/pacman.sh"
 templates=$(omarchy_pacman_templates aarch64-shield)
 # shellcheck disable=SC2016 # Pacman's $arch token must remain literal here.
 grep -qF 'https://pkgs.omarchy.org/edge/$arch' "$templates/pacman-edge.conf" || fail "Shield uses ARM Omarchy packages"
+grep -qxF 'IgnorePkg = omarchy omarchy-settings omarchy-shield linux-shield' "$templates/pacman-edge.conf" || fail "repository upgrades preserve the local fork and kernel"
 ! grep -qF '[multilib]' "$templates/pacman-edge.conf" || fail "Shield has no x86 multilib"
 pass "Shield composes the real Omarchy desktop and ARM repository templates"
 

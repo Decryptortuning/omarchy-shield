@@ -9,6 +9,9 @@ This is an experimental Omarchy platform port for `mdarcy` / Tegra210B01. Full h
 - Image manifests and pacman templates understand the Shield platform. Boot, provisioning, reset and update operations dispatch to the local `omarchy-shield` package, whose unfinished boot-changing operations refuse to run rather than use a PC boot path.
 - The pinned ACK Tegra 7.1 kernel and diagnostic initramfs have compiled and booted under QEMU `virt`. The hardware configuration enables PCIe Wi-Fi, USB host/device mode, UAS storage, Bluetooth HID, HDMI audio, CEC, Nouveau and the host1x userspace interface. The matching kernel modules have been built. QEMU's virtual board does not exercise the Shield DTB or physical peripherals.
 - The B00 device-tree overlay enables the CEC controller on the inherited P2894 CEC pinmux. Firmware matching and all physical behavior remain untested.
+- The kernel profile includes Omarchy's zstd compressed swap and encrypted-root driver requirements. `linux-shield` owns the custom kernel modules without installing a boot image. Btrfs and Snapper are included; native snapshot boot integration remains unfinished.
+
+The current firmware audit finds GM20B ACR firmware and VIC firmware in the signed Linux firmware packages. The Tegra210B01 XUSB blob, Bluetooth HCD files, and NVDEC/NVENC blobs are absent. Generic Tegra210 firmware is not a replacement for the B01 XUSB blob. Board-specific Wi-Fi calibration also needs stock-device evidence. These are unresolved input/qualification gaps, not supported hardware claims.
 
 ## Boot design
 
@@ -23,9 +26,10 @@ The initial target keeps native kernel/boot-image installation outside desktop u
 - [tegra210b01-shield-cec.dtso](tegra210b01-shield-cec.dtso): B00 evaluation board overlay; it is not confirmation of the owner's actual board revision.
 - [userspace.lock.json](userspace.lock.json): upstream source, packaging, ARM repository metadata and signed rootfs provenance. It records the upstream base rather than claiming that the public binary packages include this fork's changes.
 - [omarchy-shield](omarchy-shield/PKGBUILD): local ARM platform package. Build on Arch Linux ARM with `makepkg` after building/installing this fork's paired `omarchy` and `omarchy-settings` packages from the same source checkout through `OMARCHY_SRC` in the pinned upstream packaging recipes.
+- [BUILD.md](BUILD.md): checked build tools for the kernel/modules, signed ARM filesystem, four local packages, and isolated whole-filesystem QEMU tests.
 - [collect-shield-linux.py](collect-shield-linux.py): bounded evidence collection on the actual Tegra210B01 system. Run `sudo python3 collect-shield-linux.py --output hardware-report.json` after a native boot and basic cooling verification. `--graphics` additionally initializes EGL/Vulkan. Generated device reports must be reviewed before publishing.
 
-The source branch reports `4.0.0.alpha`. Local paired packages use that source version with release `99.shield1`; do not mix the fork's runtime with settings built from another source commit. The upstream MIT license applies to Omarchy; the copied kernel patch and device-tree inputs retain their stated GPL licenses.
+The source branch reports `4.0.0.alpha`. Local paired packages use that source version with release `99.1`; do not mix the fork's runtime with settings built from another source commit. The upstream MIT license applies to Omarchy; the copied kernel patch and device-tree inputs retain their stated GPL licenses.
 
 ## Qualification
 

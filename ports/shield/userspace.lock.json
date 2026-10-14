@@ -20,7 +20,7 @@
       "name": "omarchy",
       "file": "omarchy-edge",
       "url": "https://pkgs.omarchy.org/edge/aarch64/omarchy.db",
-      "sha256": "31feb4094241f2bf8bab5f73d4ac8f62dbcf582458b5d6c1e619e1d3a93d48b4"
+      "sha256": "2d73f5188279731c18b5db3948945af9da3f91ab28a69e70accb5feea6ff5406"
     },
     {
       "name": "core",
@@ -48,7 +48,8 @@
     }
   ],
   "local_packages": [
-    "omarchy-shield"
+    "omarchy-shield",
+    "linux-shield"
   ],
   "rootfs": {
     "filename": "ArchLinuxARM-aarch64-2026-10-14.tar.gz",

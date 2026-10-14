@@ -16,3 +16,16 @@ CONFIG_DRM_TEGRA_STAGING=y
 # Omarchy's snapshot filesystem can be mounted without an extra rootfs module.
 CONFIG_BTRFS_FS=y
 CONFIG_BTRFS_FS_POSIX_ACL=y
+CONFIG_ZRAM=m
+CONFIG_ZRAM_BACKEND_ZSTD=y
+CONFIG_ZRAM_DEF_COMP_ZSTD=y
+CONFIG_INPUT_UINPUT=m
+# Virtual devices allow desktop validation on QEMU, separate from Shield tests.
+CONFIG_DRM_VIRTIO_GPU=m
+CONFIG_VIRTIO_INPUT=m
+# Native encrypted-root support; owner provisioning and boot handoff stay gated.
+CONFIG_BLK_DEV_DM=y
+CONFIG_DM_CRYPT=y
+CONFIG_CRYPTO_XTS=y
+CONFIG_CRYPTO_AES=y
+CONFIG_CRYPTO_SHA256=y

@@ -4,15 +4,19 @@
   "subsystems": [
     {
       "id": "cpu-memory",
-      "name": "CPU, RAM and CPU frequency scaling",
+      "name": "CPU, RAM, compressed swap and CPU frequency scaling",
       "config": [
         "CONFIG_SMP",
         "CONFIG_ARM64",
-        "CONFIG_ARM_TEGRA124_CPUFREQ"
+        "CONFIG_ARM_TEGRA124_CPUFREQ",
+        "CONFIG_ZRAM",
+        "CONFIG_ZRAM_BACKEND_ZSTD"
       ],
-      "modules": [],
+      "modules": [
+        "zram"
+      ],
       "firmware_patterns": [],
-      "acceptance": "Compare stock CPU topology, RAM, OPPs and sustained frequency at monitored temperatures.",
+      "acceptance": "Compare stock CPU topology, RAM, OPPs and sustained frequency at monitored temperatures. Verify the configured zstd zram swap device and pressure recovery.",
       "required_status": "hardware-validated or an explicit unresolved capability gap",
       "device_tree_nodes": []
     },
@@ -241,7 +245,9 @@
       ],
       "modules": [],
       "firmware_patterns": [
-        "nvidia/tegra210/*"
+        "nvidia/tegra210/nvdec.bin*",
+        "nvidia/tegra210/nvenc.bin*",
+        "nvidia/tegra210/vic04_ucode.bin*"
       ],
       "acceptance": "Validate the actual host1x/userspace API, firmware and codec/sample matrix with verified hardware execution and output, including advertised bit depths/resolutions.",
       "required_status": "hardware-validated or an explicit unresolved capability gap",
@@ -300,7 +306,9 @@
       "name": "Cold boot, reboot and stock recovery",
       "config": [
         "CONFIG_MMC_SDHCI_TEGRA",
-        "CONFIG_USB_XHCI_TEGRA"
+        "CONFIG_USB_XHCI_TEGRA",
+        "CONFIG_DM_CRYPT",
+        "CONFIG_CRYPTO_XTS"
       ],
       "modules": [],
       "firmware_patterns": [],

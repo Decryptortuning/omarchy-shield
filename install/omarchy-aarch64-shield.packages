@@ -1,6 +1,9 @@
 # NVIDIA Shield TV Pro 2019. The platform package is built with the port.
 # Its boot lifecycle never flashes Android partitions from a desktop update.
 omarchy-shield
+linux-shield
+btrfs-progs
+snapper
 openssh
 mesa-utils
 vulkan-nouveau

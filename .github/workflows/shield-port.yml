@@ -1,0 +1,35 @@
+name: Shield port checks
+
+on:
+  push:
+    branches: [codex/shield-port]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  platform:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Install check tools
+        run: sudo apt-get update -qq && sudo apt-get install -y shellcheck pacman-package-manager
+      - name: Check Shield build scripts
+        run: |
+          shellcheck bin/omarchy-hw-aarch64-shield ports/shield/*.sh ports/shield/tools/*.sh ports/shield/omarchy-shield/lifecycle test/shell.d/shield-platform-test.sh
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          for path in Path('ports/shield').rglob('*.py'):
+              ast.parse(path.read_text(), filename=str(path))
+          for path in Path('ports/shield').glob('*.json'):
+              json.loads(path.read_text())
+          PY
+      - name: Exercise platform integration
+        run: |
+          for suite in shield-platform hw-platform platform-packages pacman-templates lifecycle-dispatch image-target-platform image-deferred-hardware; do
+            bash "test/shell.d/$suite-test.sh"
+          done

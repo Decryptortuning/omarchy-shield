@@ -1,0 +1,45 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# Diagnostic PID 1. Persistent devices are not mounted and networking stays off.
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+mount -t devtmpfs devtmpfs /dev
+exec </dev/console >/dev/console 2>&1
+mkdir -p /dev/pts /proc /sys /run /tmp
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devpts devpts /dev/pts
+mount -t tmpfs tmpfs /run
+mount -t tmpfs tmpfs /tmp
+
+echo 'SHIELD_LINUX_INIT_STARTED'
+uname -a
+printf 'Model: '
+if [ -r /proc/device-tree/model ]; then
+    tr '\000' '\n' </proc/device-tree/model
+fi
+printf 'Compatible: '
+if [ -r /proc/device-tree/compatible ]; then
+    tr '\000' ' ' </proc/device-tree/compatible
+    echo
+fi
+cat /proc/cmdline
+head -n 5 /proc/meminfo
+cat /proc/partitions
+
+case " $(cat /proc/cmdline) " in
+    *' shield.selftest=1 '*)
+        if [ -c /dev/console ] && [ -r /proc/meminfo ] && [ -d /sys/class ]; then
+            echo 'SHIELD_LINUX_QEMU_SELFTEST_PASS'
+            poweroff -f
+        fi
+        echo 'SHIELD_LINUX_QEMU_SELFTEST_FAIL'
+        poweroff -f
+        ;;
+esac
+
+echo 'Diagnostic shell. No persistent filesystem has been mounted.'
+echo 'HDMI, USB, cooling, networking and storage need hardware validation.'
+while true; do
+    setsid cttyhack sh
+    sleep 1
+done
