@@ -10,7 +10,10 @@ local events, recovery, command, imported = {}, nil, nil, false
 local config = { invisible = false, enable_hyprcursor = true, sync_gsettings_theme = true }
 local env = { XCURSOR_THEME = "my-xcursor", HYPRCURSOR_THEME = "my-hyprcursor", XCURSOR_PATH = "/my/icons", HYPRLAND_INSTANCE_SIGNATURE = "test-session", OMARCHY_PATH = os.getenv("ROOT") }
 local getenv = os.getenv
-os.getenv = function(name) return env[name] or getenv(name) end
+os.getenv = function(name)
+  if name == "HYPRLAND_INSTANCE_SIGNATURE" then return env[name] end
+  return env[name] or getenv(name)
+end
 local monitors = {}
 hl = {
   on = function(event, callback) events[event] = callback end,
@@ -132,5 +135,18 @@ env.XCURSOR_THEME, env.OMARCHY_STARTUP_CURSOR_SESSION, gsettings = "", "old-sess
 events["config.reloaded"]()
 assert(omarchy_startup_cursor.xcursor == "default", "an ordinary boot without a cursor theme keeps the default alias instead of adopting GSettings")
 io.popen = popen
+
+-- Config-only checks have no compositor or timer loop. No runtime cursor API
+-- may be called, even when the monitor list would otherwise look like a boot.
+hl.get_monitors = function() error("config-only mode has no compositor") end
+hl.timer = function() error("config-only mode has no timer loop") end
+hl.env = function() error("config-only mode must not change cursor state") end
+hl.config = function() error("config-only mode must not change cursor config") end
+for _, signature in ipairs({ false, "" }) do
+  env.HYPRLAND_INSTANCE_SIGNATURE = signature or nil
+  omarchy_startup_cursor_pending, omarchy_startup_cursor = nil, nil
+  events["config.reloaded"]()
+  assert(omarchy_startup_cursor_pending == nil and omarchy_startup_cursor == nil)
+end
 LUA
 pass "the first compositor frame starts blank and the reveal restores user cursor settings"
