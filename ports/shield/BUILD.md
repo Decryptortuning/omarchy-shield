@@ -66,7 +66,7 @@ The current test also starts the systemd user manager and memory-pressure servic
 
 ```sh
 python3 ports/shield/fetch-firmware-candidates.py --build-root "$build_root"
-SHIELD_BUILD_ROOT="$build_root/kernel-cache" SHIELD_DIST_DIR="$build_root/usb-diagnostic" \\
+SHIELD_BUILD_ROOT="$build_root/kernel-cache" SHIELD_DIST_DIR="$build_root/usb-diagnostic" \
   SHIELD_USB_CONSOLE=1 bash ports/shield/build-kernel.sh
 ```
 
@@ -75,3 +75,14 @@ The firmware tool extracts checksum-pinned files from NVIDIA's original L4T 32.2
 The optional diagnostic ramdisk includes only the USB serial module dependencies in addition to BusyBox. Its root USB shell requires the explicit kernel parameter `shield.usb-console=1`, a supported Tegra210B01 board, and its Tegra UDC. It stays off without that parameter and is never enabled by the desktop. This is an unauthenticated physical debugging console for bring-up, not a production login configuration. Physical enumeration on Windows remains untested. The bundle is still raw components; the actual Shield boot header and recovery route must be established before booting it.
 
 On Windows, `ports/shield/inspect-usb.ps1` performs bounded read-only ADB/fastboot inventory. Its default report lives under the ignored `ports/shield/build` directory. It never reboots, unlocks or flashes, and it refuses Android property inspection after a device identifies as something other than `mdarcy`.
+
+## Inspecting an existing stock boot image
+
+Clone AOSP's `platform/system/tools/mkbootimg` beside this checkout using [boot-tools.lock.json](boot-tools.lock.json). The wrapper exports only the pinned commit into a temporary directory, regardless of checkout changes. With an owner-supplied saved boot or recovery image:
+
+```sh
+python3 ports/shield/inspect-boot-image.py --tools ../mkbootimg \
+  --image "$build_root/stock-boot.img" --output "$build_root/stock-boot-inspection"
+```
+
+This preserves the input and extracts the header and payloads into a new directory. Generated command arguments are recorded as a JSON array, never executed. Four upstream Android v0/v1/v2 image tests and a synthetic wrapper fixture have passed; no actual Shield image, load address, device-tree handoff or temporary-boot route has been validated. This tool neither repacks nor flashes an image.

@@ -1,0 +1,15 @@
+{
+  "repository": "mkbootimg",
+  "url": "https://android.googlesource.com/platform/system/tools/mkbootimg",
+  "commit": "d2bb0af5ba6d3198a3e99529c97eda1be0b5a093",
+  "license": "Apache-2.0",
+  "scope": "Read-only inspection/extraction of an owner-supplied stock boot/recovery image. No Shield load addresses or device-tree handoff are assumed.",
+  "upstream_tests_passed": [
+    "test_unpack_boot_image_v0",
+    "test_unpack_boot_image_v1",
+    "test_unpack_boot_image_v2",
+    "test_boot_image_v2_cmdline_null_terminator"
+  ],
+  "synthetic_fixtures_only": true,
+  "actual_shield_boot_image_tested": false
+}
