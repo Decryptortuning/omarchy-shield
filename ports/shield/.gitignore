@@ -1,0 +1,5 @@
+/build/
+/dist/
+hardware-report*.json
+*.pkg.tar.*
+__pycache__/

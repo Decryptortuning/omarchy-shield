@@ -1,0 +1,2 @@
+# Unified patch context includes a space before the original source tabs.
+ports/shield/kernel-patches/*.patch -whitespace

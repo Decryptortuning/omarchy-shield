@@ -102,6 +102,15 @@ fi
 # apple_optional in test/shell.d/lifecycle-dispatch-test.sh and the Apple column
 # and registration table in docs/lifecycle-dispatch.md.
 case $platform:$operation in
+  aarch64-shield:*)
+    implementation=/usr/lib/omarchy/shield
+    package=omarchy-shield
+    required=(
+      provision-prepare provision-commit provision-verify
+      reset-prepare reset-verify reset-commit reset-rollback
+      update-verify update-takeover luks-slots setup-boot
+    )
+    ;;
   aarch64-apple:setup-system | aarch64-apple:setup-user | aarch64-apple:post-install | aarch64-apple:pre-remove)
     implementation=/usr/lib/omarchy/mac
     package=omarchy-mac

@@ -1,0 +1,42 @@
+#!/bin/bash -p
+# Native boot packaging is deliberately outside the desktop package manager.
+# Refuse unsupported boot-changing operations until physical bring-up supplies
+# a verified handoff, rather than using Omarchy's Limine/UKI implementation.
+set -euo pipefail
+[[ $- == *p* ]] || exit 126
+operation=${1:?Missing lifecycle operation}
+shift
+[[ $(/usr/bin/omarchy-hw-platform) == aarch64-shield ]] || { echo 'This operation requires a supported Shield 2019 device tree' >&2; exit 1; }
+case $operation in
+  setup-user | post-install | pre-remove)
+    (( EUID != 0 )) || { echo 'Run user setup as the target user' >&2; exit 1; }
+    # Upstream user settings apply unchanged; no unvalidated GPU overrides.
+    ;;
+  setup-system)
+    (( EUID == 0 )) || exit 1
+    echo 'Shield desktop setup retains the kernel thermal policy and firmware requirements.'
+    ;;
+  reset-rollback)
+    (( EUID == 0 )) || exit 1
+    # reset-prepare refuses before changing anything, so there is no state to undo.
+    ;;
+  update-takeover)
+    (( EUID == 0 )) || exit 1
+    for path in "$@"; do
+      case $path in
+        /boot/* | boot/* | /usr/lib/modules/* | usr/lib/modules/* | /var/lib/shield-linux/* | var/lib/shield-linux/*)
+          echo "Shield boot artifact cannot be replaced by a package takeover: $path" >&2
+          exit 1
+          ;;
+      esac
+    done
+    ;;
+  provision-prepare | provision-commit | provision-verify | reset-prepare | reset-verify | reset-commit | luks-slots | setup-boot | update-verify)
+    echo "Shield $operation is pending hardware-verified boot-image integration; no boot partitions were changed." >&2
+    exit 1
+    ;;
+  *)
+    echo "Unknown Shield lifecycle operation: $operation" >&2
+    exit 2
+    ;;
+esac

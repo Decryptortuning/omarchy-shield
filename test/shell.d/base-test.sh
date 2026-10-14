@@ -145,6 +145,7 @@ fake_platform() {
 
   case $platform in
     aarch64-apple) compatible=(apple,j416c apple,t6021 apple,arm-platform) ;;
+    aarch64-shield) compatible=(nvidia,p2894-2551-b00 nvidia,darcy nvidia,tegra210b01 nvidia,tegra210) ;;
     aarch64) compatible=(raspberrypi,5-model-b brcm,bcm2712) ;;
     x86) machine=x86_64 ;;
     *) fail "fake_platform knows the platform $platform" ;;

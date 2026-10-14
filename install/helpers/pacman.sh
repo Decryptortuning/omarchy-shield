@@ -8,7 +8,7 @@
 omarchy_pacman_templates() {
   case ${1:-} in
     x86) echo "$OMARCHY_PATH/default/pacman" ;;
-    aarch64 | aarch64-apple) echo "$OMARCHY_PATH/default/pacman/$1" ;;
+    aarch64 | aarch64-apple | aarch64-shield) echo "$OMARCHY_PATH/default/pacman/$1" ;;
     *)
       echo "Error: Unknown platform '${1:-}'." >&2
       return 1
@@ -23,7 +23,7 @@ omarchy_pacman_templates() {
 omarchy_pacman_default_channel() {
   case ${1:-} in
     x86) echo stable ;;
-    aarch64 | aarch64-apple) echo edge ;;
+    aarch64 | aarch64-apple | aarch64-shield) echo edge ;;
     *)
       echo "Error: Unknown platform '${1:-}'." >&2
       return 1

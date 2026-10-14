@@ -1,0 +1,20 @@
+pkgname=omarchy-shield
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='NVIDIA Shield TV Pro 2019 experimental Omarchy platform integration'
+arch=('aarch64')
+license=('MIT')
+depends=('bash' 'kmod' 'omarchy')
+source=('lifecycle')
+sha256sums=('28a2af6cdf824f8111e9ff43746b775157318bed558a2a04817a15840f503a45')
+
+package() {
+  install -Dm755 lifecycle "$pkgdir/usr/lib/omarchy/shield/lifecycle"
+  for operation in provision-prepare provision-commit provision-verify \
+    reset-prepare reset-verify reset-commit reset-rollback update-verify \
+    update-takeover luks-slots setup-boot setup-system setup-user post-install pre-remove; do
+    printf '#!/bin/bash -p\nexec /usr/lib/omarchy/shield/lifecycle %s "$@"\n' "$operation" \
+      > "$pkgdir/usr/lib/omarchy/shield/$operation"
+    chmod 0755 "$pkgdir/usr/lib/omarchy/shield/$operation"
+  done
+}

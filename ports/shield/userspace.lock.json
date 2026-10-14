@@ -1,0 +1,65 @@
+{
+  "target": "aarch64-shield / NVIDIA Shield TV Pro 2019",
+  "omarchy": {
+    "repository": "omarchy",
+    "url": "https://github.com/omacom/omarchy.git",
+    "branch": "quattro",
+    "source_version": "4.0.0.alpha",
+    "upstream_commit": "84cfb93959f4fe0bbb71de71593b36647d2ba78d",
+    "fork_url": "https://github.com/Decryptortuning/omarchy-shield",
+    "fork_branch": "codex/shield-port"
+  },
+  "packaging": {
+    "repository": "omarchy-pkgs",
+    "url": "https://github.com/omacom/omarchy-pkgs.git",
+    "commit": "c505828452be1e9d95c28183889ee4c922b4d7da"
+  },
+  "kernel_lock": "ports/shield/kernel.lock.json",
+  "repositories": [
+    {
+      "name": "omarchy",
+      "file": "omarchy-edge",
+      "url": "https://pkgs.omarchy.org/edge/aarch64/omarchy.db",
+      "sha256": "31feb4094241f2bf8bab5f73d4ac8f62dbcf582458b5d6c1e619e1d3a93d48b4"
+    },
+    {
+      "name": "core",
+      "file": "alarm-core.db",
+      "url": "https://arm-mirror.omarchy.org/aarch64/core/core.db",
+      "sha256": "91b52f917c664d5c6c16686b4749b2c4bb3f2673b49097f736d145ba88016364"
+    },
+    {
+      "name": "extra",
+      "file": "alarm-extra.db",
+      "url": "https://arm-mirror.omarchy.org/aarch64/extra/extra.db",
+      "sha256": "02cfb47e684d6bba91550de7ff16cdd5451890d4cd1511676e35122d380f85dc"
+    },
+    {
+      "name": "alarm",
+      "file": "alarm-alarm.db",
+      "url": "https://arm-mirror.omarchy.org/aarch64/alarm/alarm.db",
+      "sha256": "1a9827a96b203fab41e4c0e5c7a0ca53788f8516108d865b84148aae417a4653"
+    },
+    {
+      "name": "aur",
+      "file": "alarm-aur.db",
+      "url": "https://arm-mirror.omarchy.org/aarch64/aur/aur.db",
+      "sha256": "263b04baaf9e27f6bc7840455a2bf65bf9b7f9cad0be5efce0ca3650eb634024"
+    }
+  ],
+  "local_packages": [
+    "omarchy-shield"
+  ],
+  "rootfs": {
+    "filename": "ArchLinuxARM-aarch64-2026-10-14.tar.gz",
+    "url": "https://de3.mirror.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz",
+    "sha256": "42a4eeaa038994ffd31fa173256ef2f0ef511358eeb41b9ea1f8626391b9b319",
+    "signature_url": "https://de3.mirror.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz.sig",
+    "signature_sha256": "0157d8cd6261c85205931c766b754d6d56112b28800666fb64add1de192ebe11",
+    "signer_fingerprint": "68B3537F39A313B3E574D06777193F152BDBE6A6",
+    "keyring_url": "https://raw.githubusercontent.com/archlinuxarm/archlinuxarm-keyring/master/archlinuxarm.gpg",
+    "keyring_sha256": "50a08f82ce3cd524a552da4bfa37f3e04b2c9da468e2fce5783474b58a34c518"
+  },
+  "hardware_tested": false,
+  "ready_to_flash": false
+}

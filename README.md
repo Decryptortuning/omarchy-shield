@@ -1,4 +1,12 @@
-# Omarchy
+# Omarchy — NVIDIA Shield TV Pro 2019 port
+
+Experimental fork for the **2019 NVIDIA Shield TV Pro (`mdarcy`, Tegra210B01)**. The target is the full Omarchy desktop with complete hardware enablement. **Physical Shield boot and hardware support are not yet validated; there is no ready-to-flash installation image.**
+
+This branch adds the `aarch64-shield` platform, Arch Linux ARM package integration and Shield lifecycle handling. Start with the [port status and build inputs](ports/shield/README.md), [hardware acceptance matrix](ports/shield/hardware.json) and [platform integration notes](docs/shield-port.md).
+
+Upstream: [omacom/omarchy](https://github.com/omacom/omarchy). Omarchy's desktop, applications and themes remain the basis of this port.
+
+## Upstream Omarchy
 
 Omarchy is a beautiful, fun & agentic Linux distribution by DHH.
 

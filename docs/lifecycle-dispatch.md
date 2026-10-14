@@ -55,7 +55,10 @@ Registration is code in `bin/omarchy-lifecycle-dispatch`, not configuration. No 
 | --- | --- | --- | --- |
 | `aarch64-apple` | `/usr/lib/omarchy/mac-boot` | `omarchy-mac-boot` | all its operations |
 | `aarch64-apple`: `setup-system`, `setup-user`, `post-install`, `pre-remove` | `/usr/lib/omarchy/mac` | `omarchy-mac` | none |
+| `aarch64-shield` (experimental) | `/usr/lib/omarchy/shield` | `omarchy-shield` | boot, provisioning, reset, update verification/takeover and LUKS operations |
 | `x86`, `aarch64` | none | none | none: every operation is a no-op, and callers keep their generic path |
+
+Shield's platform package comes from the companion Shield Linux port project. Its unsupported operations fail explicitly while Android boot-image integration is under development; registering the platform does not establish a hardware-tested boot chain. See [the Shield bring-up scope](shield-port.md).
 
 The entrypoint for an operation is `<implementation directory>/<operation>`. A registered platform's required operations must be shipped. Its optional operations may be left out, and then they are no-ops.
 

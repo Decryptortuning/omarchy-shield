@@ -1,0 +1,18 @@
+# Hardware enablement candidate. These symbols do not qualify physical devices.
+# B00/B03 Wi-Fi uses PCIe; the upstream arm64 defconfig enabled only SDIO.
+CONFIG_BRCMFMAC_PCIE=y
+CONFIG_BRCMFMAC_SDIO=y
+CONFIG_USB_RTL8152=m
+CONFIG_USB_UAS=y
+CONFIG_HIDRAW=y
+CONFIG_UHID=m
+CONFIG_BT_HIDP=m
+CONFIG_MEDIA_CEC_SUPPORT=y
+CONFIG_CEC_TEGRA=m
+# Userspace access to the Tegra host1x engines, including VIC/NVDEC/NVENC work.
+# This is upstream's experimental interface and needs userspace qualification.
+CONFIG_STAGING=y
+CONFIG_DRM_TEGRA_STAGING=y
+# Omarchy's snapshot filesystem can be mounted without an extra rootfs module.
+CONFIG_BTRFS_FS=y
+CONFIG_BTRFS_FS_POSIX_ACL=y

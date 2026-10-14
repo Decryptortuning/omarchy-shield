@@ -1,0 +1,322 @@
+{
+  "target": "NVIDIA Shield TV Pro 2019 / mdarcy",
+  "scope": "Full hardware support is the acceptance goal; none is yet physically qualified.",
+  "subsystems": [
+    {
+      "id": "cpu-memory",
+      "name": "CPU, RAM and CPU frequency scaling",
+      "config": [
+        "CONFIG_SMP",
+        "CONFIG_ARM64",
+        "CONFIG_ARM_TEGRA124_CPUFREQ"
+      ],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Compare stock CPU topology, RAM, OPPs and sustained frequency at monitored temperatures.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    },
+    {
+      "id": "emmc",
+      "name": "Internal eMMC and partition identity",
+      "config": [
+        "CONFIG_MMC_SDHCI_TEGRA"
+      ],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Read identity/partitions first; qualify reads and separately authorized writes without overwriting NVIDIA firmware.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/mmc@700b0600"
+      ]
+    },
+    {
+      "id": "usb-host",
+      "name": "Both USB host ports and USB SSD",
+      "config": [
+        "CONFIG_USB_XHCI_TEGRA",
+        "CONFIG_PHY_TEGRA_XUSB",
+        "CONFIG_USB_STORAGE",
+        "CONFIG_USB_UAS",
+        "CONFIG_EXT4_FS",
+        "CONFIG_BTRFS_FS"
+      ],
+      "modules": [],
+      "firmware_patterns": [
+        "nvidia/tegra210b01/xusb.bin*"
+      ],
+      "acceptance": "Test each port at USB 2/3 speed with keyboard, SSD, hub, hotplug and sustained verified I/O.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/usb@70090000",
+        "/padctl@7009f000"
+      ]
+    },
+    {
+      "id": "usb-device",
+      "name": "Convertible USB device/debug port",
+      "config": [
+        "CONFIG_USB_TEGRA_XUDC",
+        "CONFIG_USB_CONFIGFS"
+      ],
+      "modules": [
+        "tegra-xudc"
+      ],
+      "firmware_patterns": [],
+      "acceptance": "Test host/device role switching and USB gadget enumeration on the PC.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/usb@700d0000"
+      ]
+    },
+    {
+      "id": "ethernet",
+      "name": "Gigabit Ethernet",
+      "config": [
+        "CONFIG_USB_RTL8152"
+      ],
+      "modules": [
+        "r8152"
+      ],
+      "firmware_patterns": [
+        "rtl_nic/rtl8153*"
+      ],
+      "acceptance": "Identify the actual adapter/driver, negotiate link, test DHCP and sustained LAN traffic.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    },
+    {
+      "id": "wifi",
+      "name": "Wi-Fi, both bands and reconnect",
+      "config": [
+        "CONFIG_BRCMFMAC",
+        "CONFIG_BRCMFMAC_PCIE",
+        "CONFIG_BRCMFMAC_SDIO"
+      ],
+      "modules": [
+        "brcmfmac"
+      ],
+      "firmware_patterns": [
+        "brcm/brcmfmac4356*"
+      ],
+      "acceptance": "Match the board revision, firmware, NVRAM, MAC and regulatory data; test association, traffic and reconnect on 2.4/5 GHz.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/pcie@1003000/pci@1,0"
+      ]
+    },
+    {
+      "id": "bluetooth",
+      "name": "Bluetooth radio and peripherals",
+      "config": [
+        "CONFIG_BT_HCIUART",
+        "CONFIG_BT_HCIUART_BCM",
+        "CONFIG_BT_HIDP",
+        "CONFIG_UHID"
+      ],
+      "modules": [
+        "hci_uart",
+        "hidp",
+        "uhid"
+      ],
+      "firmware_patterns": [
+        "brcm/BCM4354*",
+        "brcm/BCM4356*"
+      ],
+      "acceptance": "Identify the combo chip and exact firmware; test pairing, input and reconnect.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/serial@70006300/bluetooth"
+      ]
+    },
+    {
+      "id": "remote",
+      "name": "Shield remote/controller and microphone",
+      "config": [
+        "CONFIG_HIDRAW",
+        "CONFIG_UHID",
+        "CONFIG_INPUT_EVDEV"
+      ],
+      "modules": [
+        "uhid"
+      ],
+      "firmware_patterns": [],
+      "acceptance": "Test each remote button, voice/microphone transport, pairing, IR programming and wake individually; vendor features remain open.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    },
+    {
+      "id": "hdmi",
+      "name": "HDMI display, EDID and hotplug",
+      "config": [
+        "CONFIG_DRM_TEGRA",
+        "CONFIG_DRM_FBDEV_EMULATION"
+      ],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Test actual display modes, 1080p/4K and refresh rates, hotplug, reconnect, cursor and VT switching.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/host1x@50000000/sor@54580000"
+      ]
+    },
+    {
+      "id": "audio",
+      "name": "HDMI audio and USB/Bluetooth audio",
+      "config": [
+        "CONFIG_SND_HDA_TEGRA",
+        "CONFIG_SND_HDA_CODEC_HDMI",
+        "CONFIG_SND_USB_AUDIO"
+      ],
+      "modules": [
+        "snd-hda-tegra",
+        "snd-hda-codec-hdmi",
+        "snd-usb-audio"
+      ],
+      "firmware_patterns": [],
+      "acceptance": "Test HDMI PCM at supported rates/channels, routing, USB/Bluetooth audio and codec passthrough separately.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/hda@70030000"
+      ]
+    },
+    {
+      "id": "cec",
+      "name": "HDMI CEC control and wake",
+      "config": [
+        "CONFIG_CEC_TEGRA",
+        "CONFIG_CEC_NOTIFIER"
+      ],
+      "modules": [
+        "tegra-cec"
+      ],
+      "firmware_patterns": [],
+      "acceptance": "Confirm effective DT enablement, CEC adapter, key events, display control and wake behavior.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/cec@70015000"
+      ]
+    },
+    {
+      "id": "gpu",
+      "name": "GM20B GPU, OpenGL/EGL and Hyprland",
+      "config": [
+        "CONFIG_DRM_NOUVEAU",
+        "CONFIG_NOUVEAU_PLATFORM_DRIVER"
+      ],
+      "modules": [
+        "nouveau"
+      ],
+      "firmware_patterns": [
+        "nvidia/gm20b/acr/bl.bin*",
+        "nvidia/gm20b/acr/ucode_load.bin*"
+      ],
+      "acceptance": "Require a physical Nouveau renderer, EGL/OpenGL rendering, DMA-BUF sharing, Hyprland/Quickshell and monitored clock scaling; llvmpipe is not a pass.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/gpu@57000000"
+      ]
+    },
+    {
+      "id": "vulkan",
+      "name": "NVK Vulkan on GM20B",
+      "config": [
+        "CONFIG_DRM_NOUVEAU",
+        "CONFIG_NOUVEAU_PLATFORM_DRIVER"
+      ],
+      "modules": [
+        "nouveau"
+      ],
+      "firmware_patterns": [],
+      "acceptance": "Qualify actual device enumeration, rendering and synchronization; no assumptions from generic Maxwell support.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    },
+    {
+      "id": "video",
+      "name": "Hardware video decode, encode and VIC",
+      "config": [
+        "CONFIG_DRM_TEGRA",
+        "CONFIG_DRM_TEGRA_STAGING"
+      ],
+      "modules": [],
+      "firmware_patterns": [
+        "nvidia/tegra210/*"
+      ],
+      "acceptance": "Validate the actual host1x/userspace API, firmware and codec/sample matrix with verified hardware execution and output, including advertised bit depths/resolutions.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/host1x@50000000/nvdec@54480000",
+        "/host1x@50000000/nvenc@544c0000",
+        "/host1x@50000000/vic@54340000"
+      ]
+    },
+    {
+      "id": "thermal",
+      "name": "Fan, sensors and thermal throttling",
+      "config": [
+        "CONFIG_SENSORS_PWM_FAN",
+        "CONFIG_TEGRA_SOCTHERM",
+        "CONFIG_PWM_TEGRA"
+      ],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Verify idle fan/sensors and cooling-state transitions before progressively monitored load; compare trip points to stock.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": [
+        "/pwm-fan"
+      ]
+    },
+    {
+      "id": "power",
+      "name": "Regulators, GPU/EMC clocks and idle power",
+      "config": [
+        "CONFIG_REGULATOR_MAX77620",
+        "CONFIG_REGULATOR_FAN53555",
+        "CONFIG_PM_DEVFREQ",
+        "CONFIG_TEGRA_CLK_DFLL"
+      ],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Match rails/OPPs to the actual board; qualify CPU/GPU/EMC scaling and idle behavior without guessed voltage tables.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    },
+    {
+      "id": "suspend-wake",
+      "name": "Suspend, resume and wake sources",
+      "config": [
+        "CONFIG_SUSPEND",
+        "CONFIG_PM_SLEEP"
+      ],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Test repeated resume, remote/network/USB wake where supported, and peripheral/display recovery.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    },
+    {
+      "id": "boot-recovery",
+      "name": "Cold boot, reboot and stock recovery",
+      "config": [
+        "CONFIG_MMC_SDHCI_TEGRA",
+        "CONFIG_USB_XHCI_TEGRA"
+      ],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Qualify the matched Android boot image, SSD root UUID, repeated standalone power cycles and an actual stock restoration route.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    },
+    {
+      "id": "licensed-media",
+      "name": "HDR, Dolby, protected playback and NVIDIA AI upscaling",
+      "config": [],
+      "modules": [],
+      "firmware_patterns": [],
+      "acceptance": "Track vendor userspace, licensing, DRM and display-pipeline feasibility separately. Linux driver availability does not establish Android feature parity.",
+      "required_status": "hardware-validated or an explicit unresolved capability gap",
+      "device_tree_nodes": []
+    }
+  ]
+}

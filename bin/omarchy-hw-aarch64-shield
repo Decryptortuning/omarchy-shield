@@ -1,0 +1,15 @@
+#!/bin/bash -p
+
+# omarchy:summary=Detect a supported NVIDIA Shield TV Pro 2019 device tree.
+
+# Match the detector's privileged startup boundary; root never accepts a
+# platform identity supplied through the caller's environment.
+if [[ $- != *p* ]]; then
+  echo "Refusing an unsafe Bash startup." >&2
+  exit 126
+fi
+
+dir=${BASH_SOURCE[0]%/*}
+[[ $dir != "${BASH_SOURCE[0]}" ]] || dir=.
+platform=$("$dir/omarchy-hw-platform") || exit 1
+[[ $platform == "aarch64-shield" ]]
