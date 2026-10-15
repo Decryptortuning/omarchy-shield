@@ -20,7 +20,7 @@
       },
       {
         "path": "ports/shield/kernel-patches/0002-darcy-inverted-fan.patch",
-        "sha256": "7ba6b192424c42d934e0bffb445ec68da1e40348583b91d6a204eeaff795f6ea",
+        "sha256": "8652026eef2097e967f808f39c4c16a767ff614a4f9fa66e3a80ccf1449eb62d",
         "reason": "Support inverse power-only PWM, defined fan idle/resume and ascending Darcy A08 cooling; preserve the GPU regulator normal-polarity specifier. Source-tested candidate, physical behavior unqualified."
       }
     ],
