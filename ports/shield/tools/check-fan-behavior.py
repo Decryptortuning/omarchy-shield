@@ -43,7 +43,8 @@ def main():
   with tempfile.TemporaryDirectory(prefix='shield-fan-regression-') as temporary:
     root = Path(temporary)
     (root / 'test.c').write_text(code)
-    subprocess.run(['gcc', '-std=gnu11', '-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter',
+    # Match Kbuild's treatment of the existing signed loop counters.
+    subprocess.run(['gcc', '-std=gnu11', '-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter', '-Wno-sign-compare',
                     '-o', str(root / 'test'), str(root / 'test.c')], check=True)
     result = subprocess.run([str(root / 'test')], capture_output=True, text=True, check=True)
   report = {'source_sha256': {name: hashlib.sha256(text.encode()).hexdigest() for name, text in files.items()},
