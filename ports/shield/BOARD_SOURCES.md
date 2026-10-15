@@ -1,0 +1,27 @@
+# Reusable Darcy board and driver sources
+
+Darcy board definitions, Linux drivers and boot-image recipes already exist. The task is to combine the matching pieces with Omarchy and qualify them on the connected Shield. [board-sources.lock.json](board-sources.lock.json) pins five source repositories and 17 inspected files separately from the tested runtime inputs in [kernel.lock.json](kernel.lock.json). New reference checkouts live under `/home/jresp/Active_GH`.
+
+| Project | What we can reuse | Scope |
+| --- | --- | --- |
+| [Upstream Linux Darcy DT](https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a08.dts) and the pinned ACK Tegra tree | Original-Tegra210 board identity, SDIO radio wiring, PCIe, regulators, display, Bluetooth and fan nodes | The current kernel already includes this board family and drivers. This does not establish the owner's exact PCB revision or physical behavior. |
+| [LineageOS T210 Foster hardware](https://github.com/LineageOS/android_hardware_nvidia_platform_t210_foster/tree/df8bb6647ef9535f5fedf89f9c1850deaf433465/kernel-dts) | NVIDIA-derived original Darcy DTS files, A00/A04/A08 variants, pinmux, rails, memory timing, PWM fan and thermal profiles | Despite the repository's Foster name, it contains the original Darcy definitions we need. The separate T210B01 Darcy repository covers the later silicon. |
+| [LineageOS Shield device tree](https://github.com/LineageOS/android_device_nvidia_foster/tree/aa1bf701c00a4febfd64a91ddc82b4a5af600b53) | Compressed-kernel boot-image recipe, partition metadata, DT packaging, device-specific firmware mapping and current mainline-kernel integration | This is an Android device project with useful Linux integration evidence, not a ready Omarchy image. |
+| [NVIDIA Shield open source](https://developer.nvidia.com/shield-open-source) | Vendor release manifests, driver/source lineage and recovery-family references | NVIDIA lists a 9.2.2 source release. Its linked README currently supplies synchronization instructions; it is not a stock boot-header dump or recovery backup. |
+| [Switchroot Linux](https://wiki.switchroot.org/wiki/linux/l4t-ubuntu-noble-installation-guide) | Tegra L4T build scripts, firmware/video integration and power-management work | Its images and Hekate boot path target Nintendo Switch hardware. Relevant components need the matching kernel/userspace ABI and Shield board wiring. |
+
+## Concrete findings
+
+The original Darcy A08 downstream DTS names `nvram_darcy_a00.txt`. LineageOS's [Linux firmware mapping](https://github.com/LineageOS/android_device_nvidia_foster/blob/aa1bf701c00a4febfd64a91ddc82b4a5af600b53/vendor/linux-firmware/foster.mk) maps that source to `brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt`. This supplies the board-specific calibration filename missing from our generic BCM4354 firmware set. The payload still needs to be obtained and matched; no calibration file has been installed.
+
+LineageOS's [BCM4354 recipe](https://github.com/LineageOS/android_device_nvidia_tegra-common/blob/38177fe731b6145a2c1c89eb1a983dc4a8037c7d/vendor/linux-firmware/bcm/bcm4354.mk) maps the vendor `bcm4354/BCM4350C0.hcd` to `brcm/BCM4354.hcd`. This is a specific upstream device mapping to investigate, not evidence that arbitrary Broadcom firmware can be renamed. The Bluetooth payload remains absent from the runtime.
+
+Both inspected fan definitions use PWM channel 3 with a 65,536 ns period. The downstream source includes quiet/cool profiles and a thermal estimator; the mainline reference explicitly describes inverted PWM and has different cooling-state values. Wiring can be compared directly, but fan polarity, RPM response and thermal policy still need physical validation before load tests.
+
+## Boot information we now have
+
+The pinned LineageOS [BoardConfig](https://github.com/LineageOS/android_device_nvidia_foster/blob/aa1bf701c00a4febfd64a91ddc82b4a5af600b53/BoardConfig.mk) selects `Image.gz` and Android header version 1. Its [custom boot recipe](https://github.com/LineageOS/android_device_nvidia_foster/blob/aa1bf701c00a4febfd64a91ddc82b4a5af600b53/mkbootimg.mk) distinguishes the later Mdarcy/Sif recovery DT image from older platforms, where CBoot ignores that recovery-DTBO payload. Simply attaching our mainline DTB in that slot would not establish a Darcy handoff. U-Boot wrapping is conditional; a working P2894 U-Boot configuration has not been verified.
+
+The source boot-partition size matches our observed 26,738,688 bytes. Its recovery-partition size differs from the owner's fastboot report, and its bootloader allowlist does not contain the owner's observed version. These differences are recorded in the reference lock. The recipe provides useful candidate-format evidence without proving a particular built image is compatible with this device.
+
+The next integration work is to acquire the specifically mapped radio firmware with provenance, compare the vendor/mainline power and cooling definitions, and establish a recoverable DT handoff using the compressed-kernel boot recipe. A compatible stock recovery source remains necessary before the owner decides on unlocking. No unlock, flash, bootloader replacement or firmware installation was performed during this source investigation; physical acceptance remains zero.

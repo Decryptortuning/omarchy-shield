@@ -12,6 +12,8 @@ The default [kernel.lock.json](kernel.lock.json) selects the pinned ACK kernel a
 
 The original Tegra210 XUSB firmware and generic BCM4354 SDIO firmware are present in the development filesystem. Board-specific radio calibration, matching Bluetooth firmware, NVDEC/NVENC firmware, native graphics, cooling and all physical acceptance remain open. A 2019-only AI upscaling feature is not an acceptance requirement for this original-X1 hardware; capabilities actually present on the owner’s Shield remain in scope.
 
+The [board-source investigation](BOARD_SOURCES.md) now pins the original Darcy vendor DTS, LineageOS compressed-kernel/boot-image recipe and exact Wi-Fi/Bluetooth firmware mappings. Board and driver reference data is available; the remaining work is matching and integrating those inputs on this device. This research does not change the previously built artifacts or their validation receipt.
+
 ## Verified build: 2026-10-14
 
 The Darcy diagnostic kernel, modules and USB ramdisk have built successfully. Four AArch64 packages from fork commit `05dbb78eb68d63dc3c95969f5e0ff33a5411602b` have been built and installed together in the 890-package development filesystem. [validation-darcy.json](validation-darcy.json) records package hashes, built-recipe hashes, source pins, component checksums and test scope. [VALIDATION.md](VALIDATION.md) and [validation.json](validation.json) remain historical B01 results.
@@ -32,6 +34,8 @@ The local review bundle is `ports/shield/build/darcy-2026-10-14/` in the native 
 ## Native boot prerequisites
 
 The raw `Image` is 45,746,688 bytes, exceeding both the observed 25.5 MiB boot partition and 32 MiB download limit. `Image.gz` is 17,246,875 bytes; together with the 732,023-byte diagnostic ramdisk and 72,330-byte evaluation DTB, its raw payload fits that partition before header/alignment overhead. This is a size check only: the stock bootloader's compressed-kernel support, load addresses, Android header and DT handoff still require compatible stock-image evidence.
+
+LineageOS source independently specifies `Image.gz` and Android header version 1, providing a concrete candidate recipe. It also documents that the Mdarcy/Sif recovery-DTBO handoff is ignored on older platforms. This narrows the boot research, but the pinned source's bootloader allowlist and recovery-partition size differ from the owner's observations. Source defaults have not been promoted to a verified stock-header measurement.
 
 NVIDIA's [recovery download catalog](https://developer.nvidia.com/tools-downloads.json) lists a 2017 recovery 9.2.1 image, but the official download redirects to developer login when checked. No recovery image has been obtained. Its compatibility with the installed newer stock build has not been established; an older catalog entry is not a verified downgrade or restoration route.
 

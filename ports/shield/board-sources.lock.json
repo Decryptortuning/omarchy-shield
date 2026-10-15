@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "purpose": "Pinned board, firmware-mapping and boot-recipe references for connected Darcy research; separate from tested runtime build inputs",
+  "board_variant": "darcy-t210",
+  "physical_board_sku_confirmed": false,
+  "runtime_build_lock": "kernel.lock.json",
+  "references": [
+    {
+      "repository": "android_hardware_nvidia_platform_t210_foster",
+      "url": "https://github.com/LineageOS/android_hardware_nvidia_platform_t210_foster.git",
+      "branch": "lineage-23.2",
+      "commit": "df8bb6647ef9535f5fedf89f9c1850deaf433465",
+      "files": [
+        {
+          "path": "kernel-dts/tegra210-darcy-p2894-0050-a08-00.dts",
+          "sha256": "90a5598b1886bef03f6771d8e050208c9ec39eccdc901a4e6f5286af71927f29"
+        },
+        {
+          "path": "kernel-dts/tegra210-darcy-p2894-common.dtsi",
+          "sha256": "c893d9372d995c3d58eb693a7a80a585208e529a628eae3fac0f90207cb972f5"
+        },
+        {
+          "path": "kernel-dts/foster-platforms/tegra210-darcy-pwm-fan.dtsi",
+          "sha256": "48ec53f098e7604bc815cf0635f233191912b20877a9c45c7e03372182d5ec89"
+        },
+        {
+          "path": "kernel-dts/foster-platforms/tegra210-darcy-thermal-fan-est.dtsi",
+          "sha256": "499b36bcba8c694ef4d43e3f4a820ccafc39eadbb0a7a34204e6634eb6d66f13"
+        },
+        {
+          "path": "kernel-dts/foster-platforms/tegra210-darcy-power-dvfs-p2894-0050-a08.dtsi",
+          "sha256": "229cf70c9fab0417ab6e86f6e3a8c60126445f04ff39c287627d1c0344cf613b"
+        }
+      ]
+    },
+    {
+      "repository": "android_device_nvidia_foster",
+      "url": "https://github.com/LineageOS/android_device_nvidia_foster.git",
+      "branch": "lineage-23.2",
+      "commit": "aa1bf701c00a4febfd64a91ddc82b4a5af600b53",
+      "files": [
+        {
+          "path": "BoardConfig.mk",
+          "sha256": "5ef54f24aa48d56710a28419171da1c7ef7c22bb9d256de725072b66a449533d"
+        },
+        {
+          "path": "mkbootimg.mk",
+          "sha256": "74f23e0317d6cb3c611f4fb6b15a7efafd9c92101f656a905cfcf5d6630ab3a5"
+        },
+        {
+          "path": "AndroidBoard.mk",
+          "sha256": "bff07eaf5b26ff2a1d3d3586df011f8da256dbcc6d3d76472bd25dbfda3baa6c"
+        },
+        {
+          "path": "board-info.txt",
+          "sha256": "5c04aad437440ba870b1fc28484ed164474d7b264a1a94e738cd5ae590d9efdc"
+        },
+        {
+          "path": "vendor/linux-firmware/foster.mk",
+          "sha256": "fa25c0dc0d599f1300c29a97c5cdf07b4720db92e70df1dea853b5bad80cadcd"
+        },
+        {
+          "path": "build/tasks/firmware.mk",
+          "sha256": "0d97f2a26a40d00c514f8813f5b3a780d1ecfc3152e33af06cf87e3db962062a"
+        }
+      ]
+    },
+    {
+      "repository": "android_device_nvidia_tegra-common",
+      "url": "https://github.com/LineageOS/android_device_nvidia_tegra-common.git",
+      "branch": "lineage-23.2",
+      "commit": "38177fe731b6145a2c1c89eb1a983dc4a8037c7d",
+      "files": [
+        {
+          "path": "vendor/linux-firmware/bcm/bcm4354.mk",
+          "sha256": "e92db51e9f8620230ceb48e1ccd79fc8fd7f05b681d65c3e377fbcd17fcdbeea"
+        },
+        {
+          "path": "vendor/linux-firmware/bcm/bcm4356.mk",
+          "sha256": "d3cf472a5872eed2a10fe521898bcfc19fd1d1846aa92d58d456a45d068fadc7"
+        }
+      ]
+    },
+    {
+      "repository": "android_hardware_nvidia_t21x_lineage",
+      "url": "https://github.com/LineageOS/android_hardware_nvidia_t21x_lineage.git",
+      "branch": "lineage-23.2",
+      "commit": "51305c4777a681136d20e55c21ed4bf683acdd7e",
+      "files": [
+        {
+          "path": "tegra210-darcy-p2894-0050-a08-00.dts",
+          "sha256": "80ef7dfe280f13f14f9bef312250b9341145b1bea7be7d1217aeffe2f6bf3317"
+        },
+        {
+          "path": "tegra210-lineage.dtsi",
+          "sha256": "eb1b67f13113ea98a3fcf0acff36aa351df201eeb28daee3fe0daf0fb6a2b599"
+        }
+      ]
+    },
+    {
+      "repository": "ack-tegra",
+      "url": "https://git.thomasmak.in/tmakin/ack-tegra.git",
+      "branch": "testing-7.1",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "files": [
+        {
+          "path": "arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a08.dts",
+          "sha256": "4a1893972c31b004f1d86e16f7e7946234990b79b1a0009d61dd577116bbdb5f"
+        },
+        {
+          "path": "arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi",
+          "sha256": "a59b95450b12775d0934448c99b22214771bb0d52534126621f0dfee9625260c"
+        }
+      ]
+    }
+  ],
+  "radio_mappings": {
+    "wifi": {
+      "source": "vendor/nvidia/foster/rel-shield-r/bcm/bcm4354/nvram_darcy_a00.txt",
+      "linux_target": "brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt",
+      "board_reference": "nvidia,p2894-0050-a08",
+      "source_recipe": "android_device_nvidia_foster/vendor/linux-firmware/foster.mk",
+      "payload_obtained": false,
+      "physically_qualified": false
+    },
+    "bluetooth": {
+      "source": "vendor/nvidia/common/rel-shield-r/bcm/bcm4354/BCM4350C0.hcd",
+      "linux_target": "brcm/BCM4354.hcd",
+      "source_recipe": "android_device_nvidia_tegra-common/vendor/linux-firmware/bcm/bcm4354.mk",
+      "meaning": "Upstream device-specific mapping; not a general permission to relabel unrelated firmware",
+      "payload_obtained": false,
+      "physically_qualified": false
+    }
+  },
+  "boot_recipe_evidence": {
+    "kernel_filename": "Image.gz",
+    "android_header_version": 1,
+    "boot_partition_bytes": 26738688,
+    "source_recovery_partition_bytes": 26767360,
+    "observed_device_recovery_partition_bytes": 26738688,
+    "darcy_uses_mdarcy_recovery_dtbo": false,
+    "uboot_wrapping_is_conditional": true,
+    "p2894_uboot_config_verified": false,
+    "owner_bootloader_version_matches_pinned_board_info_allowlist": false,
+    "stock_boot_header_dump_obtained": false,
+    "meaning": "Useful source evidence; partition and bootloader-version differences prevent treating this recipe as a validated image for the owner device"
+  },
+  "cooling_comparison": {
+    "downstream_pwm_channel": 3,
+    "downstream_period_ns": 65536,
+    "mainline_pwm_channel": 3,
+    "mainline_period_ns": 65536,
+    "mainline_cooling_levels": [
+      255,
+      128,
+      64,
+      0
+    ],
+    "mainline_source_notes_pwm_inverted": true,
+    "downstream_quiet_and_cool_profiles_present": true,
+    "physical_fan_polarity_rpm_and_thermal_policy_qualified": false
+  },
+  "device_actions_performed": [],
+  "firmware_payloads_installed": false,
+  "physical_shield_boot_tested": false,
+  "flashable_image": false
+}
