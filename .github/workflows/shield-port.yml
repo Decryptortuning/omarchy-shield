@@ -21,7 +21,7 @@ jobs:
         run: |
           python3 ports/shield/validate-inputs.py
           shellcheck bin/omarchy-hw-aarch64-shield ports/shield/*.sh ports/shield/tools/*.sh ports/shield/omarchy-shield/lifecycle test/shell.d/shield-platform-test.sh
-          shellcheck -s sh ports/shield/diagnostic/*.sh ports/shield/ramdisk/init
+          shellcheck -s sh ports/shield/diagnostic/*.sh ports/shield/stock-bootstrap/*.sh ports/shield/ramdisk/init
           python3 - <<'PY'
           import ast, json
           from pathlib import Path
