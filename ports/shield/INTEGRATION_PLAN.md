@@ -6,13 +6,15 @@ Use the existing modern kernel, Nouveau/Mesa and Omarchy packages as the main im
 
 Plan date: October 14, 2026. The [current validation receipt](validation-darcy.json) records four built ARM packages and passing virtual tests; physical acceptance is currently zero of 19. The work below is planned, and does not change those tested artifacts.
 
+The [completed harvest](HARVEST.md) now supplies verified local board/source snapshots, exact-build boot/recovery inputs and radio firmware. It also identifies concrete fan/controller changes, NVK's default Tegra rejection and incompatible vendor/modern media interfaces. This closes acquisition work within the selected scope; the implementation, boot qualification and hardware acceptance phases below remain open.
+
 ## What each project contributes
 
 | Source | Integration work | Compatibility check |
 | --- | --- | --- |
 | Omarchy and Arch Linux ARM | Retain desktop, settings, native ARM applications, PipeWire, NetworkManager, BlueZ, zram, Btrfs and Snapper; extend the existing Shield lifecycle package. | Keep runtime/settings built from the same fork commit and preserve package signature checks. Final images need owner setup and machine-specific keys. |
 | Upstream Linux and ACK Tegra | Tegra210 drivers, mainline device-tree bindings, USB roles, PCIe, display, audio, fan, power domains and Nouveau integration. | Start from the [pinned kernel](kernel.lock.json). Add small, attributable patches with board-specific tests; distinguish compiled support from physical operation. |
-| Mesa | Nouveau OpenGL/EGL and evaluation of NVK Vulkan on GM20B. | Test the actual Tegra display/render-device combination and DMA-BUF sharing. General Maxwell support does not qualify this SoC. [NVK documentation](https://docs.mesa3d.org/drivers/nvk.html) specifies Linux 6.6 or newer; our 7.1 candidate satisfies that version prerequisite. |
+| Mesa | Nouveau OpenGL/EGL and evaluation of NVK Vulkan on GM20B. | Test the actual Tegra display/render-device combination and DMA-BUF sharing. Mesa 26.2.4 source rejects Tegra by default as unsupported/nonconformant; the broken-driver developer override remains disabled. This needs explicit implementation work. Meeting the [documented kernel-version prerequisite](https://docs.mesa3d.org/drivers/nvk.html) does not resolve that gate. |
 | LineageOS and NVIDIA-derived Darcy definitions | Board variants, GPIO/pinmux, regulators, fan and thermal policy, radio firmware mappings, compressed-kernel boot format and DT packaging. | Use the original T210 Darcy files inside the Foster hardware repository. Compare vendor bindings with current Linux bindings before translating them. [Pinned references](board-sources.lock.json) cover the inspected files. |
 | NVIDIA Shield releases and linux-firmware | Compatible recovery inputs and the required XUSB, GM20B, radio and video firmware. | Record source, hash, license, chip revision, driver request name and firmware interface for each payload. Prefer the already present original-T210 firmware where it matches. |
 | Switchroot L4T kernel and image projects | Tegra power/media fixes, firmware handling and reproducible build recipes. | The [pinned build-script references](kernel.lock.json) use a downstream kernel stack. Port applicable changes to our build tools and Arch packages; verify driver/library interfaces before importing binaries or patches. |
@@ -123,7 +125,7 @@ Produce a reproducible owner image, install/recovery instructions, package prove
 
 ## First implementation batch
 
-Begin with work that can complete on the workstation:
+The harvest completes the selected source comparison and inactive staging portions of items 1 and 2 below. Continue with the [concrete integration findings](HARVEST.md#integration-findings); reproducible fetch/package integration and the remaining items still need implementation:
 
 1. Add a source verifier and board-comparison report for the pinned Darcy inputs; record relevant Switchroot kernel/FFmpeg dependencies before importing code.
 2. Add per-board inactive firmware staging with the exact radio mappings, payload hashes, requested filenames and driver-interface evidence.

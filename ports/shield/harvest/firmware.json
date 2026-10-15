@@ -1,0 +1,1582 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "timezone": "America/Phoenix",
+  "board_variant": "darcy-t210",
+  "purpose": "Inactive firmware harvest and driver-interface evidence; public metadata only",
+  "staging_root_hint": "/home/jresp/build/omarchy-shield/harvest-2026-10-14/firmware",
+  "sources": [
+    {
+      "id": "nvidia-current-ota",
+      "url": "https://ota-downloads.nvidia.com/ota/productionBL-droid-signed-darcy-full_ota-13961458_4387.0822_76B4A5.zip",
+      "origin": "NVIDIA production OTA service; URL recorded in pinned LineageOS Foster extract/sources.txt",
+      "build_incremental": "13961458_4387.0822",
+      "matches_observed_stock_fingerprint": true,
+      "acquisition": "Only vendor.new.dat.br, vendor.transfer.list, metadata and otacert were acquired in HTTP ranges; boot agent independently acquired other members. The whole ZIP was not downloaded.",
+      "zip_member_crc_verified": true,
+      "whole_archive_signature_verified": false,
+      "licensing": "Original NOTICE.xml.gz retained. It does not identify the radio or engine firmware paths; permission to redistribute these payloads remains unestablished."
+    },
+    {
+      "id": "linux-firmware",
+      "url": "https://gitlab.com/kernel-firmware/linux-firmware",
+      "tag": "20260916",
+      "commit": "ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "acquisition": "Targeted raw files through GitLab public API at this exact commit; byte-compared against installed ALARM firmware packages.",
+      "upstream_tag_signature_verified_in_this_harvest": false,
+      "licenses": [
+        "linux-firmware/LICENSES/LICENCE.nvidia",
+        "linux-firmware/LICENSES/LICENCE.cypress",
+        "linux-firmware/LICENSES/LICENSE.r8169",
+        "linux-firmware/WHENCE"
+      ],
+      "licensing": "Upstream notices retained unmodified; WHENCE associates the relevant NVIDIA, Cypress and Realtek payloads with their notices. No payload is published in this repository."
+    },
+    {
+      "id": "alarm-firmware-packaging",
+      "url": "https://github.com/ArchLinuxARM/PKGBUILDs",
+      "commit": "77e936c9ce9b5edf95f100cbffc07569329caaae",
+      "source_path": "core/linux-firmware/PKGBUILD",
+      "packages": [
+        "linux-firmware-nvidia-20260916-1",
+        "linux-firmware-broadcom-20260916-1",
+        "linux-firmware-realtek-20260916-1",
+        "linux-firmware-whence-20260916-1"
+      ],
+      "meaning": "Pinned packaging recipe uses signed upstream tag 20260916 with no backports/reverts. Existing installed package bytes were compared; package/tag signature verification was not rerun by this harvest."
+    },
+    {
+      "id": "vendor-foster-mirror",
+      "url": "https://github.com/TheMuppets/proprietary_vendor_nvidia_foster",
+      "commit": "2f76c9bfb1d1b8c7d7b6aefa6377705457499ba4",
+      "source_path": "rel-shield-r/bcm/bcm4354/nvram_darcy_a00.txt",
+      "origin": "Third-party vendor mirror; exact file subsequently matched byte-for-byte to the official current OTA.",
+      "license_notice_found_in_mirror_tree": false
+    },
+    {
+      "id": "vendor-common-mirror",
+      "url": "https://github.com/TheMuppets/proprietary_vendor_nvidia_common",
+      "commit": "9717f73cc433ffdb6c95d227a7abe4684efc7874",
+      "source_path": "rel-shield-r/bcm/bcm4354/BCM4350C0.hcd",
+      "origin": "Third-party vendor mirror; exact file subsequently matched byte-for-byte to official current OTA bcm4350.hcd.",
+      "license_notice_found_in_mirror_tree": false
+    },
+    {
+      "id": "lineage-foster-mapping",
+      "url": "https://github.com/LineageOS/android_device_nvidia_foster",
+      "commit": "aa1bf701c00a4febfd64a91ddc82b4a5af600b53",
+      "source_path": "vendor/linux-firmware/foster.mk",
+      "license": "Apache-2.0 recipe; this does not grant a firmware license"
+    },
+    {
+      "id": "lineage-bcm4354-mapping",
+      "url": "https://github.com/LineageOS/android_device_nvidia_tegra-common",
+      "commit": "38177fe731b6145a2c1c89eb1a983dc4a8037c7d",
+      "source_path": "vendor/linux-firmware/bcm/bcm4354.mk",
+      "license": "Apache-2.0 recipe; this does not grant a firmware license"
+    },
+    {
+      "id": "ack-kernel-driver-requests",
+      "url": "https://git.thomasmak.in/tmakin/ack-tegra.git",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "meaning": "Exact driver files read with git show at the pinned runtime kernel commit; request names and format consumers compared without executing on physical hardware."
+    },
+    {
+      "id": "nvidia-l4t-32.2.1",
+      "page": "https://developer.nvidia.com/embedded/linux-tegra-r3221",
+      "url": "https://developer.download.nvidia.com/embedded/L4T/r32-2-1_Release_v1.0/T210/Jetson-210_Linux_R32.2.1_aarch64.tbz2",
+      "bytes": 195896637,
+      "sha256": "afef694c04137065691012bf9a68bb2a2a75400677712a27ee952ea24bb7037d",
+      "inner_archive_sha256": "6a69a7d4d86b957d738d20d7913a81cebe59d376814634f1d0329cb464ca1364",
+      "acquisition": "Reused locally acquired archive; outer and inner SHA256 rechecked before extraction. Vendor scripts were not executed.",
+      "licenses": [
+        "l4t-32.2.1/LICENSE.nvidia-l4t",
+        "l4t-32.2.1/LICENSE.cypress_wifibt"
+      ],
+      "meaning": "Older Jetson vendor stack comparison only; keep distinct from exact Shield OTA and modern mainline firmware."
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "linux-firmware/cypress/cyfmac4354-sdio.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 601704,
+      "sha256": "f6b4164c50c4406573f3671d50c2d19b370ed079035a7d76a38535e244ae41d8",
+      "upstream_path": "cypress/cyfmac4354-sdio.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/cypress%2Fcyfmac4354-sdio.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "brcm/brcmfmac4354-sdio.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/cypress/cyfmac4354-sdio.clm_blob",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 5750,
+      "sha256": "a72cbbaea17415d99be5c747d719cb22e6787471d047cf72fd66f9e07ab12dbd",
+      "upstream_path": "cypress/cyfmac4354-sdio.clm_blob",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/cypress%2Fcyfmac4354-sdio.clm_blob/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "brcm/brcmfmac4354-sdio.clm_blob",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "container_check": {
+        "outer_blob_magic": "BLOB",
+        "declared_header_bytes": 60,
+        "scope": "Outer framing only; Cypress internal CLM tables and runtime download not qualified"
+      },
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/tegra210/xusb.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 126464,
+      "sha256": "941873a6a70993b5c40a608cedc4608c281458c11949092d4bce125b96a92025",
+      "upstream_path": "nvidia/tegra210/xusb.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Ftegra210%2Fxusb.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/tegra210/xusb.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "container_check": {
+        "format": "xusb",
+        "version_id": "0x50290003",
+        "created_utc": "2023-04-25T07:35:59+00:00"
+      },
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/tegra210/vic04_ucode.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 16640,
+      "sha256": "01ab2263d3ca54ce6abd425d0df8bedf3a33a59bfc51f9bec1d67207e74867f9",
+      "upstream_path": "nvidia/tegra210/vic04_ucode.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Ftegra210%2Fvic04_ucode.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/tegra210/vic04_ucode.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "container_check": {
+        "format": "falcon",
+        "version": 1,
+        "application_count": 13
+      },
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/acr/bl.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 832,
+      "sha256": "a7d1cfe19e108ffc54c3d4e69242b64a1e2211112b8fac660feb2c400a72a56e",
+      "upstream_path": "nvidia/gm20b/acr/bl.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Facr%2Fbl.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/acr/bl.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/acr/ucode_load.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 18592,
+      "sha256": "b3e365b0deddaf81bd8a8ad446f0dac2a74de61c786c8170d2959568fe9fc292",
+      "upstream_path": "nvidia/gm20b/acr/ucode_load.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Facr%2Fucode_load.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/acr/ucode_load.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/fecs_bl.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 576,
+      "sha256": "75a1f6ee5a3fd9c19d2d6d9d992af7926c2569a35edc963f0188b2b633a5b823",
+      "upstream_path": "nvidia/gm20b/gr/fecs_bl.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Ffecs_bl.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/fecs_bl.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/fecs_data.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 1964,
+      "sha256": "5a9f9181df2babacad69cebf25db84b826862fc756b9086615994e4f1cbca473",
+      "upstream_path": "nvidia/gm20b/gr/fecs_data.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Ffecs_data.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/fecs_data.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/fecs_inst.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 17021,
+      "sha256": "6add9631ba952a9127b05c467bca57b27b1e43ac8c8b3f038c07b8c83db37f61",
+      "upstream_path": "nvidia/gm20b/gr/fecs_inst.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Ffecs_inst.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/fecs_inst.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/fecs_sig.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 76,
+      "sha256": "f93a11e8a43cef8445b0c2a7a96d659831c0a293dc40ed9db34e30fa86bd934c",
+      "upstream_path": "nvidia/gm20b/gr/fecs_sig.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Ffecs_sig.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/fecs_sig.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/gpccs_data.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 2068,
+      "sha256": "ff552f59151de5ab9a65ffa7b5c0d661dfd25f2b60c04640e5b0895fca53456f",
+      "upstream_path": "nvidia/gm20b/gr/gpccs_data.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Fgpccs_data.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/gpccs_data.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/gpccs_inst.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 9964,
+      "sha256": "3906a04c60a0d7b1b1483344318f3c5e1482acc284360a333b42240114dfb182",
+      "upstream_path": "nvidia/gm20b/gr/gpccs_inst.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Fgpccs_inst.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/gpccs_inst.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/sw_bundle_init.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 7616,
+      "sha256": "b287695bc7ab91fb03b738172d56b8df738cb7903852d425b88bfc66585db98d",
+      "upstream_path": "nvidia/gm20b/gr/sw_bundle_init.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Fsw_bundle_init.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/sw_bundle_init.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/sw_ctx.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 5448,
+      "sha256": "c2134c3c6ba5d0c83cd6f2a84da25239fc9586b009d3ba9acfba44e15a5a583f",
+      "upstream_path": "nvidia/gm20b/gr/sw_ctx.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Fsw_ctx.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/sw_ctx.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/sw_method_init.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 10800,
+      "sha256": "6372e2f6f547d7bd086beb066ce46ac379795f95c38eeeedd9e13c7b32515b24",
+      "upstream_path": "nvidia/gm20b/gr/sw_method_init.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm200%2Fgr%2Fsw_method_init.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "upstream_symlink_target": "../../gm200/gr/sw_method_init.bin",
+      "resolved_source_path": "nvidia/gm200/gr/sw_method_init.bin",
+      "local_representation": "Resolved bytes in regular inactive staging file",
+      "runtime_request": "nvidia/gm20b/gr/sw_method_init.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/gr/sw_nonctx.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 1432,
+      "sha256": "060d8c8eaf1bd8736849913cc035b15d08f33287ae3b1e83097c83531b010984",
+      "upstream_path": "nvidia/gm20b/gr/sw_nonctx.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fgr%2Fsw_nonctx.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/gr/sw_nonctx.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/pmu/desc.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 652,
+      "sha256": "70b0ea947d5b8d7457de99543bf140e6f077a7499ba1215f8bd2db1cb62ef92d",
+      "upstream_path": "nvidia/gm20b/pmu/desc.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fpmu%2Fdesc.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/pmu/desc.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/pmu/image.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 47872,
+      "sha256": "d1106d2e3f1daa864be00449093378febf79921e047abd52b50c2c2d99f6c310",
+      "upstream_path": "nvidia/gm20b/pmu/image.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fpmu%2Fimage.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/pmu/image.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/nvidia/gm20b/pmu/sig.bin",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 76,
+      "sha256": "7d780addbf88d67aeeac939bea27b0238a0da2d8b23aab93e862127f8ff371d8",
+      "upstream_path": "nvidia/gm20b/pmu/sig.bin",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/nvidia%2Fgm20b%2Fpmu%2Fsig.bin/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "nvidia/gm20b/pmu/sig.bin",
+      "candidate_scope": "Original Tegra210 / BCM4354 driver input",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/LICENSES/LICENCE.nvidia",
+      "source": "linux-firmware",
+      "kind": "notice",
+      "bytes": 6212,
+      "sha256": "bc5225a57f49c5249dcf238e4ae6437811677a2a8a7f579c3d839e058653ee44",
+      "upstream_path": "LICENSES/LICENCE.nvidia",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/LICENSES%2FLICENCE.nvidia/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true
+    },
+    {
+      "path": "linux-firmware/LICENSES/LICENCE.cypress",
+      "source": "linux-firmware",
+      "kind": "notice",
+      "bytes": 8914,
+      "sha256": "ae0db6cc4db33941148df0f67de53e76a77b1b5a46b3165edb7040aa2750015f",
+      "upstream_path": "LICENSES/LICENCE.cypress",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/LICENSES%2FLICENCE.cypress/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true
+    },
+    {
+      "path": "linux-firmware/WHENCE",
+      "source": "linux-firmware",
+      "kind": "notice",
+      "bytes": 474322,
+      "sha256": "9350832c1e9afc35df50fa8b9793b31d60d78ef963152eec903fc0dbc6b4a559",
+      "upstream_path": "WHENCE",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/WHENCE/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168d-1.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 1492,
+      "sha256": "ded779f55b3fc5bb8576b2d2b6c724581c72160b3c2f88e33b42dc6c2c4e70b0",
+      "upstream_path": "rtl_nic/rtl8168d-1.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168d-1.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168d-1.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168d-2.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 1324,
+      "sha256": "35dd68c01a7b24f6e554bd2c0b9cf57cf962a826651f66e75ffcea37cf2c3bb9",
+      "upstream_path": "rtl_nic/rtl8168d-2.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168d-2.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168d-2.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168e-1.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 5500,
+      "sha256": "c38d6818a99336c8e43883bbc136f9fab3b1b470ec0e86c61bf5dac617fe94bd",
+      "upstream_path": "rtl_nic/rtl8168e-1.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168e-1.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168e-1.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168e-2.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 3920,
+      "sha256": "0a489929b270df1533645a75d55ff357fd66e42057aa4e198ab738930de39386",
+      "upstream_path": "rtl_nic/rtl8168e-2.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168e-2.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168e-2.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168e-3.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 3872,
+      "sha256": "1287fdd82ff2f60d75c9970c108b49cfd11456ad3fe29c9666b8539a35777dbf",
+      "upstream_path": "rtl_nic/rtl8168e-3.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168e-3.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168e-3.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168f-1.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 3424,
+      "sha256": "ed3794c651d38b807168c7c49431bb8036922b16766588c520a20287f277615d",
+      "upstream_path": "rtl_nic/rtl8168f-1.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168f-1.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168f-1.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168f-2.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 1232,
+      "sha256": "5586b2093502f7dec762f23091fa90d6d8731e7d873509072ce2eae23ab8ee99",
+      "upstream_path": "rtl_nic/rtl8168f-2.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168f-2.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168f-2.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168fp-3.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 336,
+      "sha256": "c526c06aa0ab8d9b57ba2b730bb1e40a1c3513f8591e238dceb2e0f45210ed27",
+      "upstream_path": "rtl_nic/rtl8168fp-3.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168fp-3.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168fp-3.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168g-1.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 4304,
+      "sha256": "64a0c74632909d7cb24222054af4bc37fa867046f295fb69e230386d844ca90a",
+      "upstream_path": "rtl_nic/rtl8168g-1.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168g-1.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168g-1.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168g-2.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 4896,
+      "sha256": "f878ec719f78e0b104bc73362a9862611858bec893f58a1b3b289a0a57d71d25",
+      "upstream_path": "rtl_nic/rtl8168g-2.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168g-2.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168g-2.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168g-3.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 832,
+      "sha256": "e4d5e62b0a5a097af34c7aa3c55f634fd5be2c232e02c6b983ebd7e699cb27e9",
+      "upstream_path": "rtl_nic/rtl8168g-3.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168g-3.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168g-3.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168h-1.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 992,
+      "sha256": "4ef963690f3a7b25a9bc97fb12c58922c02886699933ed6297636cc15aad9d8d",
+      "upstream_path": "rtl_nic/rtl8168h-1.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168h-1.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168h-1.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/rtl_nic/rtl8168h-2.fw",
+      "source": "linux-firmware",
+      "kind": "firmware",
+      "bytes": 976,
+      "sha256": "0b4beab008e308f28296c13188ee23edfeff7d865e398a7ade170495c8cec7e6",
+      "upstream_path": "rtl_nic/rtl8168h-2.fw",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/rtl_nic%2Frtl8168h-2.fw/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true,
+      "runtime_request": "rtl_nic/rtl8168h-2.fw",
+      "candidate_scope": "r8169 family candidate; exact PCI revision is not yet read from the physical device",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "linux-firmware/LICENSES/LICENSE.r8169",
+      "source": "linux-firmware",
+      "kind": "notice",
+      "bytes": 219,
+      "sha256": "f9689ba2640d61e7b4527ad84cbfa6a9f0ec11484e2c9f6b5500197e22c27ecd",
+      "upstream_path": "LICENSES/LICENSE.r8169",
+      "url": "https://gitlab.com/api/v4/projects/kernel-firmware%2Flinux-firmware/repository/files/LICENSES%2FLICENSE.r8169/raw?ref=ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "matches_installed_alarm_bytes": true
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/GL3521_foster.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 18626,
+      "sha256": "152b608067c6d5fbe6e4371d2776180b3f1ef727621684bc00750abb92320de8",
+      "source_path": "/firmware/GL3521_foster.bin",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/GL_SS_HUB_ISP_foster.ini",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 5466,
+      "sha256": "31f8013e078ce783da36cab96df18840c9eeb8c99eb959e99444dab029cc4715",
+      "source_path": "/firmware/GL_SS_HUB_ISP_foster.ini",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/bcm4350.hcd",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 67567,
+      "sha256": "43e001b2a3699e3c899bb1e674336331c2e9e4e6bb244d0935e3ecd904a2cd8b",
+      "source_path": "/firmware/bcm4350.hcd",
+      "candidate_scope": "Exact source bytes of the Lineage BCM4350C0.hcd to BCM4354.hcd mapping; controller HCI subversion not yet physically checked",
+      "runtime_request": "brcm/BCM4354.hcd",
+      "mapping_source": "lineage-bcm4354-mapping",
+      "container_check": {
+        "format": "hcd",
+        "command_packets": 356
+      },
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/bcm4356a3.hcd",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 19653,
+      "sha256": "27c7bdc43b776db829e12d497381704508870a351119c327e37982e2ffb52e1d",
+      "source_path": "/firmware/bcm4356a3.hcd",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/bcmdhd_clm_darcy.blob",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2745,
+      "sha256": "31cb756b92cb9948cae9aed97fac302976285c124ed3dd9e3f24e17788cef951",
+      "source_path": "/firmware/bcmdhd_clm_darcy.blob",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/bcmdhd_clm_darcy_flynn-hp.blob",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2335,
+      "sha256": "31edefe424601c916ff1f0423341fd2716135409cf16fcce2932125b2acb665c",
+      "source_path": "/firmware/bcmdhd_clm_darcy_flynn-hp.blob",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/bcmdhd_clm_foster.blob",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 3105,
+      "sha256": "17cb87cdb9d95aa551569fb9adf3bac752ad31ef058c1162c8fec494028fe28c",
+      "source_path": "/firmware/bcmdhd_clm_foster.blob",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/brcmfmac4356-pcie.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 644879,
+      "sha256": "975e774dce2b1fcd2f83d22a43350b8c5213dd36342b19387b3f0c406689442a",
+      "source_path": "/firmware/brcmfmac4356-pcie.bin",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/brcmfmac4356-pcie.clm_blob",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2084,
+      "sha256": "b7d9d2f269d5e4fa8db26da493e6ac0b6549fe07c3d3cf4a6e52a11b7ff8c604",
+      "source_path": "/firmware/brcmfmac4356-pcie.clm_blob",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/brcmfmac4356-pcie.txt",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 4896,
+      "sha256": "1b02bf9ca276eef989216d068d418543a226381f82e70ec5bfecaa5645898ad6",
+      "source_path": "/firmware/brcmfmac4356-pcie.txt",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/dvb-demod-si2168-b40-01.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 6919,
+      "sha256": "8507536630d75a316d0719d6b95c04b90c36baa5b457ad457c9bacadafcef134",
+      "source_path": "/firmware/dvb-demod-si2168-b40-01.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/dvb-demod-si2168-d60-01.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 10829,
+      "sha256": "5e1c860e95a8d92b2716b0075dd00e55f99c2c368e35340f6b527c366ff27ee7",
+      "source_path": "/firmware/dvb-demod-si2168-d60-01.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/fw_bcmdhd.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 620416,
+      "sha256": "330f9baae0ea628b1042e32642d05a4fd7d8656f50558ead19de711910c831b4",
+      "source_path": "/firmware/fw_bcmdhd.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/NETB_img.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 70514,
+      "sha256": "71d1a576d9ea037c18021d9f1481a7f37275c85a720425f68237a6f40d41978e",
+      "source_path": "/firmware/gm20b/NETB_img.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/fecs.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 528,
+      "sha256": "6b5a3ce1f2fd1381b8aed500e0d034561a8b3054e7702e8447e12fcde7978253",
+      "source_path": "/firmware/gm20b/fecs.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/fecs_sig.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 108,
+      "sha256": "28ad0f8cdd8cf8d0de7a404c2c0d53674a5483f86abf5aeec95850e74e490160",
+      "source_path": "/firmware/gm20b/fecs_sig.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/gpccs.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 528,
+      "sha256": "97bda367d2b2cffa98b8084dae7803233474e439d1bdf6edc4029b405695f7ba",
+      "source_path": "/firmware/gm20b/gpccs.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/gpmu_ucode.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 48524,
+      "sha256": "83df949177f63e4560f2c50a5fc0affbc6e364d075ae5647946199acf7579d58",
+      "source_path": "/firmware/gm20b/gpmu_ucode.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/gpmu_ucode_desc.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 652,
+      "sha256": "e76b29528f63ab09ce85e91767c8a3fa5dc6a4704c7ca0efb1faf095f1faf76b",
+      "source_path": "/firmware/gm20b/gpmu_ucode_desc.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/gpmu_ucode_image.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 47872,
+      "sha256": "1e14af6fb9760cfb37c95199bbbb2c01f51ba1ad6b56104a27beac137368e699",
+      "source_path": "/firmware/gm20b/gpmu_ucode_image.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/gpu2cde.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 28308,
+      "sha256": "fb8d5b8ca92c85316e1b64f244714e0b14412cda3925b4c229d094fa6b8798ce",
+      "source_path": "/firmware/gm20b/gpu2cde.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/nv_acr_ucode_dbg.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 19200,
+      "sha256": "7cb37a51db43235b574aa73a9afa2c393f4c0a683b35dd32c8429923b1b1249d",
+      "source_path": "/firmware/gm20b/nv_acr_ucode_dbg.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/nv_acr_ucode_prod.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 19200,
+      "sha256": "594a6ceed45aefd6c92b9e9089bae2bcee8db5730fa9cffaebe443eb8655a772",
+      "source_path": "/firmware/gm20b/nv_acr_ucode_prod.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/pmu_bl.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 1280,
+      "sha256": "364cf184d6f3ae0130ae449748e688d76bba3e33de2704ca536a5144751f12e1",
+      "source_path": "/firmware/gm20b/pmu_bl.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/gm20b/pmu_sig.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 76,
+      "sha256": "de3aab7bf47484ce8b8cf4f66de551e43f06d8f3db177bf9e5aaf1b653a5c132",
+      "source_path": "/firmware/gm20b/pmu_sig.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvaacdec.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2372580,
+      "sha256": "f83e83c6328844c158c77e643ed33a3be6aa7a2495638f559669950265b5f0b7",
+      "source_path": "/firmware/nvaacdec.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvadma.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 155068,
+      "sha256": "e1ada7baea83d20b7124215109ac184c64afd1217b10b88454dbaf391d74de51",
+      "source_path": "/firmware/nvadma.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvadma_tx.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 135606,
+      "sha256": "6c897b8e24d0815989763bfb5946772efddfe4632af3851684a878c4aebd0ab8",
+      "source_path": "/firmware/nvadma_tx.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvapm.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 196104,
+      "sha256": "f8dc408041d93fb412c2ab3ea856ec41d01fda01d4dcea7a1bbfa615879537fd",
+      "source_path": "/firmware/nvapm.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvmp3dec.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 641779,
+      "sha256": "58530c9ce94d8d969e53f8928f5ab200a265cb8cd3c14e690389d06e914bbb19",
+      "source_path": "/firmware/nvmp3dec.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvoice.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2051707,
+      "sha256": "a0f483336010985b43abce99580b969c570df4f95a54d2f995c42fba25186747",
+      "source_path": "/firmware/nvoice.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvram_darcy_a00.txt",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 3304,
+      "sha256": "2847280d12f7b8b599639cf5491b6d9a57dad572491ed09e21b9ed37d880886a",
+      "source_path": "/firmware/nvram_darcy_a00.txt",
+      "candidate_scope": "Exact Lineage-mapped Darcy A00 NVRAM source for A08 DT name; physical board SKU still unconfirmed",
+      "runtime_request": "brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt",
+      "mapping_source": "lineage-foster-mapping",
+      "format_check": {
+        "ascii_text": true,
+        "key_count": 127,
+        "contains_mac_field": true,
+        "sromrev": "11",
+        "boardrev": "0x1101",
+        "boardtype": "0x06db",
+        "vendor_id": "0x14e4",
+        "device_id_field": "0x43a3"
+      },
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvram_foster_e_4354.txt",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2938,
+      "sha256": "bf6c4fc5e6599eba1af802ee804e05d382e219832f2035aa73e4b45f7ec371ae",
+      "source_path": "/firmware/nvram_foster_e_4354.txt",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvram_foster_e_antenna_tuned_4354.txt",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2938,
+      "sha256": "c63f672a2cbaf57d0eae770c961facc2b5e5f38fa5636f19b398918dffb32427",
+      "source_path": "/firmware/nvram_foster_e_antenna_tuned_4354.txt",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvspkprot.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 357493,
+      "sha256": "0306c1187a41e5dbfef4e78f110e9b791b8f78f80903b4e9a50cd6893bbbf42d",
+      "source_path": "/firmware/nvspkprot.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/nvsrc.elf",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 174011,
+      "sha256": "bb249263efa0a74eb27b9c190bdc6bcf4b67316214384f3e0c0d4d2c340c6050",
+      "source_path": "/firmware/nvsrc.elf",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/psoc_foster_fw.cyacd",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 17317,
+      "sha256": "f98adac9ecbfc30d0a16c9e811c54630d54f8e606fbc41bfe8d42cf03236bacc",
+      "source_path": "/firmware/psoc_foster_fw.cyacd",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvdec020.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 130816,
+      "sha256": "6075f1159e33802d7817cf71997b307a268bf3a8418d0701440d2e48d01e29af",
+      "source_path": "/firmware/tegra21x/nvhost_nvdec020.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvdec020_ns.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 130560,
+      "sha256": "f65e151dc4ef9c60c81cc3e8306a6603a217be1593011866ba09dcd64420b1ea",
+      "source_path": "/firmware/tegra21x/nvhost_nvdec020_ns.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "proposed_runtime_request": "nvidia/tegra210/nvdec.bin",
+      "container_check": {
+        "format": "falcon",
+        "version": 1,
+        "application_count": 13
+      },
+      "mapping_qualified": false,
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvdec020_prod.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 130816,
+      "sha256": "a2a9c43fc5b0b095e920fbdc7e382f494d5095bef969eebb2d727577e592a194",
+      "source_path": "/firmware/tegra21x/nvhost_nvdec020_prod.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvdec_bl020.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 4096,
+      "sha256": "79104ab615b3b0ac8c9ea8e6d378444e845aaceab0bbaaa36574b8b8079cda88",
+      "source_path": "/firmware/tegra21x/nvhost_nvdec_bl020.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvdec_bl020_prod.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 4096,
+      "sha256": "53fcad3e835513670002ea73c90b904f7d056bb03f650c64134b3174d5a45539",
+      "source_path": "/firmware/tegra21x/nvhost_nvdec_bl020_prod.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvdec_bl_no_wpr020.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 2816,
+      "sha256": "5332a569714e28712c5e25c01e41835fcb7663ee11d3b51e08791651f1c3298e",
+      "source_path": "/firmware/tegra21x/nvhost_nvdec_bl_no_wpr020.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvenc050.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 123648,
+      "sha256": "407da48ed023ddfb18964fe0ecfb392c27be332c2e36737b7b10fb7487489e96",
+      "source_path": "/firmware/tegra21x/nvhost_nvenc050.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "proposed_runtime_request": "nvidia/tegra210/nvenc.bin",
+      "container_check": {
+        "format": "falcon",
+        "version": 1,
+        "application_count": 19
+      },
+      "mapping_qualified": false,
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvjpg010.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 16640,
+      "sha256": "85bec091379f6bfd5873e9b657396065024e39b11e72c6f7f86e49a30aa830fe",
+      "source_path": "/firmware/tegra21x/nvhost_nvjpg010.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/nvhost_tsec.fw",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 72704,
+      "sha256": "e06cca5abc6bc6a9037b3d2bbaf884f8edc57401d3e74444852d5f69066d1276",
+      "source_path": "/firmware/tegra21x/nvhost_tsec.fw",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/tegra21x/vic04_ucode.bin",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 15616,
+      "sha256": "c35ad059ad19a85ac78ee58750f690049840063720eb47bd0d55ae9a626bc984",
+      "source_path": "/firmware/tegra21x/vic04_ucode.bin",
+      "candidate_scope": "Stock vendor-stack reference; no mainline compatibility assumed",
+      "proposed_runtime_request": "nvidia/tegra210/vic04_ucode.bin",
+      "container_check": {
+        "format": "falcon",
+        "version": 1,
+        "application_count": 13
+      },
+      "mapping_qualified": false,
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/xusb/tegra210b01_xusb_firmware",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 122368,
+      "sha256": "de36635ad5680fdcd483dde9fe10b9bdf54633325bdc17bc7ce011e0742be6d3",
+      "source_path": "/firmware/xusb/tegra210b01_xusb_firmware",
+      "candidate_scope": "Other-board/radio variant included in the unified stock OTA; kept separate from Darcy activation candidates",
+      "runtime_request": "nvidia/tegra210b01/xusb.bin",
+      "board_variant": "mdarcy-t210b01",
+      "container_check": {
+        "format": "xusb",
+        "version_id": "0x51060003",
+        "created_utc": "2019-10-17T16:01:14+00:00"
+      },
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "official-current-ota/payloads/firmware/xusb/tegra21x_xusb_firmware",
+      "source": "nvidia-current-ota",
+      "kind": "firmware",
+      "bytes": 126464,
+      "sha256": "d8546e8a0202bf78fe33deb02de7e7673bf2c8383bf223efe4806b69136ec7a3",
+      "source_path": "/firmware/xusb/tegra21x_xusb_firmware",
+      "candidate_scope": "Stock original-T210 comparison; differs from current linux-firmware candidate",
+      "runtime_request": "nvidia/tegra210/xusb.bin",
+      "container_check": {
+        "format": "xusb",
+        "version_id": "0x50260003",
+        "created_utc": "2020-07-31T09:33:12+00:00"
+      },
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "vendor-mirror/proprietary_vendor_nvidia_foster/nvram_darcy_a00.txt",
+      "source": "vendor-foster-mirror",
+      "kind": "firmware",
+      "bytes": 3304,
+      "sha256": "2847280d12f7b8b599639cf5491b6d9a57dad572491ed09e21b9ed37d880886a",
+      "git_blob": "d2cf4eff3275a30f3c683dde9ccecc6f5ec5c001",
+      "git_blob_identity_verified": true,
+      "matches_official_current_ota_bytes": true,
+      "redistribution_permission_established": false,
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "vendor-mirror/proprietary_vendor_nvidia_common/BCM4350C0.hcd",
+      "source": "vendor-common-mirror",
+      "kind": "firmware",
+      "bytes": 67567,
+      "sha256": "43e001b2a3699e3c899bb1e674336331c2e9e4e6bb244d0935e3ecd904a2cd8b",
+      "git_blob": "8dfecb19d5dcae0d288dc0545b702179d3405890",
+      "git_blob_identity_verified": true,
+      "matches_official_current_ota_bytes": true,
+      "redistribution_permission_established": false,
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "l4t-32.2.1/LICENSE.nvidia-l4t",
+      "source": "nvidia-l4t-32.2.1",
+      "kind": "notice",
+      "bytes": 6121,
+      "sha256": "bd28b0c5aeeb00eb11d3ec6f6f3449d4b3a40100914258332734a53527997526",
+      "source_path": "Linux_for_Tegra/nv_tegra/LICENSE"
+    },
+    {
+      "path": "l4t-32.2.1/b01-only/tegra210b01_xusb_firmware",
+      "source": "nvidia-l4t-32.2.1",
+      "kind": "firmware",
+      "bytes": 124416,
+      "sha256": "39e0730801cb3fabdcd002e92bf0dd2bb038fd7b320b8315e8b0ab10c55fb1bb",
+      "source_path": "Linux_for_Tegra/lib/firmware/tegra210b01_xusb_firmware",
+      "container_check": {
+        "format": "xusb",
+        "version_id": "0x51040003",
+        "created_utc": "2017-11-07T08:42:52+00:00"
+      },
+      "candidate_scope": "B01 only; excluded from original-T210 Darcy candidates",
+      "board_variant": "mdarcy-t210b01",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "l4t-32.2.1/nvhost_nvdec020_ns.fw",
+      "source": "nvidia-l4t-32.2.1",
+      "kind": "firmware",
+      "bytes": 130304,
+      "sha256": "f030eab423039621edea74be4460aa7ce0401ad383a421f85cc0102ee8c32e9a",
+      "source_path": "lib/firmware/tegra21x/nvhost_nvdec020_ns.fw",
+      "container_check": {
+        "format": "falcon",
+        "version": 1,
+        "application_count": 13
+      },
+      "candidate_scope": "Older L4T comparison; no Shield/current-kernel qualification",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "l4t-32.2.1/nvhost_nvenc050.fw",
+      "source": "nvidia-l4t-32.2.1",
+      "kind": "firmware",
+      "bytes": 121344,
+      "sha256": "2c52a6d805387dc532aadfd7e1962b5fbc5091604527177aa54c995c4c126d56",
+      "source_path": "lib/firmware/tegra21x/nvhost_nvenc050.fw",
+      "container_check": {
+        "format": "falcon",
+        "version": 1,
+        "application_count": 13
+      },
+      "candidate_scope": "Older L4T comparison; no Shield/current-kernel qualification",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "l4t-32.2.1/vic04_ucode.bin",
+      "source": "nvidia-l4t-32.2.1",
+      "kind": "firmware",
+      "bytes": 16640,
+      "sha256": "01ab2263d3ca54ce6abd425d0df8bedf3a33a59bfc51f9bec1d67207e74867f9",
+      "source_path": "lib/firmware/tegra21x/vic04_ucode.bin",
+      "container_check": {
+        "format": "falcon",
+        "version": 1,
+        "application_count": 13
+      },
+      "candidate_scope": "Older L4T comparison; no Shield/current-kernel qualification",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "l4t-32.2.1/bcm4354.hcd",
+      "source": "nvidia-l4t-32.2.1",
+      "kind": "firmware",
+      "bytes": 64552,
+      "sha256": "b0a48a0bf196386cf2345dbe261127fb33ef00f698fcfa563629b1d96bb889a9",
+      "source_path": "lib/firmware/bcm4354.hcd",
+      "container_check": {
+        "format": "hcd",
+        "command_packets": 257
+      },
+      "candidate_scope": "Older L4T comparison; no Shield/current-kernel qualification",
+      "installed_into_runtime": false,
+      "hardware_qualified": false
+    },
+    {
+      "path": "l4t-32.2.1/LICENSE.cypress_wifibt",
+      "source": "nvidia-l4t-32.2.1",
+      "kind": "notice",
+      "bytes": 6010,
+      "sha256": "89786bfd7060f6a60feae03257da6f3206b0f777352cf750c67b3b560dd087a5",
+      "source_path": "usr/share/doc/nvidia-tegra/LICENSE.cypress_wifibt"
+    },
+    {
+      "path": "references/ack-tegra/drivers/usb/host/xhci-tegra.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 73677,
+      "sha256": "ee60bbc8741653b807816b136bafdb8df551539e8aaeea93692d526912b09460",
+      "source_path": "drivers/usb/host/xhci-tegra.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/bluetooth/btbcm.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 19153,
+      "sha256": "0d0f3904ce577e5f35983e8d834e1ecf47eee9590dc7557c92e41ca988625e7c",
+      "source_path": "drivers/bluetooth/btbcm.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 129294,
+      "sha256": "1cded3c2fe3526495c6047f5d25377d5f9004dc21f805647564d60c9d846a97a",
+      "source_path": "drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 21174,
+      "sha256": "f2b6fe570981bf69a81fd5965712f18840df9b97dabcdbd4aa4cf260b4e9760b",
+      "source_path": "drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/tegra/falcon.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 6425,
+      "sha256": "f8e8cfccf4d17d679538883f79d43414e6cbe1aa8a6fc4f958395ece532007f3",
+      "source_path": "drivers/gpu/drm/tegra/falcon.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/tegra/falcon.h",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 2915,
+      "sha256": "692d1082ec4941c6fce3321b9c2bc7c4f582855fcc429c2caf7a9fc8b69202e6",
+      "source_path": "drivers/gpu/drm/tegra/falcon.h",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/tegra/nvdec.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 15731,
+      "sha256": "2d66e624e5098a43fe5b0633c8ce7f8260ac46cef31f630115c31689a08590c4",
+      "source_path": "drivers/gpu/drm/tegra/nvdec.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/tegra/nvenc.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 13013,
+      "sha256": "3143bf369953e0ce78eee3b4119bce7f08c02c35a54f5da2daedab5c32aef93f",
+      "source_path": "drivers/gpu/drm/tegra/nvenc.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/tegra/vic.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 15518,
+      "sha256": "908040e09f2f029edd269a42385bf5f9e41c0ac4ffa7e96ec0cf71f6fa2c15f9",
+      "source_path": "drivers/gpu/drm/tegra/vic.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/nouveau/nvkm/subdev/acr/gm20b.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 4158,
+      "sha256": "67c29cf8665d0d2ea1b33cd6928cf158504d6229be28531ed07f7ef83f051aff",
+      "source_path": "drivers/gpu/drm/nouveau/nvkm/subdev/acr/gm20b.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/nouveau/nvkm/engine/gr/gm20b.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 5991,
+      "sha256": "a44ececd0003e413d68266058e31bf2d2f40a504905689333839bc391f997ca8",
+      "source_path": "drivers/gpu/drm/nouveau/nvkm/engine/gr/gm20b.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 7768,
+      "sha256": "c8ddfc8cefea78d1cae86f7b7b6e1f21a2c8a83936b62dd910908b4d96491832",
+      "source_path": "drivers/gpu/drm/nouveau/nvkm/subdev/pmu/gm20b.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/ack-tegra/drivers/net/ethernet/realtek/r8169_main.c",
+      "source": "ack-kernel-driver-requests",
+      "kind": "reference_source",
+      "bytes": 154898,
+      "sha256": "be0ed0d27f4d62dfaefdb59a7cf4438a8b82df3b66c24266cbcf065d929acdc8",
+      "source_path": "drivers/net/ethernet/realtek/r8169_main.c",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3"
+    },
+    {
+      "path": "references/android_device_nvidia_foster/vendor/linux-firmware/foster.mk",
+      "source": "lineage-foster-mapping",
+      "kind": "reference_source",
+      "bytes": 2671,
+      "sha256": "fa25c0dc0d599f1300c29a97c5cdf07b4720db92e70df1dea853b5bad80cadcd",
+      "source_path": "vendor/linux-firmware/foster.mk",
+      "commit": "aa1bf701c00a4febfd64a91ddc82b4a5af600b53"
+    },
+    {
+      "path": "references/android_device_nvidia_tegra-common/vendor/linux-firmware/bcm/bcm4354.mk",
+      "source": "lineage-bcm4354-mapping",
+      "kind": "reference_source",
+      "bytes": 849,
+      "sha256": "e92db51e9f8620230ceb48e1ccd79fc8fd7f05b681d65c3e377fbcd17fcdbeea",
+      "source_path": "vendor/linux-firmware/bcm/bcm4354.mk",
+      "commit": "38177fe731b6145a2c1c89eb1a983dc4a8037c7d"
+    },
+    {
+      "path": "PKGBUILD-linux-firmware",
+      "source": "alarm-firmware-packaging",
+      "kind": "reference_source",
+      "bytes": 11979,
+      "sha256": "87350e73f22e232be966b7231aef4c7f341d53184928fa8396f8815cc6ce8233"
+    },
+    {
+      "path": "official-current-ota/META-INF/com/android/metadata",
+      "source": "nvidia-current-ota",
+      "kind": "acquisition_metadata",
+      "bytes": 306,
+      "sha256": "3ef7d285624876d00c87f05926a74be7af298bc3ba696b26a2911ecb43431afe",
+      "zip_crc32": "d9ec1839",
+      "zip_crc_verified": true
+    },
+    {
+      "path": "official-current-ota/vendor.transfer.list",
+      "source": "nvidia-current-ota",
+      "kind": "acquisition_metadata",
+      "bytes": 2831,
+      "sha256": "dfe87d74722c5ce0602c54fe7ec2910ed81dcaae9a59b1ff9508437bbf33f15c",
+      "zip_crc32": "07e18ef2",
+      "zip_crc_verified": true
+    },
+    {
+      "path": "official-current-ota/META-INF/com/android/otacert",
+      "source": "nvidia-current-ota",
+      "kind": "acquisition_metadata",
+      "bytes": 1424,
+      "sha256": "caff0524a5b59d3c0b6010177010e375373aa4986953857b1a7e305db57b5f76",
+      "zip_crc32": "730a3be2",
+      "zip_crc_verified": true
+    },
+    {
+      "path": "official-current-ota/vendor.new.dat.br",
+      "source": "nvidia-current-ota",
+      "kind": "container",
+      "bytes": 235025316,
+      "sha256": "cdd2681b3eaececba8c5bd95a1678096bc5da53c8a364469a44c000318b0e007",
+      "zip_crc32": "f04b82e4",
+      "zip_crc_verified": true
+    },
+    {
+      "path": "official-current-ota/vendor.ext4",
+      "source": "nvidia-current-ota",
+      "kind": "reconstructed_container",
+      "bytes": 805306368,
+      "sha256": "5415cb03baaad04c484ddbfdc30fbedd5ed076c4b27b0ca9f0e5ceb2fee6926f",
+      "ext_superblock_magic_valid": true,
+      "reconstruction_report": "official-current-ota/reconstruction.json"
+    },
+    {
+      "path": "official-current-ota/NOTICE.xml.gz",
+      "source": "nvidia-current-ota",
+      "kind": "notice",
+      "bytes": 48510,
+      "sha256": "209e1a96acec36f0c48951e0e63275e502a3a536b20e8df7077d687281f3c37b",
+      "decompressed_bytes": 547654,
+      "firmware_payload_license_association_established": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "exact-radio-payloads-obtained",
+      "result": "Both exact mapped radio inputs were acquired and matched to the official installed-build-family OTA, replacing mirror-only origin evidence.",
+      "evidence": [
+        "official-current-ota/payloads/firmware/nvram_darcy_a00.txt",
+        "official-current-ota/payloads/firmware/bcm4350.hcd"
+      ],
+      "qualification": "Source/payload match only. The physical board SKU and radio HCI/SDIO revisions remain unconfirmed."
+    },
+    {
+      "id": "bcm-hcd-framing",
+      "result": "The mapped HCD contains 356 complete commands: 355 Write_RAM (0xfc4c), then Launch_RAM (0xfc4e). Pinned btbcm_patchram sends Download_Minidriver (0xfc2e) before parsing file commands. The absence of embedded 0xfc2e is therefore consistent with this consumer.",
+      "qualification": "Packet bounds only; no firmware was sent to a controller. btbcm UART subversion 0x610c selects BCM4354, but actual controller subversion is unknown."
+    },
+    {
+      "id": "modern-firmware-baseline",
+      "result": "All 32 targeted linux-firmware payload paths match installed ALARM bytes at upstream commitab23307cfe7f9366c819025ca3e4778299bc2db2: BCM4354 SDIO binary and CLM, original Tegra210 XUSB, VIC, 15 GM20B paths and 13 RTL8168 family candidates.",
+      "qualification": "GM20B sw_method_init is a documented upstream symlink to the GM200 file; inactive staging stores its resolved bytes. No complete GPU execution/signature or radio functional test occurred."
+    },
+    {
+      "id": "stock-versus-mainline-firmware",
+      "result": "Stock currentOTA XUSB version_id 0x50260003 differs from modern linux-firmware 0x50290003. Stock VIC is 15,616 bytes; upstream/L4T 32.2.1 VIC is 16,640 bytes and those two are byte-identical. Current OTA NVDEC/NVENC also differ from older L4T 32.2.1 candidates.",
+      "qualification": "Keep each version and its provenance distinct. Firmware version freshness alone does not establish driver or command ABI compatibility."
+    },
+    {
+      "id": "codec-runtime-interface-gap",
+      "result": "Pinned ACK requests nvidia/tegra210/nvdec.bin and nvenc.bin. Current OTA and older L4T NVDEC/NVENC candidates pass Falcon-v1 framing but use vendor filenames and have not been qualified for this driver command ABI.",
+      "qualification": "Switchroot FFmpeg pin 65445e23ebc92e6f5e333065e93eb705cb67aac8 uses /dev/nvhost-nvdec, /dev/nvhost-msenc and libnvbuf_utils.so.1.0.0 NvBuffer APIs. ACK Tegra DRM/host1x is a different userspace contract. Renaming firmware cannot bridge this gap."
+    },
+    {
+      "id": "stock-supplemental-inventory",
+      "result": "The complete targeted stock firmware directory was harvested: 49 regular files totaling 8,637,795 bytes, including radio, GM20B, video, JPEG, TSEC, audio DSP and peripheral firmware. The unified OTA also contains Foster, B01 and BCM4356 inputs; these remain distinct donor references.",
+      "qualification": "Additional stock audio/peripheral binaries were inventoried only; neither their Linux consumer support nor their applicability to the owner board is established."
+    },
+    {
+      "id": "license-and-integrity-boundaries",
+      "result": "Original linux-firmware notices/WHENCE, L4T NVIDIA/Cypress notices and the stock OTA NOTICE.xml.gz are retained locally. All public artifacts are metadata only.",
+      "qualification": "SHA256/Git blob identity/ZIP CRC are integrity records, not independent authenticity or redistribution permission. Whole OTA signature was not verified from these partial members; the bundled certificate is not an independent trust anchor."
+    }
+  ],
+  "gaps": [
+    "Independently confirm actual Darcy board SKU/revision before activating A00-to-A08 NVRAM mapping; the label P2897 is not an exact board revision.",
+    "Read actual SDIO chip/revision and Bluetooth HCI subversion on a native diagnostic boot; validate exact firmware load and radio operation.",
+    "Preserve a unique owner MAC. The publicly sourced NVRAM contains a MAC field; validate the mainline platform-MAC override path before deployment and never publish calibration contents or MAC values.",
+    "Establish redistribution rights for stock OTA/vendor-mirror firmware before packaging or releasing those payloads. The retained general OTA NOTICE is not an identified firmware license.",
+    "Validate upstream BCM4354 SDIO binary/CLM with the exact Darcy NVRAM, regulatory domain and runtime driver before selecting them for the port. Stock DHD binary/CLM stay a separate matched vendor reference.",
+    "Resolve NVDEC/NVENC command and userspace ABI compatibility; test VIC operations separately. Parser success cannot pass video hardware acceptance.",
+    "Check RTL8168 PCI revision to select the actual firmware member from the 13 family candidates; no exact Ethernet revision is currently claimed.",
+    "Verify GM20B secure firmware loading, power management, EGL/OpenGL and display buffer sharing on physical hardware; upstream file availability is not GPU support qualification.",
+    "Retain B01 XUSB and BCM4356 PCIe radio inputs separately; never substitute them for original Tegra210 / SDIO BCM4354.",
+    "Integrate a reviewed per-board fetch/package lock and stricter hardware audit in a later coherent change. This harvest does not modify the tested runtime recipes, lockfiles or packages."
+  ],
+  "counts": {
+    "firmware_payload_records": 88,
+    "official_current_ota_firmware_records": 49,
+    "upstream_firmware_records": 32,
+    "reference_source_records": 16,
+    "notice_records": 7,
+    "all_artifact_records": 116
+  },
+  "device_actions_performed": [],
+  "physical_shield_boot_tested": false,
+  "firmware_payloads_installed": false,
+  "runtime_build_inputs_modified": false,
+  "flashable_image": false
+}

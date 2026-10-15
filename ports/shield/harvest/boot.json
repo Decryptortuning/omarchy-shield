@@ -1,0 +1,910 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "timezone": "America/Phoenix",
+  "board_variant": "darcy-t210",
+  "scope": "Boot,recovery and DT-handoff source harvest; runtime build locks/packages unchanged",
+  "local_staging_root": "/home/jresp/build/omarchy-shield/harvest-2026-10-14/boot",
+  "sources": [
+    {
+      "id": "android_device_nvidia_foster",
+      "url": "https://github.com/LineageOS/android_device_nvidia_foster.git",
+      "commit": "aa1bf701c00a4febfd64a91ddc82b4a5af600b53",
+      "files": [
+        {
+          "path": "BoardConfig.mk",
+          "local_path": "sources/android_device_nvidia_foster/BoardConfig.mk",
+          "bytes": 2510,
+          "sha256": "5ef54f24aa48d56710a28419171da1c7ef7c22bb9d256de725072b66a449533d"
+        },
+        {
+          "path": "mkbootimg.mk",
+          "local_path": "sources/android_device_nvidia_foster/mkbootimg.mk",
+          "bytes": 3269,
+          "sha256": "74f23e0317d6cb3c611f4fb6b15a7efafd9c92101f656a905cfcf5d6630ab3a5"
+        },
+        {
+          "path": "AndroidBoard.mk",
+          "local_path": "sources/android_device_nvidia_foster/AndroidBoard.mk",
+          "bytes": 3364,
+          "sha256": "bff07eaf5b26ff2a1d3d3586df011f8da256dbcc6d3d76472bd25dbfda3baa6c"
+        },
+        {
+          "path": "board-info.txt",
+          "local_path": "sources/android_device_nvidia_foster/board-info.txt",
+          "bytes": 114,
+          "sha256": "5c04aad437440ba870b1fc28484ed164474d7b264a1a94e738cd5ae590d9efdc"
+        },
+        {
+          "path": "lineage.dependencies",
+          "local_path": "sources/android_device_nvidia_foster/lineage.dependencies",
+          "bytes": 930,
+          "sha256": "8a552099ef221a5dad0745862c325c836c26d0b5f02feb38e89a5a86fc67b364"
+        },
+        {
+          "path": "extract/sources.txt",
+          "local_path": "sources/android_device_nvidia_foster/extract/sources.txt",
+          "bytes": 760,
+          "sha256": "783ee4176ce2ac1e9fb07cb041e7fa6ca52e317a52c824f83303955712c4bacb"
+        },
+        {
+          "path": "releasetools/releasetools.py",
+          "local_path": "sources/android_device_nvidia_foster/releasetools/releasetools.py",
+          "bytes": 15821,
+          "sha256": "4e48f829c487c3c8cea70688c88f996eb142709cf2953ca3e012839c4a49210a"
+        },
+        {
+          "path": "build/tasks/firmware.mk",
+          "local_path": "sources/android_device_nvidia_foster/build/tasks/firmware.mk",
+          "bytes": 11052,
+          "sha256": "0d97f2a26a40d00c514f8813f5b3a780d1ecfc3152e33af06cf87e3db962062a"
+        },
+        {
+          "path": "initfiles/fstab.emmc",
+          "local_path": "sources/android_device_nvidia_foster/initfiles/fstab.emmc",
+          "bytes": 1823,
+          "sha256": "05b33b782f84cfc3930c0d1e51354280746ee86b95e29a212697bdc90d682e85"
+        },
+        {
+          "path": "initfiles/init.recovery.darcy.rc",
+          "local_path": "sources/android_device_nvidia_foster/initfiles/init.recovery.darcy.rc",
+          "bytes": 684,
+          "sha256": "2b54af317d728dc5adce3e891886558f99356da14c0357b9a0e52fd6922b9a5d"
+        }
+      ],
+      "license": "Apache-2.0 notices retained in archived source files; inspect individual files before reuse"
+    },
+    {
+      "id": "android_device_nvidia_t210-common",
+      "url": "https://github.com/LineageOS/android_device_nvidia_t210-common.git",
+      "commit": "c2c9cd3f3c3971af110a2a4d2cd7878b74fdec6d",
+      "files": [
+        {
+          "path": "BoardConfigCommon.mk",
+          "local_path": "sources/android_device_nvidia_t210-common/BoardConfigCommon.mk",
+          "bytes": 1440,
+          "sha256": "3a03b054a58ee130a17058745b17f6858d81772c29bfc7258c25a5236cdd7203"
+        }
+      ],
+      "license": "Apache-2.0 notices retained in archived source files; inspect individual files before reuse"
+    },
+    {
+      "id": "android_device_nvidia_tegra-common",
+      "url": "https://github.com/LineageOS/android_device_nvidia_tegra-common.git",
+      "commit": "38177fe731b6145a2c1c89eb1a983dc4a8037c7d",
+      "files": [
+        {
+          "path": "BoardConfigTegra.mk",
+          "local_path": "sources/android_device_nvidia_tegra-common/BoardConfigTegra.mk",
+          "bytes": 1153,
+          "sha256": "e6bd03b0074cb1094ec0b17a017156c7100498ea281b4b3168a56f2ed77a4377"
+        },
+        {
+          "path": "build/tasks/u-boot.mk",
+          "local_path": "sources/android_device_nvidia_tegra-common/build/tasks/u-boot.mk",
+          "bytes": 1876,
+          "sha256": "da86ef86219685aa9dbe8e5456f9b653a8629c8864d51fcbae5eeeaf9f3f691e"
+        },
+        {
+          "path": "recovery/librecoveryupdater_tegra.cpp",
+          "local_path": "sources/android_device_nvidia_tegra-common/recovery/librecoveryupdater_tegra.cpp",
+          "bytes": 3295,
+          "sha256": "c42114516cd258993205d53be08c0de8182a0d78deff375641f90bc039c27d15"
+        },
+        {
+          "path": "extract/nvblob_extract.py",
+          "local_path": "sources/android_device_nvidia_tegra-common/extract/nvblob_extract.py",
+          "bytes": 7346,
+          "sha256": "c1ec36ab0ffcbf8e2306aeb9a87fafc312367d36b62177832c7c93ef98d0b3ab"
+        },
+        {
+          "path": "extract/get_ota_url.sh",
+          "local_path": "sources/android_device_nvidia_tegra-common/extract/get_ota_url.sh",
+          "bytes": 226,
+          "sha256": "f8636c2797122d3c21c7db70304a2bea9dfd47b602051d60f7dae8cd3f36319f"
+        }
+      ],
+      "license": "Apache-2.0 notices retained in archived source files; inspect individual files before reuse"
+    },
+    {
+      "id": "android_device_mainline_common",
+      "url": "https://github.com/LineageOS/android_device_mainline_common.git",
+      "commit": "5c5fd330f4cc0d7214eca65032b03c252b008f82",
+      "files": [
+        {
+          "path": "BoardConfigMainlineCommon.mk",
+          "local_path": "sources/android_device_mainline_common/BoardConfigMainlineCommon.mk",
+          "bytes": 1973,
+          "sha256": "b8c2def3c02dd97d8f321b43145ec965228179c88a9039f7e0503580e1e1baf9"
+        },
+        {
+          "path": "lineage.dependencies",
+          "local_path": "sources/android_device_mainline_common/lineage.dependencies",
+          "bytes": 560,
+          "sha256": "4b7e0e08ac2ef3689af843ac46f9842c3c7607c94090fd50973e0d25cfaf541c"
+        },
+        {
+          "path": "build/tasks/prebuilt-kernel-dir.mk",
+          "local_path": "sources/android_device_mainline_common/build/tasks/prebuilt-kernel-dir.mk",
+          "bytes": 1298,
+          "sha256": "3b72f152ea9fcd5e62da714e62e1aca7445c0dc890db2d4e7815abc0494b9d7c"
+        },
+        {
+          "path": "optional/prebuilt_kernel/board.mk",
+          "local_path": "sources/android_device_mainline_common/optional/prebuilt_kernel/board.mk",
+          "bytes": 1649,
+          "sha256": "40ed8358f92ede59bf1a9849758248a2d6e84e31d68da8527476a3456ac927df"
+        },
+        {
+          "path": "optional/prebuilt_kernel/product.mk",
+          "local_path": "sources/android_device_mainline_common/optional/prebuilt_kernel/product.mk",
+          "bytes": 436,
+          "sha256": "4361e31eed4b7ada63a43605c9fbec72d332ed0a428b46834ce8980db3f074a5"
+        }
+      ],
+      "license": "Apache-2.0 notices retained in archived source files; inspect individual files before reuse"
+    },
+    {
+      "id": "android_kernel_nvidia_tegra-build",
+      "url": "https://github.com/LineageOS/android_kernel_nvidia_tegra-build.git",
+      "commit": "a0d261b823a7d4dc2c767f710d3f9df1987ff1a0",
+      "files": [
+        {
+          "path": "BUILD.bazel",
+          "local_path": "sources/android_kernel_nvidia_tegra-build/BUILD.bazel",
+          "bytes": 12340,
+          "sha256": "94f23223ebb38b1e791267252baf8a8d8f14338ac61355c8aa6e596a65c9337a"
+        },
+        {
+          "path": "tegra.fragment",
+          "local_path": "sources/android_kernel_nvidia_tegra-build/tegra.fragment",
+          "bytes": 3645,
+          "sha256": "e88055327edac622174c4efd2644545af2d2aa416cf69a69b72a17c4f5072b96"
+        },
+        {
+          "path": "lineage.dependencies",
+          "local_path": "sources/android_kernel_nvidia_tegra-build/lineage.dependencies",
+          "bytes": 883,
+          "sha256": "d02da418535dbdb3c507e83214b094c1437089be0cdcee16e9f7b0f4178f98d5"
+        },
+        {
+          "path": "dts/BUILD.bazel",
+          "local_path": "sources/android_kernel_nvidia_tegra-build/dts/BUILD.bazel",
+          "bytes": 189,
+          "sha256": "74915bbec21f976ace1a2913822a97b427983ff4361cbc74f537c7e7964f348f"
+        },
+        {
+          "path": "dts/Makefile",
+          "local_path": "sources/android_kernel_nvidia_tegra-build/dts/Makefile",
+          "bytes": 3015,
+          "sha256": "580ea656a1ca1253b0f2d505e60b5e092367f3c022df2a89aadcf791f7194ccc"
+        }
+      ],
+      "license": "GPL-2.0 / GPL-2.0-only SPDX notices retained per file"
+    },
+    {
+      "id": "android_hardware_nvidia_u-boot",
+      "url": "https://github.com/LineageOS/android_hardware_nvidia_u-boot.git",
+      "commit": "0b3cd412eadc0c7ec321eb410d8701fa19854839",
+      "files": [
+        {
+          "path": "configs/baracus_defconfig",
+          "local_path": "sources/android_hardware_nvidia_u-boot/configs/baracus_defconfig",
+          "bytes": 1629,
+          "sha256": "786f5c293bab0285878e664d8922cb7dac1dcddc4eafb5276f55c42c758c8cae"
+        },
+        {
+          "path": "arch/arm/mach-tegra/cboot.c",
+          "local_path": "sources/android_hardware_nvidia_u-boot/arch/arm/mach-tegra/cboot.c",
+          "bytes": 15241,
+          "sha256": "d396e65ecc2ae3aad3e88d3cace40f3b862ae947674afaa75f5aa1babec5fd7e"
+        },
+        {
+          "path": "doc/board/nvidia/tegratab.rst",
+          "local_path": "sources/android_hardware_nvidia_u-boot/doc/board/nvidia/tegratab.rst",
+          "bytes": 2378,
+          "sha256": "bb44f43522292653ffd208990d37f9eef1b867b104533f945eb4f5fa18f2754b"
+        },
+        {
+          "path": "Licenses/README",
+          "local_path": "sources/android_hardware_nvidia_u-boot/Licenses/README",
+          "bytes": 7288,
+          "sha256": "79feed9f3865276aa9acb7fdc5ea2aba63d2f2502eda0327c10af03c8f639db2"
+        },
+        {
+          "path": "Licenses/gpl-2.0.txt",
+          "local_path": "sources/android_hardware_nvidia_u-boot/Licenses/gpl-2.0.txt",
+          "bytes": 18092,
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+        }
+      ],
+      "license": "GPL-2.0-or-later project; Licenses/README and GPL text archived"
+    },
+    {
+      "id": "shieldTV_loader",
+      "url": "https://github.com/andreiw/shieldTV_loader.git",
+      "commit": "c9ac5cdf6d2caa9716e58de79d965e9d9925e04e",
+      "files": [
+        {
+          "path": "README.md",
+          "local_path": "sources/shieldTV_loader/README.md",
+          "bytes": 3839,
+          "sha256": "845beb4552b86e04a69b7096ccc7a9d3f5add5cf0efbc2430879dfb99a216d4e"
+        },
+        {
+          "path": "Makefile",
+          "local_path": "sources/shieldTV_loader/Makefile",
+          "bytes": 936,
+          "sha256": "4177701e19248291def04ec25d8cb4faa8b4d87dc36a85a09c1c50c3ffb409ee"
+        },
+        {
+          "path": "main.c",
+          "local_path": "sources/shieldTV_loader/main.c",
+          "bytes": 6210,
+          "sha256": "8c84ecff91436a9c8bf3ef4e7dc71fbfe3c403bf2a908d9b777ba80b311f51e8"
+        },
+        {
+          "path": "start.S",
+          "local_path": "sources/shieldTV_loader/start.S",
+          "bytes": 3015,
+          "sha256": "3d28870a4096a1e8dd679500bb7f0fba9195a5997139bfeb743a5ad96f3e8f9f"
+        }
+      ],
+      "license": "GPL-2.0-or-later notices in main.c/start.S; third-party files require their own notices"
+    },
+    {
+      "id": "mkbootimg",
+      "url": "https://android.googlesource.com/platform/system/tools/mkbootimg",
+      "commit": "d2bb0af5ba6d3198a3e99529c97eda1be0b5a093",
+      "files": [
+        {
+          "path": "unpack_bootimg.py",
+          "local_path": "sources/mkbootimg/unpack_bootimg.py",
+          "bytes": 23223,
+          "sha256": "a9d260978a63bd06a24b6347e7dee8a28ff96639793caea15dff6aa491316308"
+        },
+        {
+          "path": "mkbootimg.py",
+          "local_path": "sources/mkbootimg/mkbootimg.py",
+          "bytes": 26667,
+          "sha256": "37d84b3d162e0bc62e36c1f4e1c63c85ea0caa9f29be023eb2f8efe006ad948c"
+        },
+        {
+          "path": "include/bootimg/bootimg.h",
+          "local_path": "sources/mkbootimg/include/bootimg/bootimg.h",
+          "bytes": 17317,
+          "sha256": "9adba595989e15b3343969cdc508df666e0c05d3b8a38aa362bd9945302c814e"
+        }
+      ],
+      "license": "Apache-2.0 notices in archived Python/header files"
+    },
+    {
+      "id": "kexec-tools",
+      "url": "https://github.com/horms/kexec-tools.git",
+      "commit": "0fd0d8e9ea975696fdc05ad267a65f3efd415612",
+      "license": "GPL-2.0-only; inspect individual file notices",
+      "files": [
+        {
+          "path": "kexec/arch/arm64/kexec-arm64.c",
+          "local_path": "sources/kexec-tools/kexec/arch/arm64/kexec-arm64.c",
+          "bytes": 32773,
+          "sha256": "d19c3af2c26b82e936c43c9b693fd6e80efbd8f1e3bdce77b12539d5113b82b9"
+        },
+        {
+          "path": "kexec/arch/arm64/kexec-image-arm64.c",
+          "local_path": "sources/kexec-tools/kexec/arch/arm64/kexec-image-arm64.c",
+          "bytes": 3059,
+          "sha256": "15ad7a64313fa3c026e1cd3c740c34469fb1c2cb9cc9b370e9b2e28af5048b64"
+        },
+        {
+          "path": "kexec/arch/arm64/kexec-arm64.h",
+          "local_path": "sources/kexec-tools/kexec/arch/arm64/kexec-arm64.h",
+          "bytes": 2035,
+          "sha256": "cac45295e611518bc862b62422dd650955fe4c18127febec5bead0ef26473c9c"
+        },
+        {
+          "path": "kexec/arch/arm64/image-header.h",
+          "local_path": "sources/kexec-tools/kexec/arch/arm64/image-header.h",
+          "bytes": 3362,
+          "sha256": "8ee3391307138ac78972b940dc0417c89230fb28421fa8eaa3392961c98f892e"
+        },
+        {
+          "path": "kexec/kexec.c",
+          "local_path": "sources/kexec-tools/kexec/kexec.c",
+          "bytes": 46456,
+          "sha256": "0c718bb761a1a185b3c9829a4b18596fbfb2d50f374014fabcc160607bd3f692"
+        },
+        {
+          "path": "kexec/kexec.8",
+          "local_path": "sources/kexec-tools/kexec/kexec.8",
+          "bytes": 9350,
+          "sha256": "5a91cec718d0fd4d0a7acf58e24135c4b628eaeea967c318b5d52c89f93c2fa7"
+        },
+        {
+          "path": "purgatory/arch/arm64/entry.S",
+          "local_path": "sources/kexec-tools/purgatory/arch/arm64/entry.S",
+          "bytes": 543,
+          "sha256": "2946680ec31b0a057b2742438a79903e9c55567afd39e74dba73abc15006419b"
+        },
+        {
+          "path": "COPYING",
+          "local_path": "sources/kexec-tools/COPYING",
+          "bytes": 17984,
+          "sha256": "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6"
+        }
+      ]
+    },
+    {
+      "id": "aosp-bsdiff",
+      "url": "https://android.googlesource.com/platform/external/bsdiff",
+      "branch": "android11-release",
+      "commit": "bd075c637a8c2fae81ae2444ebcbc91cbac056a8",
+      "license": "BSD-style; LICENSE and NOTICE archived",
+      "files": [
+        {
+          "path": "LICENSE",
+          "local_path": "sources/aosp-bsdiff/LICENSE",
+          "bytes": 3019,
+          "sha256": "803efc8b7c02fb330855ac3ea77422fe63ec1ec6691249b13b118bb85e267a61"
+        },
+        {
+          "path": "NOTICE",
+          "local_path": "sources/aosp-bsdiff/NOTICE",
+          "bytes": 7,
+          "sha256": "c693279643b8cd5d248172d9c22cb7cf4ed163a3c98c8a3f69c2717edd3eacb7"
+        },
+        {
+          "path": "README.android",
+          "local_path": "sources/aosp-bsdiff/README.android",
+          "bytes": 214,
+          "sha256": "406b83d26737b67fad8acb093a4eca4aa1a6cee37b36bfda36b5d278112f3ec3"
+        },
+        {
+          "path": "bspatch.1",
+          "local_path": "sources/aosp-bsdiff/bspatch.1",
+          "bytes": 2484,
+          "sha256": "a8211e918c64db123275a8ff69f2d4c5e48fa897ff2419bf1235de3d18e73b8a"
+        },
+        {
+          "path": "bspatch.cc",
+          "local_path": "sources/aosp-bsdiff/bspatch.cc",
+          "bytes": 12930,
+          "sha256": "ca2e93f5a147e890302516e528e77f8da428788b6d05c55954b5449cf2c49ac7"
+        },
+        {
+          "path": "patch_reader.cc",
+          "local_path": "sources/aosp-bsdiff/patch_reader.cc",
+          "bytes": 5452,
+          "sha256": "31621bdcbc14f33a8b790ea615e7c0d43afe1a9d6b6619f55cb7f913b5b017af"
+        },
+        {
+          "path": "refs.json",
+          "local_path": "sources/aosp-bsdiff/refs.json",
+          "bytes": 100,
+          "sha256": "a5b861c99c5fa8352061aa33c3f0c18ede448089befab6f93a96f0b37042615e"
+        },
+        {
+          "path": "tree.json",
+          "local_path": "sources/aosp-bsdiff/tree.json",
+          "bytes": 12567,
+          "sha256": "40074a03a368f9ce0f87b1bf803703a907f3de74496d33d881bfcec0856161f0"
+        },
+        {
+          "path": "utils.cc",
+          "local_path": "sources/aosp-bsdiff/utils.cc",
+          "bytes": 455,
+          "sha256": "0262da6b9c7221efcebea0989ca275425852abb6e4a6e4c77db073794354f7d3"
+        }
+      ]
+    },
+    {
+      "id": "lineage-stock-kexec-reference",
+      "url": "https://github.com/LineageOS/android_kernel_nvidia_linux-4.9_kernel_kernel-4.9.git",
+      "commit": "929f123da07cc9f73af2861eccf5a01591794e52",
+      "license": "GPL-2.0; COPYING archived",
+      "scope": "Reference implementation for the same stock kernel family, not proof that every running binary instruction equals this source commit",
+      "files": [
+        {
+          "path": "COPYING",
+          "local_path": "sources/stock-kexec-reference/COPYING",
+          "bytes": 18693,
+          "sha256": "af8067302947c01fd9eee72befa54c7e3ef8a48fecde7fd71277f2290b2bf0f7"
+        },
+        {
+          "path": "arch/arm64/include/asm/kexec.h",
+          "local_path": "sources/stock-kexec-reference/arch/arm64/include/asm/kexec.h",
+          "bytes": 1092,
+          "sha256": "eac81d6e28e6a84a0607bf778f14914f5d8185f8b9efa242d322dd8aaf311e59"
+        },
+        {
+          "path": "arch/arm64/kernel/machine_kexec.c",
+          "local_path": "sources/stock-kexec-reference/arch/arm64/kernel/machine_kexec.c",
+          "bytes": 5895,
+          "sha256": "523bcfbbf4abcdf8a18530b4e75fa22f8e4f1b5a33192d23121a521fe92f378f"
+        },
+        {
+          "path": "arch/arm64/kernel/relocate_kernel.S",
+          "local_path": "sources/stock-kexec-reference/arch/arm64/kernel/relocate_kernel.S",
+          "bytes": 2972,
+          "sha256": "dff750687c6de69aba5f46333478cfabd0a8fbebe0f7f9ea736628e09cfc49d1"
+        }
+      ]
+    },
+    {
+      "id": "nvidia-darcy-ota-9.2.4",
+      "url": "https://ota-downloads.nvidia.com/ota/productionBL-droid-signed-darcy-full_ota-13961458_4387.0822_76B4A5.zip",
+      "discovered_in": {
+        "source_id": "android_device_nvidia_foster",
+        "path": "extract/sources.txt"
+      },
+      "independent_primary_confirmation": {
+        "query_url": "https://ota.nvidia.com/ota/availableRom.php",
+        "parameters": {
+          "f": "NVIDIA/darcy/darcy:11/RQ1A.210105.003/13961458_3871.0251:user/release-keys",
+          "full_ota": "1"
+        },
+        "response_artifact_id": "nvidia-public-ota-query"
+      },
+      "release_name": "Shield Experience Upgrade 9.2.4",
+      "provider_release_timestamp": "2026-02-18T20:45:43Z[Etc/UTC]",
+      "provider_archive_bytes": 1067694046,
+      "provider_archive_md5": "65dc61d4c38b048b5c162436252fa9fd",
+      "provider_archive_md5_verified": false,
+      "full_archive_acquired": false,
+      "whole_archive_cryptographic_signature_verified": false,
+      "member_crc32_checked": true,
+      "authentication": "Public official NVIDIA HTTPS endpoint; no account, credentials or access-control bypass",
+      "license": "NVIDIA proprietary stock OS/firmware; acquisition for local owner research does not establish redistribution permission",
+      "device": "darcy",
+      "post_build": "NVIDIA/darcy/darcy:11/RQ1A.210105.003/13961458_4387.0822:user/release-keys",
+      "post_security_patch_level": "2026-01-05",
+      "metadata_matches_authorized_stock_adb_observations": true
+    },
+    {
+      "id": "nvidia-darcy-ota-9.2.0-historical",
+      "url": "https://ota-downloads.nvidia.com/ota/productionBL-droid-signed-darcy-full_ota-13961458_3871.0251_7F8709.zip",
+      "scope": "Historical format/board comparison only; its updater explicitly rejects installation over a newer build",
+      "license": "NVIDIA proprietary; local inactive research only",
+      "compatible_restore_for_current_device": false
+    },
+    {
+      "id": "nvidia-developer-recovery-9.2.1",
+      "url": "https://developer.nvidia.com/downloads/assets/mobile/secure/images/shield_atv_2017/9_2_1/nv-recovery-image-shield-2017-atv-9.2.1.tgz",
+      "access_check": {
+        "requested_url": "https://developer.nvidia.com/downloads/assets/mobile/secure/images/shield_atv_2017/9_2_1/nv-recovery-image-shield-2017-atv-9.2.1.tgz",
+        "final_url": "https://developer.nvidia.com/login",
+        "status": 200,
+        "content_type": "text/html; charset=utf-8",
+        "recovery_archive_acquired": false,
+        "login_bypassed": false
+      },
+      "scope": "Catalog recovery remains login-gated; the independent exact-build OTA supplies boot and recovery reconstruction inputs"
+    },
+    {
+      "id": "nvidia-release-notes",
+      "url": "https://www.nvidia.com/en-us/shield/software-update/",
+      "scope": "Primary public release notes list Shield Experience 9.2.4 with January 2026 security patches; exact build mapping comes from NVIDIA OTA API/metadata"
+    },
+    {
+      "id": "postmarketos-mdarcy-reference",
+      "url": "https://wiki.postmarketos.org/wiki/Nvidia_Shield_TV_Pro_2019_(nvidia-mdarcy)",
+      "scope": "Different B01 hardware. Search cache described a May 2025 not-booting port; live page redirected to an anti-bot page. No current boot success or transferable Darcy recipe established. GitHub pmaports mirror returned 404; no installers acquired/executed.",
+      "current_port_status_verified": false
+    },
+    {
+      "id": "aosp-boot-signature",
+      "url": "https://android.googlesource.com/platform/system/extras",
+      "branch": "android11-release",
+      "commit": "8524862f32a1a7d6023659fb38e9e51d4a8c6dea",
+      "license": "Apache-2.0 notice retained in BootSignature.java",
+      "files": [
+        {
+          "path": "verity/BootSignature.java",
+          "local_path": "sources/aosp-boot-signature/BootSignature.java",
+          "bytes": 13272,
+          "sha256": "1dae335ad82d12d8f53bd88cd3c195a9fafdf3f86ee23e534e1a68f6f0cbbae6"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": "nvidia-public-ota-query",
+      "path": "public-ota-query-response.txt",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 645,
+      "sha256": "df2051da3a5bfc00072e6a170dbf7a539a3d11cb5f6be96757a24c6884b90520",
+      "meaning": "Official unauthenticated API response maps exact build to9.2.4, package URL,size and providerMD5"
+    },
+    {
+      "id": "nvidia-current-ota-members",
+      "path": "current-build/ota-member-list.json",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 2149,
+      "sha256": "cc6ae998d4a9b0d859c344f3295313f7c2043c564f136ec3391392d0ae919b05",
+      "meaning": "HTTP-range ZIP central directory, with member offset,size,compression andCRC32"
+    },
+    {
+      "id": "nvidia-current-ota-ranges",
+      "path": "current-build/ota-range-requests.json",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 2128,
+      "sha256": "3b6b465c6eec80f89dfb459c06300ac034bfeb88d11c84e8cfcc32bf102b4075",
+      "meaning": "Exact public HTTP byte ranges acquired by boot investigator; other agents own separate acquisition receipts"
+    },
+    {
+      "id": "nvidia-current-ota-metadata",
+      "path": "current-build/ota-metadata/META-INF/com/android/metadata",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 306,
+      "sha256": "3ef7d285624876d00c87f05926a74be7af298bc3ba696b26a2911ecb43431afe",
+      "meaning": "Darcy target, fingerprint, incremental, security patch and timestamp"
+    },
+    {
+      "id": "nvidia-current-updater-script",
+      "path": "current-build/ota-metadata/META-INF/com/google/android/updater-script",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 1404,
+      "sha256": "828f756b7ac793e3ece67cd4ae87deaa6b51009e02ecb3697e605010a34a0570",
+      "meaning": "Inactive source data; device assertions and partition mappings, never executed"
+    },
+    {
+      "id": "nvidia-darcy-9.2.4-boot",
+      "path": "current-build/ota-metadata/boot.img",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 11044132,
+      "sha256": "a1111a6924a5bdffa8e88c960219b299a7b80d4690bffe92e415c6afb29ddd75",
+      "meaning": "Exact release stock boot input; no raw physical-device readback equality claimed",
+      "sha1": "48916fb58d1d1492ee1da227f64b01e0a495f5bb",
+      "crc32": "1ef39dfe"
+    },
+    {
+      "id": "nvidia-darcy-9.2.4-blob",
+      "path": "current-build/ota-metadata/blob",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 8162194,
+      "sha256": "89fa8822fc3613a50ee947c08e6dadea45b01e411896cbcbf29f35fb57b90730",
+      "meaning": "Inactive stock bootloader update container; only DTB member payloads extracted",
+      "crc32": "5316aefb"
+    },
+    {
+      "id": "nvidia-current-blob-table",
+      "path": "current-build/ota-blob-entries.json",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 5741,
+      "sha256": "785a7275e2de1d272542ef162db4cbebfdfab015821c8e9683e698816d7f400e",
+      "meaning": "Parsed bounded NVIDIA V2 blob entries; four DTB and matchingRP1 entries"
+    },
+    {
+      "id": "nvidia-current-boot-header",
+      "path": "current-build/boot-image/inspection.json",
+      "source_id": "mkbootimg",
+      "bytes": 1040,
+      "sha256": "2d02a5ae7447fd4d0814e8f19c975c27cba2eb7de8e9a13b177fece2c77e964b",
+      "meaning": "Pinned AOSP v1 header arguments retained as data; not executed or promoted to validated load addresses"
+    },
+    {
+      "id": "nvidia-current-boot-analysis",
+      "path": "current-build/boot-image/analysis.json",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 1460,
+      "sha256": "7faa22fe4f800c84dcc3a63fbef892bc3503238cc358beb2ac7c05bb816c7be7",
+      "meaning": "ARM64 header,gzip,embedded config evidence; config byte-identical to captured stock ADB config"
+    },
+    {
+      "id": "nvidia-current-recovery-patch",
+      "path": "current-build/recovery-inputs/recovery-from-boot.p",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 9563574,
+      "sha256": "9af155082a93b8e605e8c3d8dde5182045d48e2fceb51644a1f6803e2127ce88",
+      "meaning": "BSDIFF40 recovery patch extracted read-only from firmware agent exact-build vendor.ext4",
+      "derived_from": {
+        "agent_manifest": "firmware.json",
+        "local_source": "/home/jresp/build/omarchy-shield/harvest-2026-10-14/firmware/official-current-ota/vendor.ext4",
+        "mode": "debugfs read-only cat; installer never executed"
+      }
+    },
+    {
+      "id": "nvidia-current-install-recovery-data",
+      "path": "current-build/recovery-inputs/install-recovery.sh",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 743,
+      "sha256": "2b328c9ca1d74758fe12119794be05627108240de5ae75cabfd620d821df4fb2",
+      "meaning": "Inactive vendor script supplies boot source and recovery target sizes/SHA1; never executed",
+      "derived_from": {
+        "agent_manifest": "firmware.json",
+        "local_source": "/home/jresp/build/omarchy-shield/harvest-2026-10-14/firmware/official-current-ota/vendor.ext4",
+        "mode": "debugfs read-only cat; installer never executed"
+      }
+    },
+    {
+      "id": "nvidia-darcy-9.2.4-recovery-reconstructed",
+      "path": "current-build/recovery-inputs/recovery.img",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 20575528,
+      "sha256": "ebe2fc16c2b82114712f18bd78781b63c8d4b9a52de2294239b08a817098341d",
+      "meaning": "Locally reconstructed stock release recovery, exact vendor target size/SHA1 matched; no physical restore test",
+      "sha1": "baec8f3a73215a4cd473035d88ea375a44c7fe74"
+    },
+    {
+      "id": "nvidia-current-recovery-reconstruction",
+      "path": "current-build/recovery-inputs/reconstruction.json",
+      "source_id": "aosp-bsdiff",
+      "bytes": 1004,
+      "sha256": "56cc9ac43211e210e2e3844cfb57ba27295735d686e1d02f48ce86d54e8688e7",
+      "meaning": "Source,target and patch digests; all 44 controls and all streams consumed"
+    },
+    {
+      "id": "nvidia-current-recovery-header",
+      "path": "current-build/recovery-image/inspection.json",
+      "source_id": "mkbootimg",
+      "bytes": 1052,
+      "sha256": "8f144d772cbd4e9e641a9b039b3b4566a6b2af31f7e80e91d8f08b8efdbc3f92",
+      "meaning": "Pinned AOSP read-only recovery extraction"
+    },
+    {
+      "id": "nvidia-current-recovery-ramdisk-analysis",
+      "path": "current-build/recovery-image/ramdisk-analysis.json",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 45745,
+      "sha256": "4d2d4920a51a8b4e35ad0e3d7c60b6262efe5f3b5cf73c76817e489fd6928bb7",
+      "meaning": "Gzip/newc ramdisk456-entry inventory and selected inactive init/fstab source references"
+    },
+    {
+      "id": "nvidia-darcy-9.2.4-dtb-a00",
+      "path": "current-build/ota-blob-dtbs/DTB-11.bin",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 302966,
+      "sha256": "b71dbedba397ce7b4614b1e1353a0733b6d152565560214112025ce54ffa0e8f",
+      "meaning": "Actual release vendor DTB variant; not evidence that this is owner board SKU"
+    },
+    {
+      "id": "nvidia-darcy-9.2.4-dtb-0050-a04",
+      "path": "current-build/ota-blob-dtbs/DTB-12.bin",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 302926,
+      "sha256": "2a1762ce27b855b4a6b8f01060a05241af5c98fa656cc3e57263cb97b3ce55ec",
+      "meaning": "Actual release vendor DTB variant; not evidence that this is owner board SKU"
+    },
+    {
+      "id": "nvidia-darcy-9.2.4-dtb-0050-a08",
+      "path": "current-build/ota-blob-dtbs/DTB-13.bin",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 302447,
+      "sha256": "57ba4e45998a694f6e7e0f0b2f48a6f59855e293fbb04544f31ae884513ef6f2",
+      "meaning": "Actual release vendor DTB variant; not evidence that this is owner board SKU"
+    },
+    {
+      "id": "nvidia-darcy-9.2.4-dtb-0052-a08",
+      "path": "current-build/ota-blob-dtbs/DTB-14.bin",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 302575,
+      "sha256": "03171cdcae1dd7204f7a2956dce600ab4a3ff53ff38e055033c093847cc65c2c",
+      "meaning": "Actual release vendor DTB variant; not evidence that this is owner board SKU"
+    },
+    {
+      "id": "historical-darcy-boot",
+      "path": "ota-metadata/boot.img",
+      "source_id": "nvidia-darcy-ota-9.2.0-historical",
+      "bytes": 11044132,
+      "sha256": "e90d4e2e42d475d6cd1efab402abadfb9f8dd8e928dfa82e8887a1781fd7eb4d",
+      "meaning": "Older inactive comparison only"
+    },
+    {
+      "id": "local-reconstruction-helper",
+      "path": "reconstruct-stock-recovery.py",
+      "source_id": "aosp-bsdiff",
+      "bytes": 3590,
+      "sha256": "2a63e6f4f213d2ee3a9c8d01fdf00822fb2bf11e8c542cdb80652b83a967afe1",
+      "meaning": "Narrow bounded Python stdlib BSDIFF40 implementation; fixed regular input/output paths; writes only after vendor target digest match"
+    },
+    {
+      "id": "local-blob-inspection-helper",
+      "path": "inspect-nvblob.py",
+      "source_id": "android_device_nvidia_tegra-common",
+      "bytes": 1637,
+      "sha256": "b5125b2c4cae9e3f5a0491340d3639356a6c141367154fd0b0bcf088b4d236e4",
+      "meaning": "Bounded read-only NVIDIA blob table and DTB extraction helper"
+    },
+    {
+      "id": "local-current-ota-range-helper",
+      "path": "current-build/remote-zip.py",
+      "source_id": "nvidia-darcy-ota-9.2.4",
+      "bytes": 2509,
+      "sha256": "4c240e0a559962894d643ce90ee39e58008c965a23f5fa7a57824ca9c2a12f27",
+      "meaning": "HTTP206-only bounded publicZIP member extraction; no installer execution"
+    },
+    {
+      "id": "nvidia-current-boot-footer-verification",
+      "path": "current-build/signature-inspection/verification.json",
+      "source_id": "aosp-boot-signature",
+      "bytes": 1865,
+      "sha256": "517e21c900299b8234409cb0ebc758abe195b65d87b1db30cf0e3256f8379908",
+      "meaning": "OpenSSL verifies both stock image RSA/SHA-256 footers with the same embedded certificate; independent hardware trust and whole-OTA signature remain unverified"
+    },
+    {
+      "id": "local-boot-footer-verification-helper",
+      "path": "verify-stock-image-footer.py",
+      "source_id": "aosp-boot-signature",
+      "bytes": 3774,
+      "sha256": "38335763d517b0de732e59e4dda0a527d67be33796c892071a5962a7d1748427",
+      "meaning": "Bounded DER and authenticated target/size inspection followed by OpenSSL verification; no signing, repacking or trust installation"
+    }
+  ],
+  "findings": [
+    {
+      "id": "exact-stock-inputs",
+      "status": "proven-source-evidence",
+      "summary": "Official public NVIDIA 9.2.4 OTA metadata exactly matches the owner fingerprint, incremental build and security patch. Its embedded kernel configuration is byte-identical to the authorized stock ADB capture. Boot, DT variants and recovery reconstruction inputs are locally acquired without login.",
+      "embedded_stock_config": {
+        "bytes": 163243,
+        "sha256": "325d2cf28000ddda0ad6c65f4083648b5bb4348d793e7a4406a423574ca7c4d4",
+        "matches_authorized_adb_stock_config": true
+      },
+      "physical_device_boot_backup_obtained": false
+    },
+    {
+      "id": "stock-header-and-compression",
+      "status": "proven-source-evidence",
+      "summary": "Exact-build normal boot and reconstructed recovery use Android header version 1, 2048-byte pages and a gzip-compressed ARM64 kernel. Normal boot has no ramdisk; recovery has a 9,529,963-byte gzip ramdisk. Both lack second-stage and recovery-DTBO payloads. Recovery and normal boot have identical kernel payloads.",
+      "boot_header": {
+        "version": 1,
+        "page_bytes": 2048,
+        "kernel_bytes": 11039537,
+        "kernel_address_raw": "0x00991680",
+        "tags_address_raw": "0x00989780",
+        "ramdisk_bytes": 0,
+        "second_stage_bytes": 0,
+        "recovery_dtbo_bytes": 0,
+        "header_bytes": 1648
+      },
+      "stock_kernel_arm64_header": {
+        "code0": 340885504,
+        "code1": 0,
+        "text_offset": 524288,
+        "image_size": 29872128,
+        "flags": 10,
+        "res2": 0,
+        "res3": 0,
+        "res4": 0,
+        "magic": "ARMd",
+        "res5": 0
+      },
+      "recovery_ramdisk_bytes": 9529963,
+      "recovery_bytes": 20575528,
+      "stock_normal_kernel_initramfs_source": "",
+      "measured_load_addresses_confirmed": false,
+      "raw_address_warning": "Raw AOSP-parsed kernel/tags/ramdisk fields derive from base10,000,000 decimal and lie below the Tegra DRAM window. They are format observations, not validated physical load addresses; do not blindly reuse them."
+    },
+    {
+      "id": "current-recovery-reconstruction",
+      "status": "verified-local-reconstruction",
+      "summary": "The exact-build vendor install script source boot SHA-1 and size matched. Bounded BSDIFF40 application consumed all 44 controls and all streams, producing a 20,575,528-byte recovery whose SHA-1 matches the script. No stock installer was run.",
+      "whole_ota_signature_verified": false,
+      "physical_restore_tested": false
+    },
+    {
+      "id": "darcy-dt-selection",
+      "status": "proven-source-evidence",
+      "summary": "The official release blob carries A00, 0050 A04, 0050 A08 and 0052 A08 vendor DTBs, repeated as RP1 entries. All four inherit nvidia,boardids=2530:0032:E0, so this property cannot select the owner SKU. Lineage recovery chooses the DT filename from /proc/device-tree/nvidia,dtsfilename and writes the selected DTB to the DTB partition. Its source explicitly says the recovery-DTBO slot is ignored on original Darcy; only B01 Mdarcy/Sif use it.",
+      "owner_selected_variant_known": false
+    },
+    {
+      "id": "lineage-kernel-integration",
+      "status": "source-harvested",
+      "summary": "The pinned lineage-23.2 Foster recipe uses Image.gz, header version 1 and optional nested Android/U-Boot wrapping. Tegra build supports 6.12/6.18 mixed GKI with explicit module and DT inventories; common prebuilt rules preserve matching modules. These are source references, not binary-compatible replacements for the pinned 7.1 Omarchy kernel.",
+      "owner_bootloader_in_lineage_allowlist": false,
+      "source_recovery_partition_bytes": 26767360,
+      "owner_fastboot_recovery_partition_bytes": 26738688
+    },
+    {
+      "id": "uboot-coverage",
+      "status": "not-qualified",
+      "summary": "Pinned Lineage U-Boot has upstream Darcy DT source but no Darcy/P2894 defconfig. Its baracus defconfig targets P2371-2180; the documented tegratab chainloader targets Tegra114. Neither establishes safe P2894 initialization or temporary boot support.",
+      "p2894_uboot_verified": false
+    },
+    {
+      "id": "kexec-alternative",
+      "status": "concrete-unverified-candidate",
+      "summary": "The owner stock kernel configuration enables CONFIG_KEXEC and CONFIG_KEXEC_CORE. The pinned kexec-tools ARM64 Image loader accepts an explicit DTB and initrd through the legacy kexec_load syscall. Its file-based syscall ignores an explicit DTB. This supplies a potential RAM-only mainline handoff after obtaining a controlled privileged stock-kernel environment, avoiding initial DTB partition writes.",
+      "required_syscall_mode": "legacy kexec_load (-c/--kexec-syscall), not kexec_file_load",
+      "needs_review": [
+        "runtime RAM and reserved-memory/carveout propagation",
+        "CPUhotplug/cache shutdown and Tegra firmware state",
+        "root/SELinux syscall permission in controlled recovery",
+        "matching explicit mainlineDTB and minimal diagnostic ramdisk",
+        "working temporary stock-kernel boot entry; do not assume fastboot boot works"
+      ],
+      "physical_kexec_tested": false
+    },
+    {
+      "id": "older-shield-lesson",
+      "status": "historical-reference",
+      "summary": "The 2018 shieldTV_loader reports fastboot boot trouble and solves it by replacing Android boot. It requires unlocking and 1080p HDMI and emits 4096-byte pages. Its source is archived for code study; it is not a qualified temporary boot method for current Darcy firmware."
+    },
+    {
+      "id": "legacy-android-image-footer-integrity",
+      "status": "verified-local-cryptographic-consistency",
+      "summary": "Both acquired boot and reconstructed recovery carry legacy AndroidVerifiedBootSignature version 1 footers. An independent OpenSSL SHA-256/RSA verification passes over each padded image plus its authenticated target/size attributes. Both use the same embedded certificate. This strengthens recovery reconstruction integrity without establishing an independent hardware trust anchor or verifying the whole OTA package.",
+      "embedded_certificate_sha256": "d871a3898f9ff87ffc79dd238dc3150574b1dd4e269fcde9335a6cfbae41e185",
+      "embedded_certificate_signature_verified": true,
+      "independent_trusted_certificate_pinned": false,
+      "owner_hardware_trust_anchor_checked": false,
+      "whole_ota_signature_verified": false
+    }
+  ],
+  "gaps": [
+    "The actual owner board SKU/revision and live nvidia,dtsfilename remain unavailable under stock ADB permissions. P2897 alone does not select A00/A04/A08.",
+    "No raw physical boot/recovery/DTB backup exists; owner partition bytes have not been compared with the acquired official release image.",
+    "Whole-OTA provider MD5 and package signatures remain unverified because only selected ZIP members were downloaded. Member CRC32, local SHA-256 and boot/recovery footer signatures with their embedded certificate are verified. The certificate has not been independently matched to the owner hardware trust anchor.",
+    "The reconstructed recovery is a current-release input with the exact vendor target digest, not a tested restoration route. Recovery shell/root availability and temporary fastboot boot remain untested.",
+    "Original Darcy mainline DT handoff needs either a reviewed chainload/kexec path or a separately reviewed DTB partition operation with exact recovery inputs. Attaching a DTB in the B01 recovery-DTBO slot does not solve this.",
+    "No P2894 U-Boot configuration is verified. No custom boot image or loader was built during the harvest.",
+    "Raw Android header addresses need NVIDIA CBoot interpretation; arithmetic base inference does not establish effective runtime load addresses.",
+    "Privileged staging, USB diagnostics, CPU shutdown and runtime carveout propagation for kexec need combined source review and later qualification.",
+    "The official developer 9.2.1 recovery archive still requires NVIDIA login; no login bypass was attempted. It is no longer the only recovery-input route because exact 9.2.4 reconstruction succeeded."
+  ],
+  "proposed_native_test_route": [
+    {
+      "step": 1,
+      "kind": "offline-review",
+      "action": "Reconcile the exact current stock boot, recovery and DT inputs with the board and firmware harvest. Preserve originals, digests and an explicit recovery plan. Independently review the BSDIFF receipt and AOSP header extraction; determine a package signature verification path."
+    },
+    {
+      "step": 2,
+      "kind": "owner-prerequisite",
+      "action": "Before unlocking, finish a concrete boot/recovery candidate review, confirm owner data backup and physical fastboot-menu controls, then obtain explicit consent for unlocking and data erasure. This harvest does not authorize unlocking."
+    },
+    {
+      "step": 3,
+      "kind": "temporary-stock-kernel-entry-candidate",
+      "action": "Investigate temporary boot of current-release recovery or a reviewed stock kernel plus controlled minimal ramdisk, preserving DTB and early boot partitions. fastboot boot and recovery privileged ADB support are unknown. Failure must not automatically trigger a persistent flash."
+    },
+    {
+      "step": 4,
+      "kind": "read-only-native-inventory",
+      "action": "Once a controlled privileged stock-kernel environment exists, capture exact boot/recovery/DTB, live DTS filename and board metadata, /sys/firmware/fdt and RAM/carveout maps before a mainline handoff. Keep owner identifiers and keys private."
+    },
+    {
+      "step": 5,
+      "kind": "ram-only-mainline-candidate",
+      "action": "After source integration settles, review and build a matching static ARM64 kexec helper. Supply an explicit reviewed Darcy DTB with runtime memory reservations, kernel Image and diagnostic initramfs through legacy kexec_load. Transfer the larger Image after stock-kernel entry, avoiding the CBoot 32 MiB download limit and initial DTB writes. This candidate remains untested and may fail to preserve Tegra firmware state."
+    },
+    {
+      "step": 6,
+      "kind": "qualification",
+      "action": "After separately authorized native boot, establish a USB console and verify cooling, power and storage before load tests or the desktop. Preserve stock restoration inputs and a deterministic return to fastboot. Do not replace BCT, EBT, TOS, partition tables or other early boot firmware for this experiment."
+    }
+  ],
+  "remaining_owner_inputs": [
+    "An explicit decision about unlocking and data erasure, after a concrete native boot/recovery candidate review and owner data backup",
+    "Physical fastboot-menu control and a usable display/keyboard route when unlocking or recovery interaction requires them; current availability has not been re-confirmed",
+    "The full enclosure P/N may narrow the manufacturing variant, but cannot replace live board/DT evidence"
+  ],
+  "device_actions_performed": [],
+  "physical_shield_boot_tested": false,
+  "device_bootloader_unlocked": false,
+  "runtime_firmware_installed": false,
+  "flashable_omarchy_image_built": false,
+  "physical_restore_tested": false
+}

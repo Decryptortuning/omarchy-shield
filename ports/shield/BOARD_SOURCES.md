@@ -2,6 +2,8 @@
 
 Darcy board definitions, Linux drivers and boot-image recipes already exist. The task is to combine the matching pieces with Omarchy and qualify them on the connected Shield. [board-sources.lock.json](board-sources.lock.json) pins five source repositories and 17 inspected files separately from the tested runtime inputs in [kernel.lock.json](kernel.lock.json). New reference checkouts live under `/home/jresp/Active_GH`.
 
+The subsequent [integration harvest](HARVEST.md) expands this initial map with pinned dependency snapshots, four current-release stock DT variants, matching boot/recovery inputs, radio firmware and graphics/media interface evidence. The [board report](harvest/board.json) closes 162 lexical DTS/header include edges across its selected files and records the remaining runtime/SKU dependencies. It does not change the built kernel or claim whole-driver dependency closure.
+
 | Project | What we can reuse | Scope |
 | --- | --- | --- |
 | [Upstream Linux Darcy DT](https://github.com/torvalds/linux/blob/master/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a08.dts) and the pinned ACK Tegra tree | Original-Tegra210 board identity, SDIO radio wiring, PCIe, regulators, display, Bluetooth and fan nodes | The current kernel already includes this board family and drivers. This does not establish the owner's exact PCB revision or physical behavior. |
@@ -12,7 +14,7 @@ Darcy board definitions, Linux drivers and boot-image recipes already exist. The
 
 ## Concrete findings
 
-The original Darcy A08 downstream DTS names `nvram_darcy_a00.txt`. LineageOS's [Linux firmware mapping](https://github.com/LineageOS/android_device_nvidia_foster/blob/aa1bf701c00a4febfd64a91ddc82b4a5af600b53/vendor/linux-firmware/foster.mk) maps that source to `brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt`. This supplies the board-specific calibration filename missing from our generic BCM4354 firmware set. The payload still needs to be obtained and matched; no calibration file has been installed.
+The original Darcy A08 downstream DTS names `nvram_darcy_a00.txt`. LineageOS's [Linux firmware mapping](https://github.com/LineageOS/android_device_nvidia_foster/blob/aa1bf701c00a4febfd64a91ddc82b4a5af600b53/vendor/linux-firmware/foster.mk) maps that source to `brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt`. The harvest obtained the exact current-OTA payload and a byte-identical pinned mirror cross-check. Its board mapping, platform MAC handling and license still need review; no calibration file has been installed.
 
 LineageOS's [BCM4354 recipe](https://github.com/LineageOS/android_device_nvidia_tegra-common/blob/38177fe731b6145a2c1c89eb1a983dc4a8037c7d/vendor/linux-firmware/bcm/bcm4354.mk) maps the vendor `bcm4354/BCM4350C0.hcd` to `brcm/BCM4354.hcd`. This is a specific upstream device mapping to investigate, not evidence that arbitrary Broadcom firmware can be renamed. The Bluetooth payload remains absent from the runtime.
 
@@ -24,4 +26,4 @@ The pinned LineageOS [BoardConfig](https://github.com/LineageOS/android_device_n
 
 The source boot-partition size matches our observed 26,738,688 bytes. Its recovery-partition size differs from the owner's fastboot report, and its bootloader allowlist does not contain the owner's observed version. These differences are recorded in the reference lock. The recipe provides useful candidate-format evidence without proving a particular built image is compatible with this device.
 
-The next integration work is to acquire the specifically mapped radio firmware with provenance, compare the vendor/mainline power and cooling definitions, and establish a recoverable DT handoff using the compressed-kernel boot recipe. A compatible stock recovery source remains necessary before the owner decides on unlocking. No unlock, flash, bootloader replacement or firmware installation was performed during this source investigation; physical acceptance remains zero.
+The next integration work is to package the specifically mapped radio inputs within their license boundaries, resolve the documented fan producer/consumer issue and establish a recoverable DT handoff. The harvest now supplies exact-build recovery reconstruction inputs and a digest-matching recovery, but physical backups and restoration qualification remain open before the owner decides on unlocking. No unlock, flash, bootloader replacement or firmware installation was performed during this source investigation; physical acceptance remains zero.

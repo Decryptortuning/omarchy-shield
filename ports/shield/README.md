@@ -10,6 +10,8 @@ The [reusable board-source map](BOARD_SOURCES.md) identifies the original Darcy 
 
 The [integration plan](INTEGRATION_PLAN.md) orders the remaining board/firmware work, recovery and boot handoff, reproducible builds, native diagnostics, full hardware qualification and owner installation/update support. It includes the first implementation batch and acceptance checks for all 19 subsystems.
 
+The [completed source and firmware harvest](HARVEST.md) records 728 verified local files, including exact installed-build boot/recovery inputs, four stock DT variants and specifically mapped radio firmware. It also identifies fan startup semantics, a disabled Shield controller driver, NVK's default Tegra rejection and the vendor/modern media interface gap. These are staged research inputs; the built runtime and physical acceptance remain unchanged.
+
 ## Current implementation
 
 - The `aarch64-shield` detector recognizes A08 with original Tegra210, and B00 with Tegra210B01. Cross-generation pairs, conflicting proc/sysfs identities, 2015 Shields, Switches and Jetsons are rejected. Compatible strings identify supported evaluation DTs; they do not qualify the physical unit.
@@ -19,7 +21,7 @@ The [integration plan](INTEGRATION_PLAN.md) orders the remaining board/firmware 
 - Each board profile selects its own DTB, acceptance matrix and CEC overlay. The original Darcy profile includes PCIe Ethernet and PWM regulator requirements; B01 retains its own USB firmware and radio requirements. Firmware matching and all physical behavior remain untested.
 - The kernel profile includes Omarchy's zstd compressed swap and encrypted-root driver requirements. `linux-shield` owns the custom kernel modules without installing a boot image. Btrfs and Snapper are included; native snapshot boot integration remains unfinished.
 
-The firmware audit finds GM20B ACR, VIC and original Tegra210 XUSB files in the signed Linux firmware packages. Tegra210B01 XUSB, matching Bluetooth HCD files, and NVDEC/NVENC blobs remain absent from the development runtime. Tegra210 XUSB is not a B01 replacement. Board-specific Wi-Fi calibration still needs evidence. Inactive XUSB, Bluetooth and video candidates from NVIDIA's pinned L4T 32.2.1 archive remain unqualified. Stock Android denied direct firmware and raw boot-partition reads; those payloads have not been backed up through ADB.
+The firmware audit finds GM20B ACR, VIC and original Tegra210 XUSB files in the signed Linux firmware packages. Tegra210B01 XUSB, matching Bluetooth HCD files, and NVDEC/NVENC blobs remain absent from the development runtime. Tegra210 XUSB is not a B01 replacement. Exact current-OTA Darcy calibration/HCD/media payloads and pinned upstream firmware are now staged locally with hashes and mappings; activation, license review and physical qualification remain open. Older L4T candidates stay separate and inactive. Stock Android denied direct firmware and raw boot-partition reads; no physical partition backup was obtained through ADB.
 
 ## Boot design
 

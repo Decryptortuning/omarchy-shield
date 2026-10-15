@@ -1,0 +1,4247 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "board_variant": "darcy-t210",
+  "scope": "Pinned graphics/media source and inactive library harvest; no integration or native hardware qualification",
+  "local_staging_root": "/home/jresp/build/omarchy-shield/harvest-2026-10-14/media",
+  "sources": [
+    {
+      "repository": "FFmpeg",
+      "url": "https://github.com/theofficialgman/FFmpeg.git",
+      "commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "scope": "selected source files with original notices; not executed",
+      "files": [
+        {
+          "path": "sources/FFmpeg/COPYING.GPLv2",
+          "bytes": 18092,
+          "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+          "source_path": "COPYING.GPLv2",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/COPYING.LGPLv2.1",
+          "bytes": 26526,
+          "sha256": "b634ab5640e258563c536e658cad87080553df6f34f62269a21d554844e58bfe",
+          "source_path": "COPYING.LGPLv2.1",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/LICENSE.md",
+          "bytes": 4376,
+          "sha256": "cb48bf09a11f5fb576cddb0431c8f5ed0a60157a9ec942adffc13907cbe083f2",
+          "source_path": "LICENSE.md",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/configure",
+          "bytes": 278410,
+          "sha256": "10560138f131dbeb3793156ca395675d690d3322771d33f448351837c35c0428",
+          "source_path": "configure",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/libavcodec/Makefile",
+          "bytes": 82621,
+          "sha256": "43290bea96cef13523af23023d001c19590b90506789371d7752d454c277c6a9",
+          "source_path": "libavcodec/Makefile",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/libavcodec/allcodecs.c",
+          "bytes": 38869,
+          "sha256": "3fa9b29e7a9993be7c8f591d79510e4899d8f48b22871da9486841c40b6b49e9",
+          "source_path": "libavcodec/allcodecs.c",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/libavcodec/nvv4l2.c",
+          "bytes": 26655,
+          "sha256": "f34d8d0951da3e63f503c72631f94d86db19cac504c26b5f766af453147de7c7",
+          "source_path": "libavcodec/nvv4l2.c",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/libavcodec/nvv4l2.h",
+          "bytes": 12482,
+          "sha256": "d625d3f3f67a6fc2370c58bbfe0e11b88af27170ab0ccbc4e6719e67895bc616",
+          "source_path": "libavcodec/nvv4l2.h",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/libavcodec/nvv4l2_dec.c",
+          "bytes": 45482,
+          "sha256": "36fa27b6f29fa5e25baab4403880610a0b963c21017616c47baa24e6bf78b7cb",
+          "source_path": "libavcodec/nvv4l2_dec.c",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/libavcodec/nvv4l2_enc.c",
+          "bytes": 51783,
+          "sha256": "9a37dda9e70031d48f87f2b961afd21b4d1554228ef05cc73cbdc2f9ac84d8ad",
+          "source_path": "libavcodec/nvv4l2_enc.c",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/FFmpeg/libavcodec/nvv4l2_ext_utils.h",
+          "bytes": 85948,
+          "sha256": "ed343a2443d05122e853e28cd574bab28086e9f94aba61c0fcd97eee0fa570aa",
+          "source_path": "libavcodec/nvv4l2_ext_utils.h",
+          "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "repository": "l4t-kernel-build-scripts",
+      "url": "https://github.com/theofficialgman/l4t-kernel-build-scripts.git",
+      "commit": "1fb0e92e10eaf452b71cbdf7fc7b06c27f6de121",
+      "scope": "selected source files with original notices; not executed",
+      "files": [
+        {
+          "path": "sources/l4t-kernel-build-scripts/README.md",
+          "bytes": 576,
+          "sha256": "ba34a9c1888bdbf312031686c21a3b17e7dae88b87f0b29d9e1b461ee5fd9f8d",
+          "source_path": "README.md",
+          "source_commit": "1fb0e92e10eaf452b71cbdf7fc7b06c27f6de121",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-kernel-build-scripts/l4t-linux-build.sh",
+          "bytes": 7066,
+          "sha256": "9f37d438fc03759f01c4774605829cd73de9142aa87d586a920200d2934fa2ed",
+          "source_path": "l4t-linux-build.sh",
+          "source_commit": "1fb0e92e10eaf452b71cbdf7fc7b06c27f6de121",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "repository": "l4t-image-buildscripts",
+      "url": "https://github.com/theofficialgman/l4t-image-buildscripts.git",
+      "commit": "6869922f066ac03138d232cb064b8004c44a143d",
+      "scope": "selected source files with original notices; not executed",
+      "files": [
+        {
+          "path": "sources/l4t-image-buildscripts/README.md",
+          "bytes": 2098,
+          "sha256": "c508e468260d9a98cf185055f94df6781871a0a22aa0b91cf7a3a27a3d42768d",
+          "source_path": "README.md",
+          "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-image-buildscripts/scripts/apply.sh",
+          "bytes": 6816,
+          "sha256": "90c92918097405c68c619da51028c556bac53693c9d59eed00d444fff03edc07",
+          "source_path": "scripts/apply.sh",
+          "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-image-buildscripts/scripts/nv-apply-debs.sh",
+          "bytes": 13880,
+          "sha256": "240d1f7f0fa3f7d6975e439d590e62f71ea7eb966c455d743a8a94c5c177a5c9",
+          "source_path": "scripts/nv-apply-debs.sh",
+          "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-image-buildscripts/scripts/nv_build_samplefs.sh",
+          "bytes": 6373,
+          "sha256": "2616c2eae8ecf35572fe32d0b48328b69b8414887dfdf1d1a33398efc8f95590",
+          "source_path": "scripts/nv_build_samplefs.sh",
+          "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "repository": "switch-l4t-kernel-nvidia",
+      "url": "https://github.com/theofficialgman/switch-l4t-kernel-nvidia.git",
+      "commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "scope": "selected source files with original notices; not executed",
+      "files": [
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/Documentation/devicetree/bindings/thermal/tegra-pwm-fan.txt",
+          "bytes": 1805,
+          "sha256": "2a82fc6ae44399bade9d5790a4e82b6322f52c0c03153062d02f20bf77c3ad04",
+          "source_path": "Documentation/devicetree/bindings/thermal/tegra-pwm-fan.txt",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/drivers/thermal/pwm_fan.c",
+          "bytes": 42833,
+          "sha256": "4617e324581dbf649078fc133969b3bfc8fe13a5173ae72c532f9296d1c1323e",
+          "source_path": "drivers/thermal/pwm_fan.c",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/drivers/video/tegra/host/nvdec/hw_nvdec.h",
+          "bytes": 2472,
+          "sha256": "ba5b95762174ad29a1d428cdc1fed7e6dae4ab01e7e9237117a69dde1092ab98",
+          "source_path": "drivers/video/tegra/host/nvdec/hw_nvdec.h",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/drivers/video/tegra/host/nvdec/nvdec.c",
+          "bytes": 13835,
+          "sha256": "fd0ae827901763bb3698ef60eb0065aeb63f3cabdde650d76a063d85a7ddf430",
+          "source_path": "drivers/video/tegra/host/nvdec/nvdec.c",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/drivers/video/tegra/host/nvdec/nvdec.h",
+          "bytes": 1816,
+          "sha256": "00051d380534b4ecd5d164af0d355b8ef7be387663effbe747aee59790cd7e57",
+          "source_path": "drivers/video/tegra/host/nvdec/nvdec.h",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/include/linux/platform_data/pwm_fan.h",
+          "bytes": 1149,
+          "sha256": "c6a46c751f27fc234ba8f4ab3c71e99553ad5c79e50f24eeb023afe9fbcff513",
+          "source_path": "include/linux/platform_data/pwm_fan.h",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/include/uapi/linux/nvhost_ioctl.h",
+          "bytes": 13038,
+          "sha256": "aa17d243fff5ea38e81cc0a2ccc84796c2d1e5fb8b85041d69231d119cda51a4",
+          "source_path": "include/uapi/linux/nvhost_ioctl.h",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/include/uapi/linux/nvhost_nvdec_ioctl.h",
+          "bytes": 1509,
+          "sha256": "997ba241773ff9bc3c632c741e46e0b49d6cc35a86ac91419b02077bbd0f97ac",
+          "source_path": "include/uapi/linux/nvhost_nvdec_ioctl.h",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-nvidia/include/uapi/linux/nvmap.h",
+          "bytes": 12469,
+          "sha256": "388d30ae7a88c7f519c5d66d714e55d542958a6bbe14bf6a264d1cc0d916fd38",
+          "source_path": "include/uapi/linux/nvmap.h",
+          "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "repository": "switch-l4t-kernel-4.9",
+      "url": "https://github.com/theofficialgman/switch-l4t-kernel-4.9.git",
+      "commit": "807d12f6c4fe37e12ea70a6ec9d3bedb78d13233",
+      "scope": "selected source files with original notices; not executed",
+      "files": [
+        {
+          "path": "sources/switch-l4t-kernel-4.9/COPYING",
+          "bytes": 18693,
+          "sha256": "af8067302947c01fd9eee72befa54c7e3ef8a48fecde7fd71277f2290b2bf0f7",
+          "source_path": "COPYING",
+          "source_commit": "807d12f6c4fe37e12ea70a6ec9d3bedb78d13233",
+          "kind": "source"
+        },
+        {
+          "path": "sources/switch-l4t-kernel-4.9/drivers/pwm/pwm-tegra.c",
+          "bytes": 10188,
+          "sha256": "8d8432eb06874c4e30c2697be7fc27c1b66640d6122b83ac534c090569683de6",
+          "source_path": "drivers/pwm/pwm-tegra.c",
+          "source_commit": "807d12f6c4fe37e12ea70a6ec9d3bedb78d13233",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "repository": "ack-tegra",
+      "url": "https://git.thomasmak.in/tmakin/ack-tegra.git",
+      "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "scope": "selected source files with original notices; not executed",
+      "files": [
+        {
+          "path": "sources/ack-tegra/COPYING",
+          "bytes": 496,
+          "sha256": "fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0",
+          "source_path": "COPYING",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/drivers/gpu/drm/nouveau/nouveau_platform.c",
+          "bytes": 3060,
+          "sha256": "1cc01e1a27ec1a7cb694189ca72ce55c0801fb3c8fa9c21efd899ce1b13fbbeb",
+          "source_path": "drivers/gpu/drm/nouveau/nouveau_platform.c",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/drivers/gpu/drm/tegra/drm.c",
+          "bytes": 36726,
+          "sha256": "4b17d5862eeaf65cc54d14844dc4f78ec5306964bf122c86c60dde0f41aa1a57",
+          "source_path": "drivers/gpu/drm/tegra/drm.c",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/drivers/gpu/drm/tegra/falcon.c",
+          "bytes": 6425,
+          "sha256": "f8e8cfccf4d17d679538883f79d43414e6cbe1aa8a6fc4f958395ece532007f3",
+          "source_path": "drivers/gpu/drm/tegra/falcon.c",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/drivers/gpu/drm/tegra/nvdec.c",
+          "bytes": 15731,
+          "sha256": "2d66e624e5098a43fe5b0633c8ce7f8260ac46cef31f630115c31689a08590c4",
+          "source_path": "drivers/gpu/drm/tegra/nvdec.c",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/drivers/gpu/drm/tegra/nvenc.c",
+          "bytes": 13013,
+          "sha256": "3143bf369953e0ce78eee3b4119bce7f08c02c35a54f5da2daedab5c32aef93f",
+          "source_path": "drivers/gpu/drm/tegra/nvenc.c",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/drivers/gpu/drm/tegra/uapi.c",
+          "bytes": 8344,
+          "sha256": "c9caf819252967b5cf36ab673480265d8e8aa9b6db10d8a7661bf4adfb153982",
+          "source_path": "drivers/gpu/drm/tegra/uapi.c",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/drivers/gpu/drm/tegra/vic.c",
+          "bytes": 15518,
+          "sha256": "908040e09f2f029edd269a42385bf5f9e41c0ac4ffa7e96ec0cf71f6fa2c15f9",
+          "source_path": "drivers/gpu/drm/tegra/vic.c",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/ack-tegra/include/uapi/drm/tegra_drm.h",
+          "bytes": 21651,
+          "sha256": "84969d7efe2d983090d0b4b0f47f0dcf0f5853b830808677005b1af9d1f954c9",
+          "source_path": "include/uapi/drm/tegra_drm.h",
+          "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "repository": "l4t-debs-source",
+      "url": "https://github.com/theofficialgman/l4t-debs-source.git",
+      "commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "scope": "selected source files with original notices; not executed",
+      "files": [
+        {
+          "path": "sources/l4t-debs-source/README.md",
+          "bytes": 20,
+          "sha256": "b2e68592c40dd75700e56fba355f3db3016c67580d89317f2985dec7da58d7bc",
+          "source_path": "README.md",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/jammy/ffmpeg/0001-codecs-add-nvv4l2-codec-for-Nvidia-Tegra-SOCs.patch",
+          "bytes": 248471,
+          "sha256": "a82098dee2ce0e09a660b1b74b958a633ca1ff21433223e43faf2249fe0d1a5f",
+          "source_path": "deb_package_sources/jammy/ffmpeg/0001-codecs-add-nvv4l2-codec-for-Nvidia-Tegra-SOCs.patch",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/main/nvidia-bsp-32-7/DEBIAN/control",
+          "bytes": 959,
+          "sha256": "b2aeb455270d3ab6fd1f596fd5d7e1cdd1279c3eb806bd7591c06b737e5d519c",
+          "source_path": "deb_package_sources/main/nvidia-bsp-32-7/DEBIAN/control",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/README.Debian",
+          "bytes": 697,
+          "sha256": "43389dbc2f734b4ea07028182f9888751611c18fcd44e83ff73743812866ea76",
+          "source_path": "deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/README.Debian",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/copyright",
+          "bytes": 936,
+          "sha256": "db508e1f5d7980b3a3abdf9961b2b25a54007c761f2a5f23876d69319964abcb",
+          "source_path": "deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/copyright",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/main/vk-layer-tegra-dc-present/DEBIAN/control",
+          "bytes": 353,
+          "sha256": "16e6efa2d4921295c28a8bfb7d3ad38d4fcfba649739679919d6184bf30ca296",
+          "source_path": "deb_package_sources/main/vk-layer-tegra-dc-present/DEBIAN/control",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/main/vk-layer-tegra-dc-present/etc/profile.d/vk_layer_tegra_dc_present.sh",
+          "bytes": 375,
+          "sha256": "d5718ea377afb6c82493f04fc56dee3fd00fa2992767380795490d44448174f1",
+          "source_path": "deb_package_sources/main/vk-layer-tegra-dc-present/etc/profile.d/vk_layer_tegra_dc_present.sh",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/main/vk-layer-tegra-dc-present/usr/share/vulkan/implicit_layer.d/VkLayer_tegra_dc_present.json",
+          "bytes": 547,
+          "sha256": "34e809446f205b8fd8e7b60ad3b47357918db6fd3d7acf4715f92702ef6fbfed",
+          "source_path": "deb_package_sources/main/vk-layer-tegra-dc-present/usr/share/vulkan/implicit_layer.d/VkLayer_tegra_dc_present.json",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/noble/switch-multimedia/DEBIAN/control",
+          "bytes": 330,
+          "sha256": "b93678a5ae65a94429b05f4f835c8472cc1067ec8a3b1c37517401d651296bf7",
+          "source_path": "deb_package_sources/noble/switch-multimedia/DEBIAN/control",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/README.Debian",
+          "bytes": 699,
+          "sha256": "bf1d07ed8829140af293d813d44ba533ca50d64dd58015f581204386eac520ae",
+          "source_path": "deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/README.Debian",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/copyright",
+          "bytes": 936,
+          "sha256": "db508e1f5d7980b3a3abdf9961b2b25a54007c761f2a5f23876d69319964abcb",
+          "source_path": "deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/copyright",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/l4t-debs-source/package.sh",
+          "bytes": 257,
+          "sha256": "b0e827fe11fb4e611e46b0ce0565dc793e8cab676b5a5f92f8da20d2260c3792",
+          "source_path": "package.sh",
+          "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+          "kind": "source"
+        }
+      ]
+    },
+    {
+      "repository": "mesa",
+      "version": "26.2.4",
+      "url": "https://archive.mesa3d.org/mesa-26.2.4.tar.xz",
+      "archive": {
+        "path": "downloads/mesa-26.2.4.tar.xz",
+        "bytes": 68613948,
+        "sha256": "bce5f7fbebb934373b86c999a064d52fb5065878dc57f287f95346648ec832e9",
+        "kind": "complete_source_archive"
+      },
+      "signature": {
+        "path": "downloads/mesa-26.2.4.tar.xz.sig",
+        "bytes": 310,
+        "sha256": "cdf1c4f7e66d0cd878a093fc8b770284fb3c6bd36060c907299f70fca3ec1598",
+        "kind": "source_signature"
+      },
+      "signature_verified": false,
+      "files": [
+        {
+          "path": "sources/mesa-26.2.4/VERSION",
+          "bytes": 7,
+          "sha256": "6fdb5e1a17496d2a90f08d87bf219fa0cbe025d0b95962ed326788c76ebbc947",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/docs/drivers/nvk.rst",
+          "bytes": 3019,
+          "sha256": "e4ba633260a31b9eb4696375e65e1d814d566683701b960b1036f9072bd6c77b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/docs/license.rst",
+          "bytes": 1816,
+          "sha256": "0d1a0472ecc81830e75c20d59b0ea02841e3db21255e0ebad97ab682c54d6615",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c",
+          "bytes": 47128,
+          "sha256": "deb2d5e0fdb88605d30e40e481a738eb503f9018e421c1e97e251108c07c0c9e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/gallium/drivers/tegra/tegra_screen.c",
+          "bytes": 21044,
+          "sha256": "b2e3085b8cf3488829e8bf255a11a3903fe5594d962dede6d3f4d5e68c7e3e1f",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/loader/loader.c",
+          "bytes": 26402,
+          "sha256": "1416f0e150e463a9d76f5c2028bc70e8fbb3a2ce2292af4544fa0501e6a77463",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/drf.h",
+          "bytes": 12156,
+          "sha256": "f4e0bc228e7a871352463c23efc20263423b093aef0aa90e2413edd0a8a80d9f",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/meson.build",
+          "bytes": 5911,
+          "sha256": "19c79224344f5d805477b102e673c52548885e2356071a29be4d0cba3f4c33a8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_device_info.h",
+          "bytes": 2465,
+          "sha256": "e5395610bb9b7975e71e5319a5009327a47438f24145bf872f36809e09809b54",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_push.c",
+          "bytes": 4906,
+          "sha256": "c65c21beccf9da4ffe3eb20c00a460c5f3218376f696402fdb0d4f63e7202faa",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_push.h",
+          "bytes": 9018,
+          "sha256": "e1de7752bf9b0ddf42eae95e166e822ee7a98daf8629536d1106951b9ac29cb3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_push_dump.c",
+          "bytes": 6008,
+          "sha256": "dece6040f0d589b877f45b8cb041690ea68bbc4a731fc31d03273935f2ce34a3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0039.h",
+          "bytes": 8206,
+          "sha256": "af5962e7074d120b02dfe8ffd03960a52bfa23093520ea641925888ce8eb2e6a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0042.h",
+          "bytes": 5657,
+          "sha256": "37d1604ec61bc8b2aada7abfe132548eda444b5f3c37c96df88f3738eac855bc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl004a.h",
+          "bytes": 19796,
+          "sha256": "83fd7e84d4de6fde1c944758680517651ffc0094503830a736c555b32692ee1b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0065.h",
+          "bytes": 7194,
+          "sha256": "a75cd38f6f918aecc5941397a6c54eafde03313116bf89b425ba10092bf25fc5",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0066.h",
+          "bytes": 7881,
+          "sha256": "add1bb9399a1299447344aa75a69ed500a16a34c04a4cc047dfbb5fd8a94b9bf",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl006b.h",
+          "bytes": 2005,
+          "sha256": "0534832a19a87ba1af515d26bc080843d5c786e9d4802f8750a1b7540dbf0112",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl006c.h",
+          "bytes": 3656,
+          "sha256": "d5544c1614d8613a318ff11f111ec661fd3a415dac518ca5d2051efba045261c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl006e.h",
+          "bytes": 3582,
+          "sha256": "7f6c83fe1ee8282ec07f0abd76c09658801670b13f97bf8141543ff61b3147e4",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0077.h",
+          "bytes": 8950,
+          "sha256": "3e30ade6ca9fef162725c42de5a3e450c482b613d2a3d029350b2c9048fac8af",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl007b.h",
+          "bytes": 6059,
+          "sha256": "cc9bf649a9850ca0702efa9fb701dd9c1ecc1e02796430045e6e9b104aa49365",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl206e.h",
+          "bytes": 5279,
+          "sha256": "01a206c474c3045bec1b4f510bf2e586ae191d532c9494b61c5f30e3319a3b93",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl366e.h",
+          "bytes": 5468,
+          "sha256": "63d113044724ebf4998ebd27686d3c4b1d148bbdfcf1d9cef2b02ca7c26f19da",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl406e.h",
+          "bytes": 5782,
+          "sha256": "9e6d5fe3873a71ddb12a41376f6b1fe3ae1976600e2d3d601bb9002f53b28983",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl446e.h",
+          "bytes": 5731,
+          "sha256": "685c36a6f3343bb9f7f736ec2174b278c3fd4f917b18e141fd85b9a44b4d1526",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl502d.h",
+          "bytes": 57254,
+          "sha256": "ee1b1bcb966187505a4657c6bd6b43b50731c4c9b887efc481ee6a27351fca04",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl5039.h",
+          "bytes": 14863,
+          "sha256": "aa4d3e3caf464e11af519362cef6df6c5fa43bf8fe731e585bceb95abc2b81fa",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl506f.h",
+          "bytes": 9140,
+          "sha256": "881b62d8d195085fc19e16b6ee823896151f2629340f8a031d0810f031c692a1",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl50c0.h",
+          "bytes": 52193,
+          "sha256": "58a1a65d2a2fa0801ac7295bdf4dc4406a42484f49e944bdfbf408d2f5aa2978",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl826f.h",
+          "bytes": 10750,
+          "sha256": "4ea5f7d3c34f8213614b7ffaaf3971dc6d83ce26584a8686bad7154e508d47ab",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl85b5.h",
+          "bytes": 18066,
+          "sha256": "ee4115103ad1a61c9b2298e7f3a89a3d4b01e5b0020f0d2c3fb87b0f74449cf6",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl85c0.h",
+          "bytes": 53110,
+          "sha256": "ed4499491840ac1edf5fe5acf9607ba6f72e8a4e0a9f92fcab6ca234bbc83371",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl866f.h",
+          "bytes": 11285,
+          "sha256": "06f9bb1dca15e4aef182e33d949423583a8f1c8ec91ad2a00440fb73c0462659",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl902d.h",
+          "bytes": 85014,
+          "sha256": "8fa8bcb9f69077cc67f21ff68b17d16078e1cf200be6d728502bbba99ecb83bc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9039.h",
+          "bytes": 32144,
+          "sha256": "1113b4763fd3c0856eb887ccf6282b90027f0f61de2fed14423afe1b00473fcc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl906f.h",
+          "bytes": 15568,
+          "sha256": "b990d3acb221dd1c60de5b600bfa426bc44dd8358645afedfa4cd619e1e9897c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9097.h",
+          "bytes": 371074,
+          "sha256": "5ffdfacdd3f82a946792c12b4216de355dc78402435dcb8a5ad84802d0d17214",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9097tex.h",
+          "bytes": 43974,
+          "sha256": "0b1bc445c0c46401769ec77fc8b97f9fae3c5644054ec7f847cf887d25141162",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl90b5.h",
+          "bytes": 21610,
+          "sha256": "d7c9f4cfa10b989b85dbadda3da6c73dc25c258fedf13c7eb6d840c3b54f8386",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl90c0.h",
+          "bytes": 71003,
+          "sha256": "e71a0b4b8cd924c16517cbc66a8a1cfe9b07ad358d8d286d22a284b50c261047",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9197.h",
+          "bytes": 372672,
+          "sha256": "44ef04ca6e937433e71cb1b2a63e39ac04f221fb5d97909cf5dd335b3e14f901",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl91c0.h",
+          "bytes": 72486,
+          "sha256": "55679dd1b663aa6498c5d0e298942dba189c69b85de63630e9e2a669eb4bb991",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9297.h",
+          "bytes": 381232,
+          "sha256": "cf2badc5093abf71eedd810e8e86bea589c38a4e88098eca12e6ad1c7afe8fcc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9297tex.h",
+          "bytes": 44287,
+          "sha256": "b88783ba560ab6155b26272f207f6a3985be408ffce6bd023b1cef5cf9937202",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla040.h",
+          "bytes": 24970,
+          "sha256": "09ccd5f4b5b169b75e46f8da152b76617bf496974c53df2a1ad60fd652b5227d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla06f.h",
+          "bytes": 15291,
+          "sha256": "6c5db0562c117a76f145acbe35a6bacafe612493424078439d1a83c627fbc0b8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla097.h",
+          "bytes": 369386,
+          "sha256": "a19bdee7c004b82dafd819c2b22246b80d7dc5bf3e175c87abfcd96699c5d348",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla097sph.h",
+          "bytes": 48708,
+          "sha256": "a804dc66816ec4bd5a49be6c6745f7aa2cda31881e48472625abe4a691f0c1a3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla097tex.h",
+          "bytes": 43839,
+          "sha256": "e2c757a61c5b9da499427e5eeaca24dbd0a3b0732f6ca56dbd2c37d01236c874",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla0b5.h",
+          "bytes": 21731,
+          "sha256": "15c990387827313cd730c232d3fff1737dc26c5c6877d063866a5c1b06a78ec5",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla0c0.h",
+          "bytes": 54347,
+          "sha256": "d40acf0020184a1d5b2039918d810be8e79707d8ba289cee984a265c368c9d58",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla0c0qmd.h",
+          "bytes": 49940,
+          "sha256": "8a4ad7edaf88f26bd90fe8bd06353e2b7b7f6703b570e475a7fae7c4da7ab80c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla140.h",
+          "bytes": 24978,
+          "sha256": "19a0d452641b2023fb208dd0599dec123006dd193955f53af6a86c73d9a98c31",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla16f.h",
+          "bytes": 16477,
+          "sha256": "a54306e5563564d8834172c7ac160ed0bce173aac4331eb18b3cfa57e5067fce",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla197.h",
+          "bytes": 370186,
+          "sha256": "a0efb2656a3810ae3e26918e763b2cb0df62c5ad9f7cd4f693ba8170fb33b7ad",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla197tex.h",
+          "bytes": 43839,
+          "sha256": "fa395803e3bb44deca86573a4b93c8fa1787ad3f98eee7b7a63b2ca1ec741f1a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla1c0.h",
+          "bytes": 56291,
+          "sha256": "c7811a4ea2a3840a8085c4f9aa9fe7a9a4ca5bc9717efe413e10d9fcd2ab176e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla1c0qmd.h",
+          "bytes": 33744,
+          "sha256": "604fe9c925e6dd3064ac6792637e4454d61df036cbd796374de6f277cae7fb08",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla26f.h",
+          "bytes": 16558,
+          "sha256": "e4fcb9970a620750236a3fa490178fc91f34dcd9bb3116b7e134c3246d2167e7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla297.h",
+          "bytes": 389809,
+          "sha256": "9a39df0f7dec183027f4bcd7ae5100d7f724444174d323ec91883c48ac76e759",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla297tex.h",
+          "bytes": 59980,
+          "sha256": "0f568edcfa0d341608ce1d638142f319b2ece6e33c34a3cfc9492882756d08c1",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb06f.h",
+          "bytes": 16934,
+          "sha256": "c19a3ba78c6337f9139567365a657c7473d36d335b339f10bb83d2538e282fc7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb097.h",
+          "bytes": 385366,
+          "sha256": "61babb743bc5cd8666906575aa7eeda313e0ddb5179714b5a867facc8d59e100",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb097tex.h",
+          "bytes": 154979,
+          "sha256": "4dfcee5f7b09d9c3efba8c3dd07efb43b37d41586ae3d9338165413b19fe363c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb0b5.h",
+          "bytes": 21632,
+          "sha256": "169d958bfa379bfdf24c4656f02265ff5bcf22a2866724ee4299138d29df5332",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb0c0.h",
+          "bytes": 60082,
+          "sha256": "999a9eddb51627afcf40b48b1ecec01dfac1858eb9fc81185689bb6302f8ce77",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb0c0qmd.h",
+          "bytes": 33979,
+          "sha256": "2006b15aed0b3eecbdafe93d6f1e5adaac89078b2b32b6fef80923fe3421350b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb197.h",
+          "bytes": 404915,
+          "sha256": "175c50f29798b39c6858cafe31497e9e9798c70ca068a64856719003b5d088d7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb197tex.h",
+          "bytes": 153880,
+          "sha256": "d5aad7d7f339e09411b40a5e8b996613ae2c6d802187070bfa66a596513151bf",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb1c0.h",
+          "bytes": 62598,
+          "sha256": "6d612ede54e9615a30c0e5f03f2dcaed3039e062a7eb329a482782e9eb473942",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb1c0qmd.h",
+          "bytes": 33979,
+          "sha256": "0041719fd1619035e58eb882e04196743dc1475af65147ff851fdf9f81dd672c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc06f.h",
+          "bytes": 21291,
+          "sha256": "cea2a527393a1f0bfbca2078ae6ce3d6bf4aa9e6477593df1f1c94432fa7c45f",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc097.h",
+          "bytes": 407540,
+          "sha256": "c707a28a3f0485482d65d4702358eb6d4ad0067992018b12541f8a08f85ca429",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc097tex.h",
+          "bytes": 102495,
+          "sha256": "83a1ec5da473226345a6cb62d1eb2f8307914a822abb54ed1e05aa6117edcee2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc0b5.h",
+          "bytes": 21620,
+          "sha256": "595388a2bcf9bf7d9ae90aa013a562872fa37246f24c7c6ac151a77b3e9b8fe9",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc0c0.h",
+          "bytes": 64654,
+          "sha256": "82d0f76e863236379d5cfb9ae8fafc37cb73b0059fdebb4afb3b18d40b88b319",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc0c0qmd.h",
+          "bytes": 50238,
+          "sha256": "babcdf57e09043bc5769ad7e8068c97f163a3b9087b169e749ca218d129502e2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc197.h",
+          "bytes": 412796,
+          "sha256": "27fc08f102f7369f3c6c11cd0b598575594213a9fea0a6cd49777a4a30c96b0a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc197tex.h",
+          "bytes": 102495,
+          "sha256": "50cf1ea04ccfb2aa48cb32791ec976df6c7369c3f41cd58195864b5228a6c1b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc1b5.h",
+          "bytes": 22690,
+          "sha256": "143539dfb521b04e5fc3548fc899211e2772ffddfbf55e5d999df0a98085567a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc1c0.h",
+          "bytes": 66367,
+          "sha256": "0d234edd90843da39448178e0613508a9832ac50bb70c16138d9d171e65fa3f2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc1c0qmd.h",
+          "bytes": 50238,
+          "sha256": "e271812ed966abe84056512d32973633ceaa876e6acdfa7bb8080c4b058073e7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc36f.h",
+          "bytes": 25817,
+          "sha256": "b4b8f716fe9142bef040d588a83d21e411a8934938e4af20cb7a16da2db64948",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc397.h",
+          "bytes": 413470,
+          "sha256": "034b1cf3ee9edebf71ad00732b2d70bc455bff0c90f4f73f259d7b870b7cf0c1",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc397tex.h",
+          "bytes": 109623,
+          "sha256": "ea1704102e5d25293a0c2f3359378ae7f942b1b676127cebd98e59e486140af4",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc3b5.h",
+          "bytes": 23129,
+          "sha256": "c6321efb3a6581d384495ac735bb80e8c0b1472d73e9043fefc973e25f2d5744",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc3c0.h",
+          "bytes": 58925,
+          "sha256": "a165364bbec3d3bf16091741ff5da8bf593f1590e14d3651ee96ef9152964a66",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc3c0qmd.h",
+          "bytes": 17750,
+          "sha256": "761286640c931b8cea41e414dc8be5170bc60c50294b2b7b46ec1ed6c3db482b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc46f.h",
+          "bytes": 25773,
+          "sha256": "cc7da374f17926ca4a03cc6a8b5e3f94c975226d541049beac791bea86a6a38a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc4c0qmd.h",
+          "bytes": 17750,
+          "sha256": "4d1aad5b920cd03844a690b6a6fc24893cfab38cf9a6c31955fde3c6eec79f06",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc56f.h",
+          "bytes": 26078,
+          "sha256": "c7b1b8fe622a9071521477d0597ba036d2fc1c02663246f51e56506b1e4ec3f1",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc597.h",
+          "bytes": 460376,
+          "sha256": "4b47ff263696df6377c693088353a5bff366a8e11d5c8cac1825c2333d8ce39d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc597tex.h",
+          "bytes": 110793,
+          "sha256": "15f53cf3b6ef907cceae946143d94184aa115f843cd11b1aad13a23bba0d2595",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5b0.h",
+          "bytes": 37842,
+          "sha256": "aba8a0ffc91c9b441d3b0c2b14f8266447410ebbf41ef5a0447844d67cfe6eee",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5b5.h",
+          "bytes": 23495,
+          "sha256": "bcbd67c4b80643d138d51c36394be47d09366882fb6abd9bee746b2f3351c09c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5b7.h",
+          "bytes": 40755,
+          "sha256": "ac4dcab95447e9e69b128775ab72eb4d2514b325fc484e9a50a3e53e6164c47e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5c0.h",
+          "bytes": 61897,
+          "sha256": "c716205f0786d1bfdec9f37a8a39bf735363dc2f1f17d3a16809aa87e7c51f2e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5c0qmd.h",
+          "bytes": 17909,
+          "sha256": "542956ce8e7570d8f671cbae8e4dfdb885aaee240e4644818d47cec1cbc7f149",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc697.h",
+          "bytes": 460376,
+          "sha256": "b8c3ca711e3c5ac8283fe2ee12ba964b4503c8e9d83bc67c98f2c68a775ccc7c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc697tex.h",
+          "bytes": 110793,
+          "sha256": "fff30e8cd4dcd3ce428227be60b61d314be7f287a1c714ed16d03756e8c448ae",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6b0.h",
+          "bytes": 38830,
+          "sha256": "2539defec0c86fc262363d699cc7832dafa3ac5f967ddd9de61390dbc23e4173",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6b5.h",
+          "bytes": 23473,
+          "sha256": "38caaf7efa2c9a58849ebf688c042eb43a4e6b1c670155df412e1e82ea580b71",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6c0.h",
+          "bytes": 59772,
+          "sha256": "99d9dcdce739359f5a9c0f462b4bb4897c2f04e92f2e04d6186f1fbed55d6b7d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6c0qmd.h",
+          "bytes": 58011,
+          "sha256": "9427646887d0620e5dbf0957b04d979413319c7dc37839267c05d7c6408cb004",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc76f.h",
+          "bytes": 26394,
+          "sha256": "ee428ab733a004c4d8de720849757904aae63e083c103fd22d12272b1bc6d60d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc797.h",
+          "bytes": 474757,
+          "sha256": "868a0ce5794a9a4a2118022bfac817a0c84ba53dbc80c05337e087a3176a3e80",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc797sph.h",
+          "bytes": 67760,
+          "sha256": "06133cfa73ea27ab72129a804b054f2bad9b9706a1e679a43e8fd46c870e090b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc797tex.h",
+          "bytes": 110793,
+          "sha256": "bbfa8f6fe2e1b31eb05122ed492f69849e6f926c949e68a56f7dd77c0646fa63",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7b0.h",
+          "bytes": 52024,
+          "sha256": "acecbf5ed71a3c8b5ba0a0049ac2fea4eecf374cc6da58a2a63137afe13def47",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7b5.h",
+          "bytes": 25479,
+          "sha256": "9e8dbda2d6741abeb2d2c81bb92cb621445aac7facf8c8113f3cb3d12f1c7660",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7b7.h",
+          "bytes": 25672,
+          "sha256": "3830711dde51bda28d5364c569034a7e83686ec66c4abf5e545fb44b656f6428",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7c0.h",
+          "bytes": 74161,
+          "sha256": "ba8cf3280eaf9836e92400d063c7bc33f1e0bc1887ce69521a2ec530c2366a8a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7c0qmd.h",
+          "bytes": 58625,
+          "sha256": "e5057d62981b0ecba3c6774244ba531c78f1d6ded529339081ec84e77c0c4e36",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc86f.h",
+          "bytes": 26736,
+          "sha256": "fb175ddf3441d9c447b08fb409bf66914515b9de633175353c1d5c94e774fcc7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc8b5.h",
+          "bytes": 28004,
+          "sha256": "ab23dd15157a24e0daf81319b68450baecb925a4887a90e32cf006e850069bdf",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc96f.h",
+          "bytes": 7896,
+          "sha256": "d1c1c233b6f04206c66cebed0fd90b03491c5441925294eb823fb85482a349a6",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc997.h",
+          "bytes": 474648,
+          "sha256": "28a7aa21e99c65818b23ba0b61840bd235c0da39944aa43d1bf6bcd6ddd8c9aa",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc997tex.h",
+          "bytes": 110793,
+          "sha256": "0d7c5cf0b11ca99a6bdd4772388d137a8d2dc79fb4841f14b4249f4d1c6662f8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9b0.h",
+          "bytes": 52552,
+          "sha256": "4bedd0032e78bb28795e5929147d089304ac7b0cf225ddb9899dca5d8da2d678",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9b5.h",
+          "bytes": 27735,
+          "sha256": "14130b177d5e74dcaf9c3329f2c6a5ffa50a46d550ebbe9528d7aabcc8f23c23",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9b7.h",
+          "bytes": 27162,
+          "sha256": "a1740b9752fd129b510869a19dd820f3f39122bef2a8fa6b731f8b30d4b21b46",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9c0.h",
+          "bytes": 74146,
+          "sha256": "e15e4d37ad68439acc1985febf8f42fd1840067072112f85d6741a4171c4007f",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9c0qmd.h",
+          "bytes": 40075,
+          "sha256": "12f61b40ca721248de170469c2673ba7f9f1ac5ea24e42e42b102e8c84d7f43b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9d1.h",
+          "bytes": 10874,
+          "sha256": "9d42e4c0d55343a0b00f14233522c114db36638696138b66ab5ba03bb912db08",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clca6f.h",
+          "bytes": 4383,
+          "sha256": "a5984aa27589ed116c5739e4fbaaa00f325829cb70bba71607adcb2ac3196f15",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcab5.h",
+          "bytes": 28744,
+          "sha256": "3ab945632771609ae7643b5db1df2f91eb51745244267dd8766b6d43076a84bc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcb97.h",
+          "bytes": 474436,
+          "sha256": "ede0df77d9fc5d89be572bcf73546f9cc2c561af87fce5d8fa7db094cbc6bb3d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcb97sph.h",
+          "bytes": 67760,
+          "sha256": "06b6909666e7152e42a53914cf1e89da8605ab8a5ae33e207c9b7d371337d3fb",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcb97tex.h",
+          "bytes": 185720,
+          "sha256": "0c3e23be20fb8496ed5e6d501bdeb76e31751b4b803d988387748a9a28d619c5",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcbc0.h",
+          "bytes": 73591,
+          "sha256": "0c210852ef7638300b3f78c08714ade9d92712d48687611a89a7055e0d978a09",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcbc0qmd.h",
+          "bytes": 42268,
+          "sha256": "ff8d1dc4a5e6b37914e5e6ed5e3d728bc003dfb7e12202feb08ba71c27074d38",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcd97.h",
+          "bytes": 473204,
+          "sha256": "07ffa8e80b70f8f5d47792d941450c13c306b0a491a6ac68318ffadceabd7802",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcd97tex.h",
+          "bytes": 89369,
+          "sha256": "697c20be66a60f41085c286ed266a8a96fe6ff16192a400737db2ef6d8504f22",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcdc0.h",
+          "bytes": 67225,
+          "sha256": "71e1c9ea3bd7cc164edb4d0c7555f457513ae51f18885dbd953a41ffde36fd07",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcdc0qmd.h",
+          "bytes": 67338,
+          "sha256": "dac26460204ec90bf4736914dbeb507409957cda9168ce84a62a05b31883d85f",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clce97.h",
+          "bytes": 474577,
+          "sha256": "da1cacfd44784adc34b07c5423b67b439ae87835bfe20c44cf010dfeaa11f933",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clce97tex.h",
+          "bytes": 89369,
+          "sha256": "e916bb91685b861b1ee3ed400d74ff8c53a26793abbe2d81787f32d0518f0b79",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcec0.h",
+          "bytes": 71452,
+          "sha256": "b87d096c5a9b477af15e5b9742a51d119ee26b1259ae03297eaf140d5bd039c5",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcec0qmd.h",
+          "bytes": 67338,
+          "sha256": "6ba3a6d4742a722346c725a1c95114a62738c9a165fe18ec1cdd84c2511b4cfc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cle7d0.h",
+          "bytes": 9796,
+          "sha256": "144aa3946794011dab2a9ece0831f2c5c16c49c35d6b6012460d603c11088776",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/g_nv_name_released.h",
+          "bytes": 134323,
+          "sha256": "f1122d6b533af333a2f751d1501732ad350d259259db33d2cf0328b66f0f3ef5",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/ampere/ga100/dev_fault.h",
+          "bytes": 30128,
+          "sha256": "fde5817f348b3517850fa3ec4ab0b6d2d1df7d6cb2345bc757c589829212ea9c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/ampere/ga100/dev_runlist.h",
+          "bytes": 70282,
+          "sha256": "a6c03ba62652b4ee4f59c7addd5ba5fbb885903ece9707f3401290d70c6e79c4",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/hopper/gh100/dev_fault.h",
+          "bytes": 31856,
+          "sha256": "ed73ee4ca950bec47ed918f1e1ec14699e1e623aead0e6c1cafa141f06c650f1",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/hopper/gh100/dev_mmu.h",
+          "bytes": 50439,
+          "sha256": "583a354028ccf3b8e9f5b3af06409583f283217d078d9e7eec1f0a4d6d71ba55",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/maxwell/gm107/dev_mmu.h",
+          "bytes": 24526,
+          "sha256": "fc5b9bdbf960356831a6577d643f62ce9e3d188acbeabd9074465147dc25ad4c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/pascal/gp100/dev_fault.h",
+          "bytes": 12708,
+          "sha256": "5b0fd9e20e1850b620f24997c76b789f63292bbdba2b0ed1dd39733477eac9b0",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/pascal/gp100/dev_fb.h",
+          "bytes": 5015,
+          "sha256": "a2951aeb2889f405b4f269dbe9028bed050e25b99eb45a6b573707c3e532be81",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/pascal/gp100/dev_mmu.h",
+          "bytes": 49559,
+          "sha256": "40ff19f4b3c95ec7ffe457fe30602770ac627345a4bec24beddb14229e09f7b2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/turing/tu102/dev_fault.h",
+          "bytes": 25024,
+          "sha256": "e664be0d64df2ce31d6b5df38601b1f29e58e2d6ab2ba905383c8388287a5be7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/turing/tu102/dev_mmu.h",
+          "bytes": 52018,
+          "sha256": "302927d7f24ad9318507f07f871ad3fbd2050fe4b5ac4813ad4792cd23b4878d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/volta/gv100/dev_fault.h",
+          "bytes": 16626,
+          "sha256": "acef4b2abb4feb8f1935b659f7cbf52e3d02e4786ce176cda4d76dd70f54bc13",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/volta/gv100/dev_fb.h",
+          "bytes": 8055,
+          "sha256": "0175a270fa5af9d3a62d7fda2c9e536b58551db6bb1e9c123b84ffeec9a32584",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/volta/gv100/dev_mmu.h",
+          "bytes": 52535,
+          "sha256": "6a2656ab46cc7cdfe92c6ab12c7c5246c5d2819651add7a34b2d47fd2e13c483",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/video/nvdec_drv.h",
+          "bytes": 94207,
+          "sha256": "6211a3cf07e381374d81cee0b7745ebcbad8b6ef7e8fed8d903945a0a8878a73",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/video/nvenc_drv.h",
+          "bytes": 275485,
+          "sha256": "04ba0a17c2a50e6102f7511c6294c2b61d99fdd1b6651410a3d63c4924da323d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/headers/nvtypes.h",
+          "bytes": 393,
+          "sha256": "b6be17c9beccb86ea8b0c759b0c8129d6ee79334e73991d568d24baa09593aff",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/cl/nvk_copy_indirect.h",
+          "bytes": 212,
+          "sha256": "7871deb2e841be41f7e5d2c1ddba274b81721e77c9addfc9d998b3d0323dde0e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/cl/nvk_query.h",
+          "bytes": 212,
+          "sha256": "4ebc9a6d62b5be17b0fa5a51230541d867d7f6e304aaa48b105799b37d9dbb7b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/layers/nvk_app_workarounds.c",
+          "bytes": 891,
+          "sha256": "05c2ca01c87488256622fc44c74caf6544d0ad297c31140a2238e5668fce9383",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/layers/nvk_app_workarounds.h",
+          "bytes": 406,
+          "sha256": "af08041acf517b576c8b63652b465d8d8fe66286328c4b82b5b96e31025f00bc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/meson.build",
+          "bytes": 5939,
+          "sha256": "b7f5b6c021d6e94e42378f1c94248c6c66a8cb756a16b6a13e12b4aff3b1b177",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_acceleration_structure.c",
+          "bytes": 348,
+          "sha256": "48968bdcd307aafbdfa51240601949700c3e489a9a544207b1a778e0f4b19f9c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_android.c",
+          "bytes": 1273,
+          "sha256": "cb539c5b5aed8393f3f0c12e9cc7f6bac075e60dab5bf67249c077caa90664c4",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer.c",
+          "bytes": 11322,
+          "sha256": "2de9f039874baf73e4d7477469644d5ae47419b62b71808a1d7741b8391f0837",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer.h",
+          "bytes": 699,
+          "sha256": "17f6b6302d689fb165f4aacea8a7f0f2783eabe11a238f70a7cb9f43ca2ba16b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer_view.c",
+          "bytes": 4148,
+          "sha256": "afe547bf37cd1b6d2062f597477f45ce47c8203af3dd3e4c65637732809052f2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer_view.h",
+          "bytes": 860,
+          "sha256": "7fbd8ba86248b362b7b1ca6040f1fd8054f94bf0d382db0a0ffcb74b44ae5a84",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_buffer.c",
+          "bytes": 51114,
+          "sha256": "aa1a146553458381ea2d54e399378c3fe98a1fc2460c9cb4d82bc99ea0d84a6e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_buffer.h",
+          "bytes": 16370,
+          "sha256": "d66d97b1456d5ef17f4fa325cfb404d17ee5882466cdc6e66bbff0f59b2b6928",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_clear.c",
+          "bytes": 13600,
+          "sha256": "7f1e14b2b1b9b82b07ef53d9c073e88fbfe7d9c8e3986ed13b0c4ba3e2029d8d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_copy.c",
+          "bytes": 40051,
+          "sha256": "5e791a351518eae12ef9d563450327d1133835e532484ad4dde79a2338a3e82e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_dispatch.c",
+          "bytes": 22696,
+          "sha256": "6b7c0c72d1c29d20bc185914a3ccb39ba2e8d4e2e9a0cb3a96e984946cc8ac13",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_draw.c",
+          "bytes": 223013,
+          "sha256": "8e9c97b91a13156dc4ac74b3ecb252d064b8cbde8c7ef31d46433a0814861c5d",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_indirect.c",
+          "bytes": 52011,
+          "sha256": "4a2a8739b1c596c1901f6d89264c0a7d64eafe95395644ce41ef873b765c2b8e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_meta.c",
+          "bytes": 19763,
+          "sha256": "e70703d3a1464036c3fb985be9e92db23f9c7bafb3b50b949ee80273f59d1164",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_pool.c",
+          "bytes": 6356,
+          "sha256": "38e3485bc1e83d27234f8236cc0fd6e920f13a83269a472c17899609983f07c0",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_pool.h",
+          "bytes": 1791,
+          "sha256": "0a28dc24cca76a5beafbc9eaea2bd41f061022b6b7f98acef5ac7145bd53d892",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cubin.c",
+          "bytes": 11385,
+          "sha256": "05e78bf3db8ea0ee675cc47c2510d6c91602fd966ef12e11f55d49fac53e9dd6",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cubin.h",
+          "bytes": 790,
+          "sha256": "5d7a861557d97e59f1ca913a9fc381a87803f164cbdf78cfe53de211b50c0f81",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_debug.h",
+          "bytes": 1553,
+          "sha256": "6c330bc99e4a3951acdab7e16a8d6de91d4fae1871f9393a2fbab01c9bf340f7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set.c",
+          "bytes": 44341,
+          "sha256": "a8dc89ca8cc88cfd01114b9aced325de5c5d2cee3e247680b3998e4d1a96aecc",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set.h",
+          "bytes": 2127,
+          "sha256": "67d81fb6b024dbc0851e02ac902eba35f0b54102a5f1e4b55e3edcb531469b39",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set_layout.c",
+          "bytes": 22158,
+          "sha256": "e9c31e8f6d45bd4d8420672c6be325be9f2125082d9859322b4b2c2195fd159b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set_layout.h",
+          "bytes": 2757,
+          "sha256": "03ff620e424e74f5e46cea43f1e1c0961c66420070125780522fb3b6807a5953",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_table.c",
+          "bytes": 10202,
+          "sha256": "b18d457dac34ee06bdbe5931955c777da8c132fa41d7e435ab85756b56f35ad7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_table.h",
+          "bytes": 2803,
+          "sha256": "c0743e64b516ce3a636db6fb2c31657a26d3e1e5780f133d958e37a0a2aa439f",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_types.h",
+          "bytes": 4404,
+          "sha256": "c013302f38b8d0ce9c2015760c021ed9d098e897e8fe55ca9098b7877e621121",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device.c",
+          "bytes": 16364,
+          "sha256": "0c118e8595ab9649ab39993e065e98da9c91ed3c0e48ef594c34d98c8584a8a8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device.h",
+          "bytes": 2272,
+          "sha256": "276babbfebf6ce6ef32099a35929eb8b98d3dd57920b979d4644277d79f7624a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device_memory.c",
+          "bytes": 19322,
+          "sha256": "797a7a75fcf10e3766d8f2f60cfd5b490751ecfc48709fd43240964b5308a1ea",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device_memory.h",
+          "bytes": 656,
+          "sha256": "66dc33ec70703409a29f6136085c4aead37f92e54091659e12775a925b33b658",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_edb_bview_cache.c",
+          "bytes": 8055,
+          "sha256": "ab0b7ad93d6b75cb3f6cf91b81a9c955701a70274df0ac9108b94fdd2002861f",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_edb_bview_cache.h",
+          "bytes": 2883,
+          "sha256": "ea25bde38bbd086612b2c93c8e460cccb13e521af4bc25efe0128f1831995a71",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_event.c",
+          "bytes": 9363,
+          "sha256": "dca80ac608c8962e90ab4d50f266cd6931a8349fbba8cc9facf8e913238bc2e7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_event.h",
+          "bytes": 474,
+          "sha256": "50763228f2ef18bb16646e004edfe7e1acf76ce00ef23db8ac66d657d2b5d318",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_format.c",
+          "bytes": 12172,
+          "sha256": "c12384b254fd44adfe0748001c96d984f9f25f9b720c13dfc1f02a67b499bf94",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_format.h",
+          "bytes": 1213,
+          "sha256": "f7bebbbf8d349c1ab6c64219b95a4a89660b8997ad8902bed7ea002cff437cbd",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_heap.c",
+          "bytes": 5299,
+          "sha256": "5d6c86e850817c179dd2c4d72134df518a577b889a4fc0719cc15db6fbdf3fc3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_heap.h",
+          "bytes": 1439,
+          "sha256": "15be8a55f8a4b15c804a4922ed9df98f71fc1c4444ca886d9fd4fdabdfca1b6c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_host_copy.c",
+          "bytes": 21882,
+          "sha256": "f4d78e256badc33daaaedbb254b33e082b3db83134b310cc71ff4dbdf783c462",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image.c",
+          "bytes": 79571,
+          "sha256": "5b5c402e523a5c8a3e0dd26aaa387b97a8638504e5bd7c2d91b8c89e3d83c977",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image.h",
+          "bytes": 8421,
+          "sha256": "11de4b5228f773c3703a715d96b898d2029e7786429c717bd616e3d554a4b84b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image_view.c",
+          "bytes": 14938,
+          "sha256": "587d7e66fb11534469d882fa0b00541d4c102db2d61434312d42e6a59ab96fca",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image_view.h",
+          "bytes": 1487,
+          "sha256": "cf4a34ab1608ae055b0990ccf28532d8f60c51c1aaa6ac698721db8d063562d4",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_indirect_execution_set.c",
+          "bytes": 13698,
+          "sha256": "131d7e9cf966f21bbe4580510f72bd59b16aabf54e07d703de4d662bf1c2ffa3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_indirect_execution_set.h",
+          "bytes": 1810,
+          "sha256": "96bd6efe17b2dc805fead967284b5ae17ad9298ed4aa0ac3e0172691f2530922",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_instance.c",
+          "bytes": 7193,
+          "sha256": "7c3cfc1eae4de35bc0d6c94a627c0ac54dfcbfafd8bfe63e7af4e6a6c877694a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_instance.h",
+          "bytes": 705,
+          "sha256": "9bd974336d6caa9259a92fb22d837e74185665a64ff1723534a839a3204cf5b7",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_arena.c",
+          "bytes": 6785,
+          "sha256": "4274fca1e9f8d759d98397fdc0b54044b314c9e9b2d92a91ab6e70e84b64a25c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_arena.h",
+          "bytes": 7229,
+          "sha256": "3778f5c63081b7ad0030c639122722597f0f9f73c841d391e7f17120c83751f5",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_stream.c",
+          "bytes": 8581,
+          "sha256": "104f3849c57e209d06e73fe9d248ec7b737f9725a757e8dc79ddcf05c86786a6",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_stream.h",
+          "bytes": 2505,
+          "sha256": "21fdbc96aff10e0e6ae00781c6af338747cfa5adbfc151017434699d58775c32",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mme.c",
+          "bytes": 5775,
+          "sha256": "c7cbfc8eba00a99b416a93d837386a7c955487ab1c7ae05c1f5c1b814582348e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mme.h",
+          "bytes": 9883,
+          "sha256": "eaf3a02c9ba49cd5c3ba7623df0570941d9d6016eb0fffa80e6bb44a38ba3bd2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_nir_lower_descriptors.c",
+          "bytes": 53433,
+          "sha256": "bd1a19bc4a0e2f8d6ae054cb3fffe9f40f634073fa6f379815e79f98efcb0d91",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_nir_lower_mesh_shader.c",
+          "bytes": 5635,
+          "sha256": "38d58f8b0caac8d46c45c2238ebb0335550f6a5c848d3027ca045064a4b0e8b3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_physical_device.c",
+          "bytes": 83454,
+          "sha256": "14f438da36d8804fdfa67d17a5b7e9e5cf2e06a5535b893bd2f2d4a720f8ee48",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_physical_device.h",
+          "bytes": 2464,
+          "sha256": "9b53e856264d7eb5ea6f7e1218f9fce3248886e59c9eafe81c7be1d4293897c5",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_private.h",
+          "bytes": 1422,
+          "sha256": "70ee9cb7401dc6121e10caf818c9cdb887f4df13fb2a6a760f59ab71a5c74ab2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_query_pool.c",
+          "bytes": 44946,
+          "sha256": "b274c373414aa83aaf5ed2d805baa60f4a17c07bcf1df5bc9c3eeb7673b82172",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_query_pool.h",
+          "bytes": 1497,
+          "sha256": "48ef57d61be1f2a87532dfb9fa7d349f6d7a6e6ab2e95c744e9a7ca55d2f3e22",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_queue.c",
+          "bytes": 15980,
+          "sha256": "93ddbd794115511913917dcc2c9958162051e47b4a1f58288507aec2deedc69a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_queue.h",
+          "bytes": 2854,
+          "sha256": "d0a04e521aa608febb1e598de69fbc69ba52e736998bbeb3e8f45cb56ca75d0c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_sampler.c",
+          "bytes": 14720,
+          "sha256": "119f8e76c14884331720e2bec42c10ca44eb10d91df2965d6eee0b8b4169cb85",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_sampler.h",
+          "bytes": 812,
+          "sha256": "db4b02d8fa99489ce49faffe21d544a782766257fa4e8c42c2d5ba2820ea9c9b",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_shader.c",
+          "bytes": 58276,
+          "sha256": "a54b58b697f6ed1b00a8d445a6f1bb428c2c4e034a37811bae16df0fa1540c77",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_shader.h",
+          "bytes": 4907,
+          "sha256": "ccb7191d14d540f2c75659101f3ec90abc0702c9672ce2e78ed96a4b1a9996c2",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_upload_queue.c",
+          "bytes": 8202,
+          "sha256": "809ae225efb25d17ccfbbb40827a2374890f8a70e296530c8c64e0c935792972",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_upload_queue.h",
+          "bytes": 1468,
+          "sha256": "b5a082b7e28ab51b6b6119dafa5256f737721f56cc7712607661a655430e3ce8",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_wsi.c",
+          "bytes": 1418,
+          "sha256": "b8392a62e5099c5991448f4cc623a5073eea2f737961315564ad179dfd7cee01",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_wsi.h",
+          "bytes": 285,
+          "sha256": "184e902e717c8b56305e5054e936cca5d7138d716725b8662e57ca80c3e395c4",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau.h",
+          "bytes": 4240,
+          "sha256": "9dd5b2a36889a36b3aa3de7ef9998123eb4d0d96588810ee123de06ff2c32429",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_ctx.c",
+          "bytes": 15324,
+          "sha256": "8757621b736ccfcefac0f8937eb1ec8e5d911e27ea3fcd5a3200432ab2e69691",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_dev.c",
+          "bytes": 2991,
+          "sha256": "ffbde73e7bbc4f29375da404844273c6f429f7b59004842a5f1204ee6eb281b0",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_mem.c",
+          "bytes": 10268,
+          "sha256": "0552646ac6207e0de5f7d68aaab3ce38be2ed880828724a240bb6093cf425cbd",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_pdev.c",
+          "bytes": 5526,
+          "sha256": "19e26da0839e5921f3c2c1790b1ac2ba31ae28d4c93500764ffe3562cca0451c",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_va.c",
+          "bytes": 8291,
+          "sha256": "172cd5a85efe3581194ca86f02a53c5a948c518cfe57bf2eede01aa645a06d49",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nvkmd.c",
+          "bytes": 14909,
+          "sha256": "811edc03d5424f8000896f72e635036cb0a4a915395abf6e4d53098d49336c71",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nvkmd.h",
+          "bytes": 17912,
+          "sha256": "5bee0e261ed5ae30484f75d1edf34bffd4810812e6c0a8f22b3eda96ff3f54f9",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/vulkan/test_nvk_mme.c",
+          "bytes": 792,
+          "sha256": "7c60fc3ec789579f86da63a4055430c5f142cfc3d406ecda95aaff56ec39fe2e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/meson.build",
+          "bytes": 644,
+          "sha256": "9e317d42481fbea47a3db584d519d492529711656eb3ae9e08011a245102b8de",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_bo.c",
+          "bytes": 8294,
+          "sha256": "dccc6e302443ba57a31ff6cc25197000dce9a046272d1e13734072b301860f61",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_bo.h",
+          "bytes": 2861,
+          "sha256": "72b2ddf290a978504bac04c614e274cd3309f349b570b3693cc83cbc847c7bc3",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_context.c",
+          "bytes": 7251,
+          "sha256": "23b5dbf79b0fbe8bdae1aeb5e6b77ccf040de31b4b86076101b4ec694a8d6bd1",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_context.h",
+          "bytes": 1040,
+          "sha256": "d2209f9043eb2795e462c3727c8a73eb9f972f135142de7509b6f7c80e1aa17a",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_device.c",
+          "bytes": 18322,
+          "sha256": "1f7c5fb4e4571ec08132b212282de26eb3749e5fe68fd33d9af22290a9d8318e",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_device.h",
+          "bytes": 925,
+          "sha256": "0f8e803117f40784448d6af9b201f2df2f8ae1858f66eb211e85e0b704987836",
+          "kind": "source"
+        },
+        {
+          "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_private.h",
+          "bytes": 127,
+          "sha256": "4b966d3199b1574b4c71eba312d400e83c408896e52671857b5cf0b69f88e953",
+          "kind": "source"
+        }
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "sources/FFmpeg/COPYING.GPLv2",
+      "bytes": 18092,
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "source_path": "COPYING.GPLv2",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/COPYING.LGPLv2.1",
+      "bytes": 26526,
+      "sha256": "b634ab5640e258563c536e658cad87080553df6f34f62269a21d554844e58bfe",
+      "source_path": "COPYING.LGPLv2.1",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/LICENSE.md",
+      "bytes": 4376,
+      "sha256": "cb48bf09a11f5fb576cddb0431c8f5ed0a60157a9ec942adffc13907cbe083f2",
+      "source_path": "LICENSE.md",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/configure",
+      "bytes": 278410,
+      "sha256": "10560138f131dbeb3793156ca395675d690d3322771d33f448351837c35c0428",
+      "source_path": "configure",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/libavcodec/Makefile",
+      "bytes": 82621,
+      "sha256": "43290bea96cef13523af23023d001c19590b90506789371d7752d454c277c6a9",
+      "source_path": "libavcodec/Makefile",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/libavcodec/allcodecs.c",
+      "bytes": 38869,
+      "sha256": "3fa9b29e7a9993be7c8f591d79510e4899d8f48b22871da9486841c40b6b49e9",
+      "source_path": "libavcodec/allcodecs.c",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/libavcodec/nvv4l2.c",
+      "bytes": 26655,
+      "sha256": "f34d8d0951da3e63f503c72631f94d86db19cac504c26b5f766af453147de7c7",
+      "source_path": "libavcodec/nvv4l2.c",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/libavcodec/nvv4l2.h",
+      "bytes": 12482,
+      "sha256": "d625d3f3f67a6fc2370c58bbfe0e11b88af27170ab0ccbc4e6719e67895bc616",
+      "source_path": "libavcodec/nvv4l2.h",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/libavcodec/nvv4l2_dec.c",
+      "bytes": 45482,
+      "sha256": "36fa27b6f29fa5e25baab4403880610a0b963c21017616c47baa24e6bf78b7cb",
+      "source_path": "libavcodec/nvv4l2_dec.c",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/libavcodec/nvv4l2_enc.c",
+      "bytes": 51783,
+      "sha256": "9a37dda9e70031d48f87f2b961afd21b4d1554228ef05cc73cbdc2f9ac84d8ad",
+      "source_path": "libavcodec/nvv4l2_enc.c",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/FFmpeg/libavcodec/nvv4l2_ext_utils.h",
+      "bytes": 85948,
+      "sha256": "ed343a2443d05122e853e28cd574bab28086e9f94aba61c0fcd97eee0fa570aa",
+      "source_path": "libavcodec/nvv4l2_ext_utils.h",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8",
+      "kind": "source"
+    },
+    {
+      "path": "FFmpeg-65445e23-source.tar.gz",
+      "bytes": 15134823,
+      "sha256": "b2e6448259d5da8fa3493756f6dbafc65595c236db3e468cf80d0292a7be74f0",
+      "kind": "complete_source_archive",
+      "source_commit": "65445e23ebc92e6f5e333065e93eb705cb67aac8"
+    },
+    {
+      "path": "sources/l4t-kernel-build-scripts/README.md",
+      "bytes": 576,
+      "sha256": "ba34a9c1888bdbf312031686c21a3b17e7dae88b87f0b29d9e1b461ee5fd9f8d",
+      "source_path": "README.md",
+      "source_commit": "1fb0e92e10eaf452b71cbdf7fc7b06c27f6de121",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-kernel-build-scripts/l4t-linux-build.sh",
+      "bytes": 7066,
+      "sha256": "9f37d438fc03759f01c4774605829cd73de9142aa87d586a920200d2934fa2ed",
+      "source_path": "l4t-linux-build.sh",
+      "source_commit": "1fb0e92e10eaf452b71cbdf7fc7b06c27f6de121",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-image-buildscripts/README.md",
+      "bytes": 2098,
+      "sha256": "c508e468260d9a98cf185055f94df6781871a0a22aa0b91cf7a3a27a3d42768d",
+      "source_path": "README.md",
+      "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-image-buildscripts/scripts/apply.sh",
+      "bytes": 6816,
+      "sha256": "90c92918097405c68c619da51028c556bac53693c9d59eed00d444fff03edc07",
+      "source_path": "scripts/apply.sh",
+      "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-image-buildscripts/scripts/nv-apply-debs.sh",
+      "bytes": 13880,
+      "sha256": "240d1f7f0fa3f7d6975e439d590e62f71ea7eb966c455d743a8a94c5c177a5c9",
+      "source_path": "scripts/nv-apply-debs.sh",
+      "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-image-buildscripts/scripts/nv_build_samplefs.sh",
+      "bytes": 6373,
+      "sha256": "2616c2eae8ecf35572fe32d0b48328b69b8414887dfdf1d1a33398efc8f95590",
+      "source_path": "scripts/nv_build_samplefs.sh",
+      "source_commit": "6869922f066ac03138d232cb064b8004c44a143d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/Documentation/devicetree/bindings/thermal/tegra-pwm-fan.txt",
+      "bytes": 1805,
+      "sha256": "2a82fc6ae44399bade9d5790a4e82b6322f52c0c03153062d02f20bf77c3ad04",
+      "source_path": "Documentation/devicetree/bindings/thermal/tegra-pwm-fan.txt",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/drivers/thermal/pwm_fan.c",
+      "bytes": 42833,
+      "sha256": "4617e324581dbf649078fc133969b3bfc8fe13a5173ae72c532f9296d1c1323e",
+      "source_path": "drivers/thermal/pwm_fan.c",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/drivers/video/tegra/host/nvdec/hw_nvdec.h",
+      "bytes": 2472,
+      "sha256": "ba5b95762174ad29a1d428cdc1fed7e6dae4ab01e7e9237117a69dde1092ab98",
+      "source_path": "drivers/video/tegra/host/nvdec/hw_nvdec.h",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/drivers/video/tegra/host/nvdec/nvdec.c",
+      "bytes": 13835,
+      "sha256": "fd0ae827901763bb3698ef60eb0065aeb63f3cabdde650d76a063d85a7ddf430",
+      "source_path": "drivers/video/tegra/host/nvdec/nvdec.c",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/drivers/video/tegra/host/nvdec/nvdec.h",
+      "bytes": 1816,
+      "sha256": "00051d380534b4ecd5d164af0d355b8ef7be387663effbe747aee59790cd7e57",
+      "source_path": "drivers/video/tegra/host/nvdec/nvdec.h",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/include/linux/platform_data/pwm_fan.h",
+      "bytes": 1149,
+      "sha256": "c6a46c751f27fc234ba8f4ab3c71e99553ad5c79e50f24eeb023afe9fbcff513",
+      "source_path": "include/linux/platform_data/pwm_fan.h",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/include/uapi/linux/nvhost_ioctl.h",
+      "bytes": 13038,
+      "sha256": "aa17d243fff5ea38e81cc0a2ccc84796c2d1e5fb8b85041d69231d119cda51a4",
+      "source_path": "include/uapi/linux/nvhost_ioctl.h",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/include/uapi/linux/nvhost_nvdec_ioctl.h",
+      "bytes": 1509,
+      "sha256": "997ba241773ff9bc3c632c741e46e0b49d6cc35a86ac91419b02077bbd0f97ac",
+      "source_path": "include/uapi/linux/nvhost_nvdec_ioctl.h",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-nvidia/include/uapi/linux/nvmap.h",
+      "bytes": 12469,
+      "sha256": "388d30ae7a88c7f519c5d66d714e55d542958a6bbe14bf6a264d1cc0d916fd38",
+      "source_path": "include/uapi/linux/nvmap.h",
+      "source_commit": "7d95822acda1f6dab3f3d1d099b43ff9e0d0e626",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-4.9/COPYING",
+      "bytes": 18693,
+      "sha256": "af8067302947c01fd9eee72befa54c7e3ef8a48fecde7fd71277f2290b2bf0f7",
+      "source_path": "COPYING",
+      "source_commit": "807d12f6c4fe37e12ea70a6ec9d3bedb78d13233",
+      "kind": "source"
+    },
+    {
+      "path": "sources/switch-l4t-kernel-4.9/drivers/pwm/pwm-tegra.c",
+      "bytes": 10188,
+      "sha256": "8d8432eb06874c4e30c2697be7fc27c1b66640d6122b83ac534c090569683de6",
+      "source_path": "drivers/pwm/pwm-tegra.c",
+      "source_commit": "807d12f6c4fe37e12ea70a6ec9d3bedb78d13233",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/COPYING",
+      "bytes": 496,
+      "sha256": "fb5a425bd3b3cd6071a3a9aff9909a859e7c1158d54d32e07658398cd67eb6a0",
+      "source_path": "COPYING",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/drivers/gpu/drm/nouveau/nouveau_platform.c",
+      "bytes": 3060,
+      "sha256": "1cc01e1a27ec1a7cb694189ca72ce55c0801fb3c8fa9c21efd899ce1b13fbbeb",
+      "source_path": "drivers/gpu/drm/nouveau/nouveau_platform.c",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/drivers/gpu/drm/tegra/drm.c",
+      "bytes": 36726,
+      "sha256": "4b17d5862eeaf65cc54d14844dc4f78ec5306964bf122c86c60dde0f41aa1a57",
+      "source_path": "drivers/gpu/drm/tegra/drm.c",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/drivers/gpu/drm/tegra/falcon.c",
+      "bytes": 6425,
+      "sha256": "f8e8cfccf4d17d679538883f79d43414e6cbe1aa8a6fc4f958395ece532007f3",
+      "source_path": "drivers/gpu/drm/tegra/falcon.c",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/drivers/gpu/drm/tegra/nvdec.c",
+      "bytes": 15731,
+      "sha256": "2d66e624e5098a43fe5b0633c8ce7f8260ac46cef31f630115c31689a08590c4",
+      "source_path": "drivers/gpu/drm/tegra/nvdec.c",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/drivers/gpu/drm/tegra/nvenc.c",
+      "bytes": 13013,
+      "sha256": "3143bf369953e0ce78eee3b4119bce7f08c02c35a54f5da2daedab5c32aef93f",
+      "source_path": "drivers/gpu/drm/tegra/nvenc.c",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/drivers/gpu/drm/tegra/uapi.c",
+      "bytes": 8344,
+      "sha256": "c9caf819252967b5cf36ab673480265d8e8aa9b6db10d8a7661bf4adfb153982",
+      "source_path": "drivers/gpu/drm/tegra/uapi.c",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/drivers/gpu/drm/tegra/vic.c",
+      "bytes": 15518,
+      "sha256": "908040e09f2f029edd269a42385bf5f9e41c0ac4ffa7e96ec0cf71f6fa2c15f9",
+      "source_path": "drivers/gpu/drm/tegra/vic.c",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/ack-tegra/include/uapi/drm/tegra_drm.h",
+      "bytes": 21651,
+      "sha256": "84969d7efe2d983090d0b4b0f47f0dcf0f5853b830808677005b1af9d1f954c9",
+      "source_path": "include/uapi/drm/tegra_drm.h",
+      "source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/README.md",
+      "bytes": 20,
+      "sha256": "b2e68592c40dd75700e56fba355f3db3016c67580d89317f2985dec7da58d7bc",
+      "source_path": "README.md",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/jammy/ffmpeg/0001-codecs-add-nvv4l2-codec-for-Nvidia-Tegra-SOCs.patch",
+      "bytes": 248471,
+      "sha256": "a82098dee2ce0e09a660b1b74b958a633ca1ff21433223e43faf2249fe0d1a5f",
+      "source_path": "deb_package_sources/jammy/ffmpeg/0001-codecs-add-nvv4l2-codec-for-Nvidia-Tegra-SOCs.patch",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/main/nvidia-bsp-32-7/DEBIAN/control",
+      "bytes": 959,
+      "sha256": "b2aeb455270d3ab6fd1f596fd5d7e1cdd1279c3eb806bd7591c06b737e5d519c",
+      "source_path": "deb_package_sources/main/nvidia-bsp-32-7/DEBIAN/control",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/README.Debian",
+      "bytes": 697,
+      "sha256": "43389dbc2f734b4ea07028182f9888751611c18fcd44e83ff73743812866ea76",
+      "source_path": "deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/README.Debian",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/copyright",
+      "bytes": 936,
+      "sha256": "db508e1f5d7980b3a3abdf9961b2b25a54007c761f2a5f23876d69319964abcb",
+      "source_path": "deb_package_sources/main/nvidia-bsp-32-7/usr/share/doc/nvidia-bsp-32-7/copyright",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/main/vk-layer-tegra-dc-present/DEBIAN/control",
+      "bytes": 353,
+      "sha256": "16e6efa2d4921295c28a8bfb7d3ad38d4fcfba649739679919d6184bf30ca296",
+      "source_path": "deb_package_sources/main/vk-layer-tegra-dc-present/DEBIAN/control",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/main/vk-layer-tegra-dc-present/etc/profile.d/vk_layer_tegra_dc_present.sh",
+      "bytes": 375,
+      "sha256": "d5718ea377afb6c82493f04fc56dee3fd00fa2992767380795490d44448174f1",
+      "source_path": "deb_package_sources/main/vk-layer-tegra-dc-present/etc/profile.d/vk_layer_tegra_dc_present.sh",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/main/vk-layer-tegra-dc-present/usr/share/vulkan/implicit_layer.d/VkLayer_tegra_dc_present.json",
+      "bytes": 547,
+      "sha256": "34e809446f205b8fd8e7b60ad3b47357918db6fd3d7acf4715f92702ef6fbfed",
+      "source_path": "deb_package_sources/main/vk-layer-tegra-dc-present/usr/share/vulkan/implicit_layer.d/VkLayer_tegra_dc_present.json",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/noble/switch-multimedia/DEBIAN/control",
+      "bytes": 330,
+      "sha256": "b93678a5ae65a94429b05f4f835c8472cc1067ec8a3b1c37517401d651296bf7",
+      "source_path": "deb_package_sources/noble/switch-multimedia/DEBIAN/control",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/README.Debian",
+      "bytes": 699,
+      "sha256": "bf1d07ed8829140af293d813d44ba533ca50d64dd58015f581204386eac520ae",
+      "source_path": "deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/README.Debian",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/copyright",
+      "bytes": 936,
+      "sha256": "db508e1f5d7980b3a3abdf9961b2b25a54007c761f2a5f23876d69319964abcb",
+      "source_path": "deb_package_sources/noble/switch-multimedia/usr/share/doc/switch-multimedia/copyright",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/l4t-debs-source/package.sh",
+      "bytes": 257,
+      "sha256": "b0e827fe11fb4e611e46b0ce0565dc793e8cab676b5a5f92f8da20d2260c3792",
+      "source_path": "package.sh",
+      "source_commit": "29a4d3d56a6e600f86cde89d541b21094e37115d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/VERSION",
+      "bytes": 7,
+      "sha256": "6fdb5e1a17496d2a90f08d87bf219fa0cbe025d0b95962ed326788c76ebbc947",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/docs/drivers/nvk.rst",
+      "bytes": 3019,
+      "sha256": "e4ba633260a31b9eb4696375e65e1d814d566683701b960b1036f9072bd6c77b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/docs/license.rst",
+      "bytes": 1816,
+      "sha256": "0d1a0472ecc81830e75c20d59b0ea02841e3db21255e0ebad97ab682c54d6615",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c",
+      "bytes": 47128,
+      "sha256": "deb2d5e0fdb88605d30e40e481a738eb503f9018e421c1e97e251108c07c0c9e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/gallium/drivers/tegra/tegra_screen.c",
+      "bytes": 21044,
+      "sha256": "b2e3085b8cf3488829e8bf255a11a3903fe5594d962dede6d3f4d5e68c7e3e1f",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/loader/loader.c",
+      "bytes": 26402,
+      "sha256": "1416f0e150e463a9d76f5c2028bc70e8fbb3a2ce2292af4544fa0501e6a77463",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/drf.h",
+      "bytes": 12156,
+      "sha256": "f4e0bc228e7a871352463c23efc20263423b093aef0aa90e2413edd0a8a80d9f",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/meson.build",
+      "bytes": 5911,
+      "sha256": "19c79224344f5d805477b102e673c52548885e2356071a29be4d0cba3f4c33a8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_device_info.h",
+      "bytes": 2465,
+      "sha256": "e5395610bb9b7975e71e5319a5009327a47438f24145bf872f36809e09809b54",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_push.c",
+      "bytes": 4906,
+      "sha256": "c65c21beccf9da4ffe3eb20c00a460c5f3218376f696402fdb0d4f63e7202faa",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_push.h",
+      "bytes": 9018,
+      "sha256": "e1de7752bf9b0ddf42eae95e166e822ee7a98daf8629536d1106951b9ac29cb3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nv_push_dump.c",
+      "bytes": 6008,
+      "sha256": "dece6040f0d589b877f45b8cb041690ea68bbc4a731fc31d03273935f2ce34a3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0039.h",
+      "bytes": 8206,
+      "sha256": "af5962e7074d120b02dfe8ffd03960a52bfa23093520ea641925888ce8eb2e6a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0042.h",
+      "bytes": 5657,
+      "sha256": "37d1604ec61bc8b2aada7abfe132548eda444b5f3c37c96df88f3738eac855bc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl004a.h",
+      "bytes": 19796,
+      "sha256": "83fd7e84d4de6fde1c944758680517651ffc0094503830a736c555b32692ee1b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0065.h",
+      "bytes": 7194,
+      "sha256": "a75cd38f6f918aecc5941397a6c54eafde03313116bf89b425ba10092bf25fc5",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0066.h",
+      "bytes": 7881,
+      "sha256": "add1bb9399a1299447344aa75a69ed500a16a34c04a4cc047dfbb5fd8a94b9bf",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl006b.h",
+      "bytes": 2005,
+      "sha256": "0534832a19a87ba1af515d26bc080843d5c786e9d4802f8750a1b7540dbf0112",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl006c.h",
+      "bytes": 3656,
+      "sha256": "d5544c1614d8613a318ff11f111ec661fd3a415dac518ca5d2051efba045261c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl006e.h",
+      "bytes": 3582,
+      "sha256": "7f6c83fe1ee8282ec07f0abd76c09658801670b13f97bf8141543ff61b3147e4",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl0077.h",
+      "bytes": 8950,
+      "sha256": "3e30ade6ca9fef162725c42de5a3e450c482b613d2a3d029350b2c9048fac8af",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl007b.h",
+      "bytes": 6059,
+      "sha256": "cc9bf649a9850ca0702efa9fb701dd9c1ecc1e02796430045e6e9b104aa49365",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl206e.h",
+      "bytes": 5279,
+      "sha256": "01a206c474c3045bec1b4f510bf2e586ae191d532c9494b61c5f30e3319a3b93",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl366e.h",
+      "bytes": 5468,
+      "sha256": "63d113044724ebf4998ebd27686d3c4b1d148bbdfcf1d9cef2b02ca7c26f19da",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl406e.h",
+      "bytes": 5782,
+      "sha256": "9e6d5fe3873a71ddb12a41376f6b1fe3ae1976600e2d3d601bb9002f53b28983",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl446e.h",
+      "bytes": 5731,
+      "sha256": "685c36a6f3343bb9f7f736ec2174b278c3fd4f917b18e141fd85b9a44b4d1526",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl502d.h",
+      "bytes": 57254,
+      "sha256": "ee1b1bcb966187505a4657c6bd6b43b50731c4c9b887efc481ee6a27351fca04",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl5039.h",
+      "bytes": 14863,
+      "sha256": "aa4d3e3caf464e11af519362cef6df6c5fa43bf8fe731e585bceb95abc2b81fa",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl506f.h",
+      "bytes": 9140,
+      "sha256": "881b62d8d195085fc19e16b6ee823896151f2629340f8a031d0810f031c692a1",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl50c0.h",
+      "bytes": 52193,
+      "sha256": "58a1a65d2a2fa0801ac7295bdf4dc4406a42484f49e944bdfbf408d2f5aa2978",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl826f.h",
+      "bytes": 10750,
+      "sha256": "4ea5f7d3c34f8213614b7ffaaf3971dc6d83ce26584a8686bad7154e508d47ab",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl85b5.h",
+      "bytes": 18066,
+      "sha256": "ee4115103ad1a61c9b2298e7f3a89a3d4b01e5b0020f0d2c3fb87b0f74449cf6",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl85c0.h",
+      "bytes": 53110,
+      "sha256": "ed4499491840ac1edf5fe5acf9607ba6f72e8a4e0a9f92fcab6ca234bbc83371",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl866f.h",
+      "bytes": 11285,
+      "sha256": "06f9bb1dca15e4aef182e33d949423583a8f1c8ec91ad2a00440fb73c0462659",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl902d.h",
+      "bytes": 85014,
+      "sha256": "8fa8bcb9f69077cc67f21ff68b17d16078e1cf200be6d728502bbba99ecb83bc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9039.h",
+      "bytes": 32144,
+      "sha256": "1113b4763fd3c0856eb887ccf6282b90027f0f61de2fed14423afe1b00473fcc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl906f.h",
+      "bytes": 15568,
+      "sha256": "b990d3acb221dd1c60de5b600bfa426bc44dd8358645afedfa4cd619e1e9897c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9097.h",
+      "bytes": 371074,
+      "sha256": "5ffdfacdd3f82a946792c12b4216de355dc78402435dcb8a5ad84802d0d17214",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9097tex.h",
+      "bytes": 43974,
+      "sha256": "0b1bc445c0c46401769ec77fc8b97f9fae3c5644054ec7f847cf887d25141162",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl90b5.h",
+      "bytes": 21610,
+      "sha256": "d7c9f4cfa10b989b85dbadda3da6c73dc25c258fedf13c7eb6d840c3b54f8386",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl90c0.h",
+      "bytes": 71003,
+      "sha256": "e71a0b4b8cd924c16517cbc66a8a1cfe9b07ad358d8d286d22a284b50c261047",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9197.h",
+      "bytes": 372672,
+      "sha256": "44ef04ca6e937433e71cb1b2a63e39ac04f221fb5d97909cf5dd335b3e14f901",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl91c0.h",
+      "bytes": 72486,
+      "sha256": "55679dd1b663aa6498c5d0e298942dba189c69b85de63630e9e2a669eb4bb991",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9297.h",
+      "bytes": 381232,
+      "sha256": "cf2badc5093abf71eedd810e8e86bea589c38a4e88098eca12e6ad1c7afe8fcc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cl9297tex.h",
+      "bytes": 44287,
+      "sha256": "b88783ba560ab6155b26272f207f6a3985be408ffce6bd023b1cef5cf9937202",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla040.h",
+      "bytes": 24970,
+      "sha256": "09ccd5f4b5b169b75e46f8da152b76617bf496974c53df2a1ad60fd652b5227d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla06f.h",
+      "bytes": 15291,
+      "sha256": "6c5db0562c117a76f145acbe35a6bacafe612493424078439d1a83c627fbc0b8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla097.h",
+      "bytes": 369386,
+      "sha256": "a19bdee7c004b82dafd819c2b22246b80d7dc5bf3e175c87abfcd96699c5d348",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla097sph.h",
+      "bytes": 48708,
+      "sha256": "a804dc66816ec4bd5a49be6c6745f7aa2cda31881e48472625abe4a691f0c1a3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla097tex.h",
+      "bytes": 43839,
+      "sha256": "e2c757a61c5b9da499427e5eeaca24dbd0a3b0732f6ca56dbd2c37d01236c874",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla0b5.h",
+      "bytes": 21731,
+      "sha256": "15c990387827313cd730c232d3fff1737dc26c5c6877d063866a5c1b06a78ec5",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla0c0.h",
+      "bytes": 54347,
+      "sha256": "d40acf0020184a1d5b2039918d810be8e79707d8ba289cee984a265c368c9d58",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla0c0qmd.h",
+      "bytes": 49940,
+      "sha256": "8a4ad7edaf88f26bd90fe8bd06353e2b7b7f6703b570e475a7fae7c4da7ab80c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla140.h",
+      "bytes": 24978,
+      "sha256": "19a0d452641b2023fb208dd0599dec123006dd193955f53af6a86c73d9a98c31",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla16f.h",
+      "bytes": 16477,
+      "sha256": "a54306e5563564d8834172c7ac160ed0bce173aac4331eb18b3cfa57e5067fce",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla197.h",
+      "bytes": 370186,
+      "sha256": "a0efb2656a3810ae3e26918e763b2cb0df62c5ad9f7cd4f693ba8170fb33b7ad",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla197tex.h",
+      "bytes": 43839,
+      "sha256": "fa395803e3bb44deca86573a4b93c8fa1787ad3f98eee7b7a63b2ca1ec741f1a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla1c0.h",
+      "bytes": 56291,
+      "sha256": "c7811a4ea2a3840a8085c4f9aa9fe7a9a4ca5bc9717efe413e10d9fcd2ab176e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla1c0qmd.h",
+      "bytes": 33744,
+      "sha256": "604fe9c925e6dd3064ac6792637e4454d61df036cbd796374de6f277cae7fb08",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla26f.h",
+      "bytes": 16558,
+      "sha256": "e4fcb9970a620750236a3fa490178fc91f34dcd9bb3116b7e134c3246d2167e7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla297.h",
+      "bytes": 389809,
+      "sha256": "9a39df0f7dec183027f4bcd7ae5100d7f724444174d323ec91883c48ac76e759",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cla297tex.h",
+      "bytes": 59980,
+      "sha256": "0f568edcfa0d341608ce1d638142f319b2ece6e33c34a3cfc9492882756d08c1",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb06f.h",
+      "bytes": 16934,
+      "sha256": "c19a3ba78c6337f9139567365a657c7473d36d335b339f10bb83d2538e282fc7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb097.h",
+      "bytes": 385366,
+      "sha256": "61babb743bc5cd8666906575aa7eeda313e0ddb5179714b5a867facc8d59e100",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb097tex.h",
+      "bytes": 154979,
+      "sha256": "4dfcee5f7b09d9c3efba8c3dd07efb43b37d41586ae3d9338165413b19fe363c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb0b5.h",
+      "bytes": 21632,
+      "sha256": "169d958bfa379bfdf24c4656f02265ff5bcf22a2866724ee4299138d29df5332",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb0c0.h",
+      "bytes": 60082,
+      "sha256": "999a9eddb51627afcf40b48b1ecec01dfac1858eb9fc81185689bb6302f8ce77",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb0c0qmd.h",
+      "bytes": 33979,
+      "sha256": "2006b15aed0b3eecbdafe93d6f1e5adaac89078b2b32b6fef80923fe3421350b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb197.h",
+      "bytes": 404915,
+      "sha256": "175c50f29798b39c6858cafe31497e9e9798c70ca068a64856719003b5d088d7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb197tex.h",
+      "bytes": 153880,
+      "sha256": "d5aad7d7f339e09411b40a5e8b996613ae2c6d802187070bfa66a596513151bf",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb1c0.h",
+      "bytes": 62598,
+      "sha256": "6d612ede54e9615a30c0e5f03f2dcaed3039e062a7eb329a482782e9eb473942",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clb1c0qmd.h",
+      "bytes": 33979,
+      "sha256": "0041719fd1619035e58eb882e04196743dc1475af65147ff851fdf9f81dd672c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc06f.h",
+      "bytes": 21291,
+      "sha256": "cea2a527393a1f0bfbca2078ae6ce3d6bf4aa9e6477593df1f1c94432fa7c45f",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc097.h",
+      "bytes": 407540,
+      "sha256": "c707a28a3f0485482d65d4702358eb6d4ad0067992018b12541f8a08f85ca429",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc097tex.h",
+      "bytes": 102495,
+      "sha256": "83a1ec5da473226345a6cb62d1eb2f8307914a822abb54ed1e05aa6117edcee2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc0b5.h",
+      "bytes": 21620,
+      "sha256": "595388a2bcf9bf7d9ae90aa013a562872fa37246f24c7c6ac151a77b3e9b8fe9",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc0c0.h",
+      "bytes": 64654,
+      "sha256": "82d0f76e863236379d5cfb9ae8fafc37cb73b0059fdebb4afb3b18d40b88b319",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc0c0qmd.h",
+      "bytes": 50238,
+      "sha256": "babcdf57e09043bc5769ad7e8068c97f163a3b9087b169e749ca218d129502e2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc197.h",
+      "bytes": 412796,
+      "sha256": "27fc08f102f7369f3c6c11cd0b598575594213a9fea0a6cd49777a4a30c96b0a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc197tex.h",
+      "bytes": 102495,
+      "sha256": "50cf1ea04ccfb2aa48cb32791ec976df6c7369c3f41cd58195864b5228a6c1b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc1b5.h",
+      "bytes": 22690,
+      "sha256": "143539dfb521b04e5fc3548fc899211e2772ffddfbf55e5d999df0a98085567a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc1c0.h",
+      "bytes": 66367,
+      "sha256": "0d234edd90843da39448178e0613508a9832ac50bb70c16138d9d171e65fa3f2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc1c0qmd.h",
+      "bytes": 50238,
+      "sha256": "e271812ed966abe84056512d32973633ceaa876e6acdfa7bb8080c4b058073e7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc36f.h",
+      "bytes": 25817,
+      "sha256": "b4b8f716fe9142bef040d588a83d21e411a8934938e4af20cb7a16da2db64948",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc397.h",
+      "bytes": 413470,
+      "sha256": "034b1cf3ee9edebf71ad00732b2d70bc455bff0c90f4f73f259d7b870b7cf0c1",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc397tex.h",
+      "bytes": 109623,
+      "sha256": "ea1704102e5d25293a0c2f3359378ae7f942b1b676127cebd98e59e486140af4",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc3b5.h",
+      "bytes": 23129,
+      "sha256": "c6321efb3a6581d384495ac735bb80e8c0b1472d73e9043fefc973e25f2d5744",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc3c0.h",
+      "bytes": 58925,
+      "sha256": "a165364bbec3d3bf16091741ff5da8bf593f1590e14d3651ee96ef9152964a66",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc3c0qmd.h",
+      "bytes": 17750,
+      "sha256": "761286640c931b8cea41e414dc8be5170bc60c50294b2b7b46ec1ed6c3db482b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc46f.h",
+      "bytes": 25773,
+      "sha256": "cc7da374f17926ca4a03cc6a8b5e3f94c975226d541049beac791bea86a6a38a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc4c0qmd.h",
+      "bytes": 17750,
+      "sha256": "4d1aad5b920cd03844a690b6a6fc24893cfab38cf9a6c31955fde3c6eec79f06",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc56f.h",
+      "bytes": 26078,
+      "sha256": "c7b1b8fe622a9071521477d0597ba036d2fc1c02663246f51e56506b1e4ec3f1",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc597.h",
+      "bytes": 460376,
+      "sha256": "4b47ff263696df6377c693088353a5bff366a8e11d5c8cac1825c2333d8ce39d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc597tex.h",
+      "bytes": 110793,
+      "sha256": "15f53cf3b6ef907cceae946143d94184aa115f843cd11b1aad13a23bba0d2595",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5b0.h",
+      "bytes": 37842,
+      "sha256": "aba8a0ffc91c9b441d3b0c2b14f8266447410ebbf41ef5a0447844d67cfe6eee",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5b5.h",
+      "bytes": 23495,
+      "sha256": "bcbd67c4b80643d138d51c36394be47d09366882fb6abd9bee746b2f3351c09c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5b7.h",
+      "bytes": 40755,
+      "sha256": "ac4dcab95447e9e69b128775ab72eb4d2514b325fc484e9a50a3e53e6164c47e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5c0.h",
+      "bytes": 61897,
+      "sha256": "c716205f0786d1bfdec9f37a8a39bf735363dc2f1f17d3a16809aa87e7c51f2e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc5c0qmd.h",
+      "bytes": 17909,
+      "sha256": "542956ce8e7570d8f671cbae8e4dfdb885aaee240e4644818d47cec1cbc7f149",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc697.h",
+      "bytes": 460376,
+      "sha256": "b8c3ca711e3c5ac8283fe2ee12ba964b4503c8e9d83bc67c98f2c68a775ccc7c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc697tex.h",
+      "bytes": 110793,
+      "sha256": "fff30e8cd4dcd3ce428227be60b61d314be7f287a1c714ed16d03756e8c448ae",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6b0.h",
+      "bytes": 38830,
+      "sha256": "2539defec0c86fc262363d699cc7832dafa3ac5f967ddd9de61390dbc23e4173",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6b5.h",
+      "bytes": 23473,
+      "sha256": "38caaf7efa2c9a58849ebf688c042eb43a4e6b1c670155df412e1e82ea580b71",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6c0.h",
+      "bytes": 59772,
+      "sha256": "99d9dcdce739359f5a9c0f462b4bb4897c2f04e92f2e04d6186f1fbed55d6b7d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc6c0qmd.h",
+      "bytes": 58011,
+      "sha256": "9427646887d0620e5dbf0957b04d979413319c7dc37839267c05d7c6408cb004",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc76f.h",
+      "bytes": 26394,
+      "sha256": "ee428ab733a004c4d8de720849757904aae63e083c103fd22d12272b1bc6d60d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc797.h",
+      "bytes": 474757,
+      "sha256": "868a0ce5794a9a4a2118022bfac817a0c84ba53dbc80c05337e087a3176a3e80",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc797sph.h",
+      "bytes": 67760,
+      "sha256": "06133cfa73ea27ab72129a804b054f2bad9b9706a1e679a43e8fd46c870e090b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc797tex.h",
+      "bytes": 110793,
+      "sha256": "bbfa8f6fe2e1b31eb05122ed492f69849e6f926c949e68a56f7dd77c0646fa63",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7b0.h",
+      "bytes": 52024,
+      "sha256": "acecbf5ed71a3c8b5ba0a0049ac2fea4eecf374cc6da58a2a63137afe13def47",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7b5.h",
+      "bytes": 25479,
+      "sha256": "9e8dbda2d6741abeb2d2c81bb92cb621445aac7facf8c8113f3cb3d12f1c7660",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7b7.h",
+      "bytes": 25672,
+      "sha256": "3830711dde51bda28d5364c569034a7e83686ec66c4abf5e545fb44b656f6428",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7c0.h",
+      "bytes": 74161,
+      "sha256": "ba8cf3280eaf9836e92400d063c7bc33f1e0bc1887ce69521a2ec530c2366a8a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc7c0qmd.h",
+      "bytes": 58625,
+      "sha256": "e5057d62981b0ecba3c6774244ba531c78f1d6ded529339081ec84e77c0c4e36",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc86f.h",
+      "bytes": 26736,
+      "sha256": "fb175ddf3441d9c447b08fb409bf66914515b9de633175353c1d5c94e774fcc7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc8b5.h",
+      "bytes": 28004,
+      "sha256": "ab23dd15157a24e0daf81319b68450baecb925a4887a90e32cf006e850069bdf",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc96f.h",
+      "bytes": 7896,
+      "sha256": "d1c1c233b6f04206c66cebed0fd90b03491c5441925294eb823fb85482a349a6",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc997.h",
+      "bytes": 474648,
+      "sha256": "28a7aa21e99c65818b23ba0b61840bd235c0da39944aa43d1bf6bcd6ddd8c9aa",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc997tex.h",
+      "bytes": 110793,
+      "sha256": "0d7c5cf0b11ca99a6bdd4772388d137a8d2dc79fb4841f14b4249f4d1c6662f8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9b0.h",
+      "bytes": 52552,
+      "sha256": "4bedd0032e78bb28795e5929147d089304ac7b0cf225ddb9899dca5d8da2d678",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9b5.h",
+      "bytes": 27735,
+      "sha256": "14130b177d5e74dcaf9c3329f2c6a5ffa50a46d550ebbe9528d7aabcc8f23c23",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9b7.h",
+      "bytes": 27162,
+      "sha256": "a1740b9752fd129b510869a19dd820f3f39122bef2a8fa6b731f8b30d4b21b46",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9c0.h",
+      "bytes": 74146,
+      "sha256": "e15e4d37ad68439acc1985febf8f42fd1840067072112f85d6741a4171c4007f",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9c0qmd.h",
+      "bytes": 40075,
+      "sha256": "12f61b40ca721248de170469c2673ba7f9f1ac5ea24e42e42b102e8c84d7f43b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clc9d1.h",
+      "bytes": 10874,
+      "sha256": "9d42e4c0d55343a0b00f14233522c114db36638696138b66ab5ba03bb912db08",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clca6f.h",
+      "bytes": 4383,
+      "sha256": "a5984aa27589ed116c5739e4fbaaa00f325829cb70bba71607adcb2ac3196f15",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcab5.h",
+      "bytes": 28744,
+      "sha256": "3ab945632771609ae7643b5db1df2f91eb51745244267dd8766b6d43076a84bc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcb97.h",
+      "bytes": 474436,
+      "sha256": "ede0df77d9fc5d89be572bcf73546f9cc2c561af87fce5d8fa7db094cbc6bb3d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcb97sph.h",
+      "bytes": 67760,
+      "sha256": "06b6909666e7152e42a53914cf1e89da8605ab8a5ae33e207c9b7d371337d3fb",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcb97tex.h",
+      "bytes": 185720,
+      "sha256": "0c3e23be20fb8496ed5e6d501bdeb76e31751b4b803d988387748a9a28d619c5",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcbc0.h",
+      "bytes": 73591,
+      "sha256": "0c210852ef7638300b3f78c08714ade9d92712d48687611a89a7055e0d978a09",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcbc0qmd.h",
+      "bytes": 42268,
+      "sha256": "ff8d1dc4a5e6b37914e5e6ed5e3d728bc003dfb7e12202feb08ba71c27074d38",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcd97.h",
+      "bytes": 473204,
+      "sha256": "07ffa8e80b70f8f5d47792d941450c13c306b0a491a6ac68318ffadceabd7802",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcd97tex.h",
+      "bytes": 89369,
+      "sha256": "697c20be66a60f41085c286ed266a8a96fe6ff16192a400737db2ef6d8504f22",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcdc0.h",
+      "bytes": 67225,
+      "sha256": "71e1c9ea3bd7cc164edb4d0c7555f457513ae51f18885dbd953a41ffde36fd07",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcdc0qmd.h",
+      "bytes": 67338,
+      "sha256": "dac26460204ec90bf4736914dbeb507409957cda9168ce84a62a05b31883d85f",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clce97.h",
+      "bytes": 474577,
+      "sha256": "da1cacfd44784adc34b07c5423b67b439ae87835bfe20c44cf010dfeaa11f933",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clce97tex.h",
+      "bytes": 89369,
+      "sha256": "e916bb91685b861b1ee3ed400d74ff8c53a26793abbe2d81787f32d0518f0b79",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcec0.h",
+      "bytes": 71452,
+      "sha256": "b87d096c5a9b477af15e5b9742a51d119ee26b1259ae03297eaf140d5bd039c5",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/clcec0qmd.h",
+      "bytes": 67338,
+      "sha256": "6ba3a6d4742a722346c725a1c95114a62738c9a165fe18ec1cdd84c2511b4cfc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/classes/cle7d0.h",
+      "bytes": 9796,
+      "sha256": "144aa3946794011dab2a9ece0831f2c5c16c49c35d6b6012460d603c11088776",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/g_nv_name_released.h",
+      "bytes": 134323,
+      "sha256": "f1122d6b533af333a2f751d1501732ad350d259259db33d2cf0328b66f0f3ef5",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/ampere/ga100/dev_fault.h",
+      "bytes": 30128,
+      "sha256": "fde5817f348b3517850fa3ec4ab0b6d2d1df7d6cb2345bc757c589829212ea9c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/ampere/ga100/dev_runlist.h",
+      "bytes": 70282,
+      "sha256": "a6c03ba62652b4ee4f59c7addd5ba5fbb885903ece9707f3401290d70c6e79c4",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/hopper/gh100/dev_fault.h",
+      "bytes": 31856,
+      "sha256": "ed73ee4ca950bec47ed918f1e1ec14699e1e623aead0e6c1cafa141f06c650f1",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/hopper/gh100/dev_mmu.h",
+      "bytes": 50439,
+      "sha256": "583a354028ccf3b8e9f5b3af06409583f283217d078d9e7eec1f0a4d6d71ba55",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/maxwell/gm107/dev_mmu.h",
+      "bytes": 24526,
+      "sha256": "fc5b9bdbf960356831a6577d643f62ce9e3d188acbeabd9074465147dc25ad4c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/pascal/gp100/dev_fault.h",
+      "bytes": 12708,
+      "sha256": "5b0fd9e20e1850b620f24997c76b789f63292bbdba2b0ed1dd39733477eac9b0",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/pascal/gp100/dev_fb.h",
+      "bytes": 5015,
+      "sha256": "a2951aeb2889f405b4f269dbe9028bed050e25b99eb45a6b573707c3e532be81",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/pascal/gp100/dev_mmu.h",
+      "bytes": 49559,
+      "sha256": "40ff19f4b3c95ec7ffe457fe30602770ac627345a4bec24beddb14229e09f7b2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/turing/tu102/dev_fault.h",
+      "bytes": 25024,
+      "sha256": "e664be0d64df2ce31d6b5df38601b1f29e58e2d6ab2ba905383c8388287a5be7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/turing/tu102/dev_mmu.h",
+      "bytes": 52018,
+      "sha256": "302927d7f24ad9318507f07f871ad3fbd2050fe4b5ac4813ad4792cd23b4878d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/volta/gv100/dev_fault.h",
+      "bytes": 16626,
+      "sha256": "acef4b2abb4feb8f1935b659f7cbf52e3d02e4786ce176cda4d76dd70f54bc13",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/volta/gv100/dev_fb.h",
+      "bytes": 8055,
+      "sha256": "0175a270fa5af9d3a62d7fda2c9e536b58551db6bb1e9c123b84ffeec9a32584",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/hwref/volta/gv100/dev_mmu.h",
+      "bytes": 52535,
+      "sha256": "6a2656ab46cc7cdfe92c6ab12c7c5246c5d2819651add7a34b2d47fd2e13c483",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/video/nvdec_drv.h",
+      "bytes": 94207,
+      "sha256": "6211a3cf07e381374d81cee0b7745ebcbad8b6ef7e8fed8d903945a0a8878a73",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvidia/video/nvenc_drv.h",
+      "bytes": 275485,
+      "sha256": "04ba0a17c2a50e6102f7511c6294c2b61d99fdd1b6651410a3d63c4924da323d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/headers/nvtypes.h",
+      "bytes": 393,
+      "sha256": "b6be17c9beccb86ea8b0c759b0c8129d6ee79334e73991d568d24baa09593aff",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/cl/nvk_copy_indirect.h",
+      "bytes": 212,
+      "sha256": "7871deb2e841be41f7e5d2c1ddba274b81721e77c9addfc9d998b3d0323dde0e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/cl/nvk_query.h",
+      "bytes": 212,
+      "sha256": "4ebc9a6d62b5be17b0fa5a51230541d867d7f6e304aaa48b105799b37d9dbb7b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/layers/nvk_app_workarounds.c",
+      "bytes": 891,
+      "sha256": "05c2ca01c87488256622fc44c74caf6544d0ad297c31140a2238e5668fce9383",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/layers/nvk_app_workarounds.h",
+      "bytes": 406,
+      "sha256": "af08041acf517b576c8b63652b465d8d8fe66286328c4b82b5b96e31025f00bc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/meson.build",
+      "bytes": 5939,
+      "sha256": "b7f5b6c021d6e94e42378f1c94248c6c66a8cb756a16b6a13e12b4aff3b1b177",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_acceleration_structure.c",
+      "bytes": 348,
+      "sha256": "48968bdcd307aafbdfa51240601949700c3e489a9a544207b1a778e0f4b19f9c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_android.c",
+      "bytes": 1273,
+      "sha256": "cb539c5b5aed8393f3f0c12e9cc7f6bac075e60dab5bf67249c077caa90664c4",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer.c",
+      "bytes": 11322,
+      "sha256": "2de9f039874baf73e4d7477469644d5ae47419b62b71808a1d7741b8391f0837",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer.h",
+      "bytes": 699,
+      "sha256": "17f6b6302d689fb165f4aacea8a7f0f2783eabe11a238f70a7cb9f43ca2ba16b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer_view.c",
+      "bytes": 4148,
+      "sha256": "afe547bf37cd1b6d2062f597477f45ce47c8203af3dd3e4c65637732809052f2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_buffer_view.h",
+      "bytes": 860,
+      "sha256": "7fbd8ba86248b362b7b1ca6040f1fd8054f94bf0d382db0a0ffcb74b44ae5a84",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_buffer.c",
+      "bytes": 51114,
+      "sha256": "aa1a146553458381ea2d54e399378c3fe98a1fc2460c9cb4d82bc99ea0d84a6e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_buffer.h",
+      "bytes": 16370,
+      "sha256": "d66d97b1456d5ef17f4fa325cfb404d17ee5882466cdc6e66bbff0f59b2b6928",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_clear.c",
+      "bytes": 13600,
+      "sha256": "7f1e14b2b1b9b82b07ef53d9c073e88fbfe7d9c8e3986ed13b0c4ba3e2029d8d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_copy.c",
+      "bytes": 40051,
+      "sha256": "5e791a351518eae12ef9d563450327d1133835e532484ad4dde79a2338a3e82e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_dispatch.c",
+      "bytes": 22696,
+      "sha256": "6b7c0c72d1c29d20bc185914a3ccb39ba2e8d4e2e9a0cb3a96e984946cc8ac13",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_draw.c",
+      "bytes": 223013,
+      "sha256": "8e9c97b91a13156dc4ac74b3ecb252d064b8cbde8c7ef31d46433a0814861c5d",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_indirect.c",
+      "bytes": 52011,
+      "sha256": "4a2a8739b1c596c1901f6d89264c0a7d64eafe95395644ce41ef873b765c2b8e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_meta.c",
+      "bytes": 19763,
+      "sha256": "e70703d3a1464036c3fb985be9e92db23f9c7bafb3b50b949ee80273f59d1164",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_pool.c",
+      "bytes": 6356,
+      "sha256": "38e3485bc1e83d27234f8236cc0fd6e920f13a83269a472c17899609983f07c0",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cmd_pool.h",
+      "bytes": 1791,
+      "sha256": "0a28dc24cca76a5beafbc9eaea2bd41f061022b6b7f98acef5ac7145bd53d892",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cubin.c",
+      "bytes": 11385,
+      "sha256": "05e78bf3db8ea0ee675cc47c2510d6c91602fd966ef12e11f55d49fac53e9dd6",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_cubin.h",
+      "bytes": 790,
+      "sha256": "5d7a861557d97e59f1ca913a9fc381a87803f164cbdf78cfe53de211b50c0f81",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_debug.h",
+      "bytes": 1553,
+      "sha256": "6c330bc99e4a3951acdab7e16a8d6de91d4fae1871f9393a2fbab01c9bf340f7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set.c",
+      "bytes": 44341,
+      "sha256": "a8dc89ca8cc88cfd01114b9aced325de5c5d2cee3e247680b3998e4d1a96aecc",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set.h",
+      "bytes": 2127,
+      "sha256": "67d81fb6b024dbc0851e02ac902eba35f0b54102a5f1e4b55e3edcb531469b39",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set_layout.c",
+      "bytes": 22158,
+      "sha256": "e9c31e8f6d45bd4d8420672c6be325be9f2125082d9859322b4b2c2195fd159b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_set_layout.h",
+      "bytes": 2757,
+      "sha256": "03ff620e424e74f5e46cea43f1e1c0961c66420070125780522fb3b6807a5953",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_table.c",
+      "bytes": 10202,
+      "sha256": "b18d457dac34ee06bdbe5931955c777da8c132fa41d7e435ab85756b56f35ad7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_table.h",
+      "bytes": 2803,
+      "sha256": "c0743e64b516ce3a636db6fb2c31657a26d3e1e5780f133d958e37a0a2aa439f",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_descriptor_types.h",
+      "bytes": 4404,
+      "sha256": "c013302f38b8d0ce9c2015760c021ed9d098e897e8fe55ca9098b7877e621121",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device.c",
+      "bytes": 16364,
+      "sha256": "0c118e8595ab9649ab39993e065e98da9c91ed3c0e48ef594c34d98c8584a8a8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device.h",
+      "bytes": 2272,
+      "sha256": "276babbfebf6ce6ef32099a35929eb8b98d3dd57920b979d4644277d79f7624a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device_memory.c",
+      "bytes": 19322,
+      "sha256": "797a7a75fcf10e3766d8f2f60cfd5b490751ecfc48709fd43240964b5308a1ea",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_device_memory.h",
+      "bytes": 656,
+      "sha256": "66dc33ec70703409a29f6136085c4aead37f92e54091659e12775a925b33b658",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_edb_bview_cache.c",
+      "bytes": 8055,
+      "sha256": "ab0b7ad93d6b75cb3f6cf91b81a9c955701a70274df0ac9108b94fdd2002861f",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_edb_bview_cache.h",
+      "bytes": 2883,
+      "sha256": "ea25bde38bbd086612b2c93c8e460cccb13e521af4bc25efe0128f1831995a71",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_event.c",
+      "bytes": 9363,
+      "sha256": "dca80ac608c8962e90ab4d50f266cd6931a8349fbba8cc9facf8e913238bc2e7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_event.h",
+      "bytes": 474,
+      "sha256": "50763228f2ef18bb16646e004edfe7e1acf76ce00ef23db8ac66d657d2b5d318",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_format.c",
+      "bytes": 12172,
+      "sha256": "c12384b254fd44adfe0748001c96d984f9f25f9b720c13dfc1f02a67b499bf94",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_format.h",
+      "bytes": 1213,
+      "sha256": "f7bebbbf8d349c1ab6c64219b95a4a89660b8997ad8902bed7ea002cff437cbd",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_heap.c",
+      "bytes": 5299,
+      "sha256": "5d6c86e850817c179dd2c4d72134df518a577b889a4fc0719cc15db6fbdf3fc3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_heap.h",
+      "bytes": 1439,
+      "sha256": "15be8a55f8a4b15c804a4922ed9df98f71fc1c4444ca886d9fd4fdabdfca1b6c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_host_copy.c",
+      "bytes": 21882,
+      "sha256": "f4d78e256badc33daaaedbb254b33e082b3db83134b310cc71ff4dbdf783c462",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image.c",
+      "bytes": 79571,
+      "sha256": "5b5c402e523a5c8a3e0dd26aaa387b97a8638504e5bd7c2d91b8c89e3d83c977",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image.h",
+      "bytes": 8421,
+      "sha256": "11de4b5228f773c3703a715d96b898d2029e7786429c717bd616e3d554a4b84b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image_view.c",
+      "bytes": 14938,
+      "sha256": "587d7e66fb11534469d882fa0b00541d4c102db2d61434312d42e6a59ab96fca",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_image_view.h",
+      "bytes": 1487,
+      "sha256": "cf4a34ab1608ae055b0990ccf28532d8f60c51c1aaa6ac698721db8d063562d4",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_indirect_execution_set.c",
+      "bytes": 13698,
+      "sha256": "131d7e9cf966f21bbe4580510f72bd59b16aabf54e07d703de4d662bf1c2ffa3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_indirect_execution_set.h",
+      "bytes": 1810,
+      "sha256": "96bd6efe17b2dc805fead967284b5ae17ad9298ed4aa0ac3e0172691f2530922",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_instance.c",
+      "bytes": 7193,
+      "sha256": "7c3cfc1eae4de35bc0d6c94a627c0ac54dfcbfafd8bfe63e7af4e6a6c877694a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_instance.h",
+      "bytes": 705,
+      "sha256": "9bd974336d6caa9259a92fb22d837e74185665a64ff1723534a839a3204cf5b7",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_arena.c",
+      "bytes": 6785,
+      "sha256": "4274fca1e9f8d759d98397fdc0b54044b314c9e9b2d92a91ab6e70e84b64a25c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_arena.h",
+      "bytes": 7229,
+      "sha256": "3778f5c63081b7ad0030c639122722597f0f9f73c841d391e7f17120c83751f5",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_stream.c",
+      "bytes": 8581,
+      "sha256": "104f3849c57e209d06e73fe9d248ec7b737f9725a757e8dc79ddcf05c86786a6",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mem_stream.h",
+      "bytes": 2505,
+      "sha256": "21fdbc96aff10e0e6ae00781c6af338747cfa5adbfc151017434699d58775c32",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mme.c",
+      "bytes": 5775,
+      "sha256": "c7cbfc8eba00a99b416a93d837386a7c955487ab1c7ae05c1f5c1b814582348e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_mme.h",
+      "bytes": 9883,
+      "sha256": "eaf3a02c9ba49cd5c3ba7623df0570941d9d6016eb0fffa80e6bb44a38ba3bd2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_nir_lower_descriptors.c",
+      "bytes": 53433,
+      "sha256": "bd1a19bc4a0e2f8d6ae054cb3fffe9f40f634073fa6f379815e79f98efcb0d91",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_nir_lower_mesh_shader.c",
+      "bytes": 5635,
+      "sha256": "38d58f8b0caac8d46c45c2238ebb0335550f6a5c848d3027ca045064a4b0e8b3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_physical_device.c",
+      "bytes": 83454,
+      "sha256": "14f438da36d8804fdfa67d17a5b7e9e5cf2e06a5535b893bd2f2d4a720f8ee48",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_physical_device.h",
+      "bytes": 2464,
+      "sha256": "9b53e856264d7eb5ea6f7e1218f9fce3248886e59c9eafe81c7be1d4293897c5",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_private.h",
+      "bytes": 1422,
+      "sha256": "70ee9cb7401dc6121e10caf818c9cdb887f4df13fb2a6a760f59ab71a5c74ab2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_query_pool.c",
+      "bytes": 44946,
+      "sha256": "b274c373414aa83aaf5ed2d805baa60f4a17c07bcf1df5bc9c3eeb7673b82172",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_query_pool.h",
+      "bytes": 1497,
+      "sha256": "48ef57d61be1f2a87532dfb9fa7d349f6d7a6e6ab2e95c744e9a7ca55d2f3e22",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_queue.c",
+      "bytes": 15980,
+      "sha256": "93ddbd794115511913917dcc2c9958162051e47b4a1f58288507aec2deedc69a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_queue.h",
+      "bytes": 2854,
+      "sha256": "d0a04e521aa608febb1e598de69fbc69ba52e736998bbeb3e8f45cb56ca75d0c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_sampler.c",
+      "bytes": 14720,
+      "sha256": "119f8e76c14884331720e2bec42c10ca44eb10d91df2965d6eee0b8b4169cb85",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_sampler.h",
+      "bytes": 812,
+      "sha256": "db4b02d8fa99489ce49faffe21d544a782766257fa4e8c42c2d5ba2820ea9c9b",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_shader.c",
+      "bytes": 58276,
+      "sha256": "a54b58b697f6ed1b00a8d445a6f1bb428c2c4e034a37811bae16df0fa1540c77",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_shader.h",
+      "bytes": 4907,
+      "sha256": "ccb7191d14d540f2c75659101f3ec90abc0702c9672ce2e78ed96a4b1a9996c2",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_upload_queue.c",
+      "bytes": 8202,
+      "sha256": "809ae225efb25d17ccfbbb40827a2374890f8a70e296530c8c64e0c935792972",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_upload_queue.h",
+      "bytes": 1468,
+      "sha256": "b5a082b7e28ab51b6b6119dafa5256f737721f56cc7712607661a655430e3ce8",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_wsi.c",
+      "bytes": 1418,
+      "sha256": "b8392a62e5099c5991448f4cc623a5073eea2f737961315564ad179dfd7cee01",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvk_wsi.h",
+      "bytes": 285,
+      "sha256": "184e902e717c8b56305e5054e936cca5d7138d716725b8662e57ca80c3e395c4",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau.h",
+      "bytes": 4240,
+      "sha256": "9dd5b2a36889a36b3aa3de7ef9998123eb4d0d96588810ee123de06ff2c32429",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_ctx.c",
+      "bytes": 15324,
+      "sha256": "8757621b736ccfcefac0f8937eb1ec8e5d911e27ea3fcd5a3200432ab2e69691",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_dev.c",
+      "bytes": 2991,
+      "sha256": "ffbde73e7bbc4f29375da404844273c6f429f7b59004842a5f1204ee6eb281b0",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_mem.c",
+      "bytes": 10268,
+      "sha256": "0552646ac6207e0de5f7d68aaab3ce38be2ed880828724a240bb6093cf425cbd",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_pdev.c",
+      "bytes": 5526,
+      "sha256": "19e26da0839e5921f3c2c1790b1ac2ba31ae28d4c93500764ffe3562cca0451c",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nouveau/nvkmd_nouveau_va.c",
+      "bytes": 8291,
+      "sha256": "172cd5a85efe3581194ca86f02a53c5a948c518cfe57bf2eede01aa645a06d49",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nvkmd.c",
+      "bytes": 14909,
+      "sha256": "811edc03d5424f8000896f72e635036cb0a4a915395abf6e4d53098d49336c71",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/nvkmd/nvkmd.h",
+      "bytes": 17912,
+      "sha256": "5bee0e261ed5ae30484f75d1edf34bffd4810812e6c0a8f22b3eda96ff3f54f9",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/vulkan/test_nvk_mme.c",
+      "bytes": 792,
+      "sha256": "7c60fc3ec789579f86da63a4055430c5f142cfc3d406ecda95aaff56ec39fe2e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/meson.build",
+      "bytes": 644,
+      "sha256": "9e317d42481fbea47a3db584d519d492529711656eb3ae9e08011a245102b8de",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_bo.c",
+      "bytes": 8294,
+      "sha256": "dccc6e302443ba57a31ff6cc25197000dce9a046272d1e13734072b301860f61",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_bo.h",
+      "bytes": 2861,
+      "sha256": "72b2ddf290a978504bac04c614e274cd3309f349b570b3693cc83cbc847c7bc3",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_context.c",
+      "bytes": 7251,
+      "sha256": "23b5dbf79b0fbe8bdae1aeb5e6b77ccf040de31b4b86076101b4ec694a8d6bd1",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_context.h",
+      "bytes": 1040,
+      "sha256": "d2209f9043eb2795e462c3727c8a73eb9f972f135142de7509b6f7c80e1aa17a",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_device.c",
+      "bytes": 18322,
+      "sha256": "1f7c5fb4e4571ec08132b212282de26eb3749e5fe68fd33d9af22290a9d8318e",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_device.h",
+      "bytes": 925,
+      "sha256": "0f8e803117f40784448d6af9b201f2df2f8ae1858f66eb211e85e0b704987836",
+      "kind": "source"
+    },
+    {
+      "path": "sources/mesa-26.2.4/src/nouveau/winsys/nouveau_private.h",
+      "bytes": 127,
+      "sha256": "4b966d3199b1574b4c71eba312d400e83c408896e52671857b5cf0b69f88e953",
+      "kind": "source"
+    },
+    {
+      "path": "downloads/mesa-26.2.4.tar.xz",
+      "bytes": 68613948,
+      "sha256": "bce5f7fbebb934373b86c999a064d52fb5065878dc57f287f95346648ec832e9",
+      "kind": "complete_source_archive"
+    },
+    {
+      "path": "downloads/mesa-26.2.4.tar.xz.sig",
+      "bytes": 310,
+      "sha256": "cdf1c4f7e66d0cd878a093fc8b770284fb3c6bd36060c907299f70fca3ec1598",
+      "kind": "source_signature"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libv4l2_nvvideocodec.so",
+      "bytes": 10112,
+      "sha256": "a60269138cd67667617b95ee463cb2d73a08c2a0f67175eae6b5f6bf8dcea3fd",
+      "source_member": "usr/lib/aarch64-linux-gnu/tegra/libv4l2_nvvideocodec.so",
+      "kind": "inactive_vendor_library_or_notice",
+      "needed_libraries": [
+        "libtegrav4l2.so",
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "elf_machine": 183,
+      "executed": false
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1.1",
+      "bytes": 15750720,
+      "sha256": "db852ba75ae95d21cc1be77a8824bc5c32894b4c68f75ae05c6978e747bc4597",
+      "source_member": "usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1.1",
+      "kind": "inactive_vendor_library_or_notice",
+      "needed_libraries": [
+        "libm.so.6",
+        "libc.so.6",
+        "libdl.so.2",
+        "librt.so.1",
+        "libpthread.so.0",
+        "libnvrm_gpu.so",
+        "libnvrm.so",
+        "libnvrm_graphics.so",
+        "libnvidia-fatbinaryloader.so.32.2.1"
+      ],
+      "elf_machine": 183,
+      "executed": false
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvmmlite_video.so",
+      "bytes": 199104,
+      "sha256": "3ff73edf999837db5d442a264f3505d19ee25213568b4d2d9290f680b4148129",
+      "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvmmlite_video.so",
+      "kind": "inactive_vendor_library_or_notice",
+      "needed_libraries": [
+        "libnvmedia.so",
+        "libnvmm_utils.so",
+        "libnvmmlite_utils.so",
+        "libnvrm.so",
+        "libnvrm_graphics.so",
+        "libnvddk_2d_v2.so",
+        "libnvos.so",
+        "libnvtnr.so",
+        "libc.so.6"
+      ],
+      "elf_machine": 183,
+      "executed": false
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvv4l2.so",
+      "bytes": 1067768,
+      "sha256": "0ade4cab828829ea656753a98e6c915ae39ebcf63490c4792bc36478163e27ae",
+      "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvv4l2.so",
+      "kind": "inactive_vendor_library_or_notice",
+      "needed_libraries": [
+        "libv4lconvert.so.0",
+        "libdl.so.2",
+        "libc.so.6"
+      ],
+      "elf_machine": 183,
+      "executed": false
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvomx.so",
+      "bytes": 415400,
+      "sha256": "543a6b0e235404b71f4d3501aad6e43cb05c5b1d019d5375c73f3b76fc91c1e2",
+      "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvomx.so",
+      "kind": "inactive_vendor_library_or_notice",
+      "needed_libraries": [
+        "libnvtvmr.so",
+        "libnvmm.so",
+        "libnvmm_contentpipe.so",
+        "libnvmm_utils.so",
+        "libnvmmlite.so",
+        "libnvmmlite_utils.so",
+        "libnvrm.so",
+        "libnvrm_graphics.so",
+        "libnvos.so",
+        "libnvddk_2d_v2.so",
+        "libnvdc.so",
+        "libasound.so.2",
+        "libdl.so.2",
+        "libm.so.6",
+        "libc.so.6"
+      ],
+      "elf_machine": 183,
+      "executed": false
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvbuf_utils.so.1.0.0",
+      "bytes": 29272,
+      "sha256": "99d656a7682fdcc4807731727e91f767db265df316d07ee832cdaa11340e92d6",
+      "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvbuf_utils.so.1.0.0",
+      "kind": "inactive_vendor_library_or_notice",
+      "needed_libraries": [
+        "libnvrm.so",
+        "libnvrm_graphics.so",
+        "libEGL.so.1",
+        "libnvddk_vic.so",
+        "libnvbuf_fdmap.so.1.0.0",
+        "libc.so.6"
+      ],
+      "elf_machine": 183,
+      "executed": false
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.libnvargus",
+      "bytes": 1502,
+      "sha256": "1467d3bd35f6ad87ffb24c0e665c2d028dda6e943dff66b347f0051370dcf88d",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.libnvargus",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.libtegrav4l2",
+      "bytes": 7770,
+      "sha256": "b4e0f72b067cd11afa0875d20144423a80b7293e4309cca43190cf8c1d4ba200",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.libtegrav4l2",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.libnvcam_imageencoder",
+      "bytes": 2723,
+      "sha256": "7ea9279fe435e009307da026ea72a1f47ecbdeef3a6a7f6bb04a2dec7bbdfcd5",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.libnvcam_imageencoder",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.libnvv4l2",
+      "bytes": 26990,
+      "sha256": "dee27dbeddf4f7d093df765624022e72fb28c818d60fa3fd9d1dd77b392e4d31",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.libnvv4l2",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.libnveventlib",
+      "bytes": 1086,
+      "sha256": "c19b803d92378a0acc9c7dc02e018022f821b8284a5d918e2628e6d1d9376245",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.libnveventlib",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.tegra_sensors",
+      "bytes": 2094,
+      "sha256": "f3f3ecff94537e7d5944fdbae7c6bd02d5eddca8fe1c29d8699ff2e54d26cebc",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.tegra_sensors",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.libnvv4lconvert",
+      "bytes": 26990,
+      "sha256": "dee27dbeddf4f7d093df765624022e72fb28c818d60fa3fd9d1dd77b392e4d31",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.libnvv4lconvert",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.cypress_wifibt",
+      "bytes": 6010,
+      "sha256": "89786bfd7060f6a60feae03257da6f3206b0f777352cf750c67b3b560dd087a5",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.cypress_wifibt",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.brcm_patchram_plus",
+      "bytes": 11958,
+      "sha256": "a85e1af5d521f0d68aa08806292076bb9bda8a31a496f17063fafab121053e4d",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.brcm_patchram_plus",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/usr/share/doc/nvidia-tegra/LICENSE.libnvtracebuf",
+      "bytes": 1086,
+      "sha256": "c19b803d92378a0acc9c7dc02e018022f821b8284a5d918e2628e6d1d9376245",
+      "source_member": "usr/share/doc/nvidia-tegra/LICENSE.libnvtracebuf",
+      "kind": "inactive_vendor_library_or_notice"
+    },
+    {
+      "path": "vendor-libraries/l4t-32.2.1/LICENSE",
+      "bytes": 6121,
+      "sha256": "bd28b0c5aeeb00eb11d3ec6f6f3449d4b3a40100914258332734a53527997526",
+      "kind": "vendor_license"
+    }
+  ],
+  "vendor_library_source": {
+    "lock": "ports/shield/firmware.lock.json",
+    "release": "L4T32.2.1",
+    "purpose": "static interface comparison only",
+    "libraries": [
+      {
+        "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libv4l2_nvvideocodec.so",
+        "bytes": 10112,
+        "sha256": "a60269138cd67667617b95ee463cb2d73a08c2a0f67175eae6b5f6bf8dcea3fd",
+        "source_member": "usr/lib/aarch64-linux-gnu/tegra/libv4l2_nvvideocodec.so",
+        "kind": "inactive_vendor_library_or_notice",
+        "needed_libraries": [
+          "libtegrav4l2.so",
+          "libpthread.so.0",
+          "libc.so.6"
+        ],
+        "elf_machine": 183,
+        "executed": false
+      },
+      {
+        "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1.1",
+        "bytes": 15750720,
+        "sha256": "db852ba75ae95d21cc1be77a8824bc5c32894b4c68f75ae05c6978e747bc4597",
+        "source_member": "usr/lib/aarch64-linux-gnu/tegra/libcuda.so.1.1",
+        "kind": "inactive_vendor_library_or_notice",
+        "needed_libraries": [
+          "libm.so.6",
+          "libc.so.6",
+          "libdl.so.2",
+          "librt.so.1",
+          "libpthread.so.0",
+          "libnvrm_gpu.so",
+          "libnvrm.so",
+          "libnvrm_graphics.so",
+          "libnvidia-fatbinaryloader.so.32.2.1"
+        ],
+        "elf_machine": 183,
+        "executed": false
+      },
+      {
+        "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvmmlite_video.so",
+        "bytes": 199104,
+        "sha256": "3ff73edf999837db5d442a264f3505d19ee25213568b4d2d9290f680b4148129",
+        "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvmmlite_video.so",
+        "kind": "inactive_vendor_library_or_notice",
+        "needed_libraries": [
+          "libnvmedia.so",
+          "libnvmm_utils.so",
+          "libnvmmlite_utils.so",
+          "libnvrm.so",
+          "libnvrm_graphics.so",
+          "libnvddk_2d_v2.so",
+          "libnvos.so",
+          "libnvtnr.so",
+          "libc.so.6"
+        ],
+        "elf_machine": 183,
+        "executed": false
+      },
+      {
+        "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvv4l2.so",
+        "bytes": 1067768,
+        "sha256": "0ade4cab828829ea656753a98e6c915ae39ebcf63490c4792bc36478163e27ae",
+        "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvv4l2.so",
+        "kind": "inactive_vendor_library_or_notice",
+        "needed_libraries": [
+          "libv4lconvert.so.0",
+          "libdl.so.2",
+          "libc.so.6"
+        ],
+        "elf_machine": 183,
+        "executed": false
+      },
+      {
+        "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvomx.so",
+        "bytes": 415400,
+        "sha256": "543a6b0e235404b71f4d3501aad6e43cb05c5b1d019d5375c73f3b76fc91c1e2",
+        "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvomx.so",
+        "kind": "inactive_vendor_library_or_notice",
+        "needed_libraries": [
+          "libnvtvmr.so",
+          "libnvmm.so",
+          "libnvmm_contentpipe.so",
+          "libnvmm_utils.so",
+          "libnvmmlite.so",
+          "libnvmmlite_utils.so",
+          "libnvrm.so",
+          "libnvrm_graphics.so",
+          "libnvos.so",
+          "libnvddk_2d_v2.so",
+          "libnvdc.so",
+          "libasound.so.2",
+          "libdl.so.2",
+          "libm.so.6",
+          "libc.so.6"
+        ],
+        "elf_machine": 183,
+        "executed": false
+      },
+      {
+        "path": "vendor-libraries/l4t-32.2.1/usr/lib/aarch64-linux-gnu/tegra/libnvbuf_utils.so.1.0.0",
+        "bytes": 29272,
+        "sha256": "99d656a7682fdcc4807731727e91f767db265df316d07ee832cdaa11340e92d6",
+        "source_member": "usr/lib/aarch64-linux-gnu/tegra/libnvbuf_utils.so.1.0.0",
+        "kind": "inactive_vendor_library_or_notice",
+        "needed_libraries": [
+          "libnvrm.so",
+          "libnvrm_graphics.so",
+          "libEGL.so.1",
+          "libnvddk_vic.so",
+          "libnvbuf_fdmap.so.1.0.0",
+          "libc.so.6"
+        ],
+        "elf_machine": 183,
+        "executed": false
+      }
+    ],
+    "installed_into_runtime": false,
+    "inner_archive_sha256": "6a69a7d4d86b957d738d20d7913a81cebe59d376814634f1d0329cb464ca1364",
+    "archive_member": "Linux_for_Tegra/nv_tegra/nvidia_drivers.tbz2"
+  },
+  "findings": [
+    {
+      "id": "ffmpeg-vendor-interface",
+      "status": "source-confirmed",
+      "details": "Switchroot FFmpeg opens /dev/nvhost-nvdec and /dev/nvhost-msenc through libv4l2, dynamically loads libnvbuf_utils.so.1.0.0 and uses NvBuffer APIs. The existing ACK Tegra DRM/host1x UAPI is a different contract; the codec cannot be promoted as a drop-in mainline implementation.",
+      "evidence": [
+        "FFmpeg/libavcodec/nvv4l2_dec.c:74",
+        "FFmpeg/libavcodec/nvv4l2_enc.c:39",
+        "FFmpeg/libavcodec/nvv4l2.c:873",
+        "ack-tegra/include/uapi/drm/tegra_drm.h"
+      ]
+    },
+    {
+      "id": "nvk-tegra-default-rejection",
+      "status": "source-confirmed",
+      "details": "Mesa26.2.4 nvk_is_conformant explicitly rejects non-discrete Tegra device type; physical-device creation returns incompatible-driver unless a developer override is set. General Maxwell support does not establish working GM20B Vulkan. No override was enabled.",
+      "evidence": [
+        "mesa-26.2.4/src/nouveau/vulkan/nvk_physical_device.c:87",
+        "mesa-26.2.4/src/nouveau/vulkan/nvk_physical_device.c:1508"
+      ]
+    },
+    {
+      "id": "desktop-rendering",
+      "status": "native-test-required",
+      "details": "Nouveau OpenGL and Tegra display/render-device buffer sharing remain the primary desktop path. Installing Mesa and passing Hyprland config verification do not qualify real EGL/scanout."
+    },
+    {
+      "id": "compute",
+      "status": "interface-gap",
+      "details": "Cached L4T CUDA/vendor libraries are a separate vendor-driver stack and were inspected as ELF files only. No CUDA, OpenCL or Vulkan compute execution is qualified."
+    },
+    {
+      "id": "switchroot-build-reuse",
+      "status": "source-confirmed",
+      "details": "Donor scripts include moving-branch pulls, reset and package installation operations. Only source snapshots were harvested; none of the donor build or package scripts was executed."
+    }
+  ],
+  "gaps": [
+    "Native GPU/Wayland buffer-sharing validation",
+    "NVK Tegra support and conformance work before Vulkan qualification",
+    "Modern DRM/host1x media userspace implementation or an explicitly matched isolated vendor stack",
+    "Media sample correctness, browser/GStreamer playback and encode/VIC testing",
+    "Source Mesa detached signature has been retained but not cryptographically verified",
+    "Downstream selected snapshots are interface references, not a complete ready-to-build L4T distribution"
+  ],
+  "device_actions_performed": [],
+  "runtime_changes_performed": [],
+  "physical_shield_boot_tested": false,
+  "flashable_image": false
+}
