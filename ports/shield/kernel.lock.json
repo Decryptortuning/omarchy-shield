@@ -30,8 +30,8 @@
       },
       {
         "path": "ports/shield/kernel-patches/0004-darcy-smmu-handoff.patch",
-        "sha256": "11386a1db93487b93aa8bf7fe3c990f36c94363c515f90d8777f50b71bd729c7",
-        "reason": "Default-off A04 inherited SMMU reset and completion gate after OF platform population, before ordinary device init. Old DMA quiescence remains separate; native modern boot unqualified."
+        "sha256": "71ce47ebada995ec3a23513c73926a856aa498fd012bca250579c97c6193faa2",
+        "reason": "Default-off A04 inherited SMMU reset and post-OF completion gate; separately gated stamped GPU-disabled RAM probe can retain GPUB while denying every paging ASID. Native target userspace unqualified."
       }
     ],
     "variant": "omarchy-a04",

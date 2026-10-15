@@ -132,7 +132,9 @@ The diagnostic tool checks kernel compression identity, stock input hashes/heade
 
 The A04 kernel includes a default-off experimental `tegra_smmu.reset_inherited=1` parameter. It is for a reviewed recovery-to-Linux handoff after old DMA masters have been quiesced. It clears and verifies only the enable bit of the 39 SWGROUP registers already described by the T210 SoC table, before the existing cache flush, global enable and IOMMU registration. The register set is documented by [upstream commit 4a91b11c](https://github.com/torvalds/linux/commit/4a91b11c0a100532c466e07a1372d134ab0e753d), citing the Tegra X1 TRM with NVIDIA maintainer acknowledgement. Client registers, PTB slots and the default identity policy stay unchanged.
 
-A requested unsupported, repeated or rejected reset panics. A completion gate runs at subsystem phase 4, after the MC driver's architecture registration and OF platform population at phase 3s, and before the selected DMA drivers at phase 6; this also stops boot if MC probing never reaches the helper or fails before successful SMMU registration. The normal kernel behavior is unchanged while the parameter is off. This does not stop old DMA, fix the RAM/EMC handoff or establish a working native boot.
+A requested unsupported, repeated or rejected reset panics. A completion gate runs at subsystem phase 4, after the MC driver's architecture registration and OF platform population at phase 3s, and before the selected DMA drivers at phase 6; this also stops boot if MC probing never reaches the helper or fails before successful SMMU registration. The normal kernel behavior is unchanged while the parameter is off. This does not stop old DMA, establish RAM/EMC stability or qualify native userspace.
+
+The additional default-off `tegra_smmu.preserve_disabled_gpu=1` option is confined to the stamped first RAM probe, with the exact A04/T210 identity and an explicitly disabled GM20B node. It requires the inherited-reset request, retains only GPUB at `0xaac`, and marks all 128 paging ASIDs unavailable before IOMMU registration. This prevents paging attachments from replacing PTB slots, including all four GPUB selectors, while preserving strict checks for the other 38 groups. It does not preserve old page-table RAM or support an enabled GPU. The old GPU must already be quiescent. No conclusion about register security or writability follows from the observed failed clear.
 
 After the frozen source review and build, test the actual driver functions with fake MMIO and the missing-provider boot guard:
 
@@ -141,7 +143,7 @@ python3 ports/shield/tools/check-smmu-handoff.py --kernel-source "$kernel_source
 SHIELD_DIST_DIR="$build_root/kernel" bash ports/shield/tools/smoke-smmu-gate.sh
 ```
 
-The host harness checks all 39 registers and 128 ASID values, crossed-profile rejection, protected-write failure, an absent MC and the completion latch. The second command intentionally requests the reset on QEMU `virt`, where no Tegra MC can complete it, and requires a kernel panic before userspace. Neither is a physical SMMU or DMA qualification.
+The host harness checks all 39 registers and 128 ASID values, crossed-profile rejection, protected-write failure, an absent MC, the completion latch, invalid retention contracts, untouched GPUB state and refusal of all paging allocations in retention mode. The second command intentionally requests the reset on QEMU `virt`, where no Tegra MC can complete it, and requires a kernel panic before userspace. Neither is a physical SMMU or DMA qualification.
 
 ### Early persistent diagnostic console
 

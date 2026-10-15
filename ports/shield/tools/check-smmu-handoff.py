@@ -39,6 +39,9 @@ def main():
     raise ValueError('The handoff reset must remain a read-only, default-off module parameter')
   if 'static bool reset_inherited;' not in source or 'subsys_initcall(tegra_smmu_check_handoff_reset);' not in source:
     raise ValueError('Missing default-off state or pre-device completion gate')
+  if ('static bool preserve_disabled_gpu;' not in source or
+      'module_param_named(preserve_disabled_gpu, preserve_disabled_gpu, bool, 0400);' not in source):
+    raise ValueError('Disabled-GPU diagnostic retention must be a separate default-off parameter')
   if 'arch_initcall(tegra_mc_init);' not in parent:
     raise ValueError('Re-review parent MC probe ordering')
   if 'arch_initcall_sync(of_platform_default_populate_init);' not in files['drivers/of/platform.c']:
@@ -53,7 +56,10 @@ def main():
     raise ValueError('Reset/flush/enable/register/completion ordering changed')
   template = (Path(__file__).resolve().parent.parent / 'tests/smmu-harness.c').read_text()
   code = template.replace('/* GROUPS */', ',\n'.join(f'  {{ .reg = 0x{reg:x} }}' for reg in registers))
-  names = ('smmu_flush', 'tegra_smmu_reset_handoff', 'tegra_smmu_check_handoff_reset')
+  prepare = source.split('static int tegra_smmu_as_prepare(', 1)[1].split('static void tegra_smmu_as_unprepare(', 1)[0]
+  if not (prepare.index('err = tegra_smmu_alloc_asid(') < prepare.index('if (err < 0)') < prepare.index('SMMU_PTB_ASID')):
+    raise ValueError('Paging allocation must fail before any PTB update')
+  names = ('smmu_flush', 'tegra_smmu_alloc_asid', 'tegra_smmu_reset_handoff', 'tegra_smmu_check_handoff_reset')
   code = code.replace('/* DRIVER */', '\n'.join(function(source, name) for name in names))
   with tempfile.TemporaryDirectory(prefix='shield-smmu-regression-') as temporary:
     root = Path(temporary)
@@ -64,6 +70,7 @@ def main():
   report = {'source_sha256': {name: hashlib.sha256(text.encode()).hexdigest() for name, text in files.items()},
             'actual_driver_functions': list(names), 'documented_soc_registers': registers,
             'probe_completion_order_checked': True, 'result': result.stdout.strip(),
+            'disabled_GPU_retention_blocks_all_paging_ASIDs': True,
             'scope': 'Actual source functions and SoC table with fake MMIO; no physical DMA, SMMU or native handoff qualification',
             'native_handoff_qualified': False, 'device_actions_performed': []}
   args.output.parent.mkdir(parents=True, exist_ok=True)

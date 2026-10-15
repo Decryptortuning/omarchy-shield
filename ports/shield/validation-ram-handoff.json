@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "scope": "Measured legacy recovery RAM handoff and corrected early-logging component build; modern Shield userspace not verified",
+  "scope": "Measured native Linux 7.1 kernel entry and early persistent panic; modern Shield userspace not verified",
   "base_source_commit": "db6cb0f28a63254c9f73d22b619fd904dd6caed3",
   "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
   "board_variant": "darcy-t210-a04",
@@ -63,9 +63,18 @@
     "first_attempt_return_to_recovery": "owner confirmed automatic",
     "modern_kernel_userspace": "not verified",
     "diagnostic_ACM_enumeration": "not observed in two capture windows",
-    "second_attempt_recovery_log": "pending owner HDMI/recovery ADB access",
+    "second_attempt_recovery_log": "retrieved: native Linux 7.1 entry, early ramoops console, panic before PID1",
     "physical_full_hardware_passes": 0,
-    "physical_full_hardware_entries": 19
+    "physical_full_hardware_entries": 19,
+    "modern_kernel_entry": "confirmed by persistent console",
+    "modern_early_failure": {
+      "component": "tegra-smmu reset during OF memory-controller probe",
+      "register": "0xaac (GPUB)",
+      "reason": "ASID_ENABLE remained set after clear request; security/writability cause unproven",
+      "uptime_seconds": 0.034568
+    },
+    "warm_recovery_return": "confirmed by recovery software-reset state",
+    "persistent_console_sha256": "eaaffaa1376c70aaa023aae495aec5462b5b0e1f71ff6fb985fa14fd9817d185"
   },
   "USB_rootfs": {
     "fresh_owner_rootfs_signed_base_and_paired_packages": "offline image audit passed",
@@ -77,10 +86,11 @@
   "limitations": [
     "Initial completion gate ran before OF platform population; corrected gate waits until subsystem phase",
     "Generic host force-idle returns success with power-state warning and can skip channel suspend; successful readback does not establish all old-master shutdown",
-    "Persistent console uses explicitly reserved existing RAM layout; physical modern log retrieval still pending",
+    "Persistent console uses explicitly reserved existing RAM layout; physical modern panic log retrieved; userspace not reached",
     "No modern cooling, USB host, GPU, desktop, main boot image or full recovery-chain qualification",
     "Current logging components are diagnostic artifacts, not replacement paired desktop packages or an installer"
   ],
   "raw_device_identifiers_published": false,
-  "new_boot_DTB_or_early_firmware_partition_writes": false
+  "new_boot_DTB_or_early_firmware_partition_writes": false,
+  "source_files_scope": "Historical second-attempt component inputs; subsequent diagnostic policy is separately reviewed and not covered by these build hashes"
 }
