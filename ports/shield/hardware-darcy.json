@@ -1,5 +1,5 @@
 {
-  "target": "NVIDIA Shield TV / darcy / original Tegra210 (A08 evaluation DT; physical board SKU unconfirmed)",
+  "target": "NVIDIA Shield TV / Darcy A04 / original Tegra210 A02; selected by bootloader and matching stored stock DTB",
   "scope": "Full hardware support is the acceptance goal; none is yet physically qualified.",
   "subsystems": [
     {
@@ -272,14 +272,18 @@
       "config": [
         "CONFIG_SENSORS_PWM_FAN",
         "CONFIG_TEGRA_SOCTHERM",
-        "CONFIG_PWM_TEGRA"
+        "CONFIG_PWM_TEGRA",
+        "CONFIG_SENSORS_LM90"
       ],
       "modules": [],
       "firmware_patterns": [],
-      "acceptance": "Verify idle fan/sensors and cooling-state transitions before progressively monitored load; compare trip points to stock.",
+      "acceptance": "Verify both TMP451 channels against stock, alert wiring, idle fan and cooling-state transitions before progressively monitored load. Vendor board-temperature DRAM and diode DVFS actions remain explicit gaps until mapped and physically tested.",
       "required_status": "hardware-validated or an explicit unresolved capability gap",
       "device_tree_nodes": [
-        "/pwm-fan"
+        "/pwm-fan",
+        "/i2c@7000c000/temperature-sensor@4c",
+        "/thermal-zones/board-thermal",
+        "/thermal-zones/diode-thermal"
       ]
     },
     {

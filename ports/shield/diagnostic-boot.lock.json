@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "board_variant": "darcy-t210",
+  "board_variant": "darcy-t210-a04",
   "stock_build": "13961458_4387.0822",
   "stock_inputs": [
     {
@@ -33,16 +33,16 @@
     "license": "GPL-2.0-only; retain per-file notices",
     "syscall": "legacy kexec_load with explicit DTB and initrd",
     "stock_config_enabled": true,
-    "physical_entry_or_handoff_verified": false
+    "physical_entry_or_handoff_verified": false,
+    "privileged_lineage_recovery_entry_verified": true,
+    "physical_kexec_load_or_exec_verified": false
   },
   "unresolved_native_gates": [
-    "Controlled privileged stock-kernel entry and temporary boot behavior",
-    "Actual owner PCB/SKU, RAM code and live DT identity",
-    "Memory reservations, trained EMC tables and bootloader fixup propagation",
-    "CBoot load-address interpretation for any Android-format custom entry image",
-    "Tegra CPU/cache/device shutdown state across legacy kexec",
-    "Physical fan supply, PWM polarity, tach response and conservative stop conditions",
-    "Physical backups, restoration procedure and owner unlocking/data-wipe decision"
+    "Propagate captured live memory banks, VPR/framebuffer reservations and boot-trained EMC data to modern bindings",
+    "Validate RAM code, inherited EMC rate and OPP/timing agreement before enabling EMC scaling",
+    "Tegra CPU/cache shutdown and active recovery XUDC DMA quiescence across legacy kexec",
+    "Physical modern-kernel fan supply, PWM polarity, tach response and conservative stop conditions",
+    "Review CBoot header interpretation before any Android-format modern entry; recovery-only route is independently verified"
   ],
   "flashable_image": false
 }

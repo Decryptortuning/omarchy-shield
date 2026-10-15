@@ -3,7 +3,9 @@
 shield_usb_supported_board() {
   shield_usb_tokens=$1
   if printf '%s\n' "$shield_usb_tokens" | grep -Eq '^(apple,|qcom,)'; then return 1; fi
-  if printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,p2894-0050-a08'; then
+  if printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,p2894-0050-a04' &&
+     printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,p2894-0050-a08'; then return 1; fi
+  if printf '%s\n' "$shield_usb_tokens" | grep -Eq '^nvidia,p2894-0050-a0[48]$'; then
     printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,tegra210' || return 1
     if printf '%s\n' "$shield_usb_tokens" | grep -Eq '^nvidia,(tegra210b01|p2894-2551-b00)$'; then return 1; fi
   elif printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,p2894-2551-b00'; then

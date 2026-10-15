@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-15",
+  "scope": "Distinct modern Darcy A04 kernel/profile component integration; no native modern execution",
+  "base_commit": "3da903f3db51ec88d90adccc7280783897c1fed2",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "board_variant": "darcy-t210-a04",
+  "dtb": "tegra210-p2894-0050-a04.dtb",
+  "artifacts": {
+    "Image": {
+      "bytes": 45746688,
+      "sha256": "fde89201df271500b29838cd7c80ab9833fab51faa793e3c8f9c6095f83af1c0"
+    },
+    "Image.gz": {
+      "bytes": 17256232,
+      "sha256": "e2bca839dabaf1beb36590ccc05347acb46984af74f0e7ae57a0d083e880e28b"
+    },
+    "initramfs.cpio.gz": {
+      "bytes": 731742,
+      "sha256": "b4e165c7d19f1046419c89ea8d19e5646f5e064b23a0b16d4159380823060f4b"
+    },
+    "tegra210-p2894-0050-a04.dtb": {
+      "bytes": 72718,
+      "sha256": "361401229f0975df14578b0521e6fe8fa9af3f9bd79ae87182b83134eb0e9f80"
+    },
+    "kernel-modules.tar.zst": {
+      "bytes": 19152205,
+      "sha256": "f94bc394ae29de3e8d248083bada225fea297163d50376a6576212de021e95ea"
+    }
+  },
+  "checks": {
+    "input_checksums": "passed",
+    "variant_python_tests": 14,
+    "bringup_input_python_tests": 12,
+    "platform_shell_groups": 7,
+    "shell_and_powershell_parser": "passed",
+    "fresh_kernel_and_matching_modules_build": "passed",
+    "compiled_profile_and_A04_sensor_PWM_properties": "passed",
+    "LM90_driver": "built-in",
+    "QEMU_virt_kernel_and_diagnostic_initramfs": "passed",
+    "schema_meta_validation": "passed for board root, LM90 sensor and thermal-zones schemas",
+    "compiled_DTB_schema_validation": {
+      "new_A04_root_sensor_monitor_zone_errors": 0,
+      "inherited_errors": 1,
+      "inherited_error": "tegra210.dtsi mem-thermal cooling-maps names dram-active and dram-passive do not match map-*",
+      "unrelated_schema_preprocessing_notices": 4,
+      "full_schema_pass": false
+    }
+  },
+  "board_review": {
+    "independent_stock_DTB_matches_A04": true,
+    "selected_normalized_electrical_nodes_matched_across_A04_A08_live": 66,
+    "temperature_sensor": "TMP451, I2C 0x4c, MAX77620 SD3, GPIO X4 level-low IRQ",
+    "thermal_monitor_channels": {
+      "board": 0,
+      "diode": 1
+    },
+    "polling_ms": 1000,
+    "vendor_DRAM_and_voltage_thermal_actions_ported": false
+  },
+  "native": {
+    "modern_kernel_booted_on_Shield": false,
+    "kexec_loaded_or_executed": false,
+    "firmware_activated": false,
+    "physical_acceptance_passes_added": 0,
+    "full_hardware_passes": 0,
+    "full_hardware_entries": 19
+  },
+  "open_handoff_requirements": [
+    "Live three-bank RAM and explicit exclusions; do not use component DTB flat RAM layout",
+    "Sanitized training data/EMC and inherited clock state review",
+    "Secondary CPU shutdown and active USB/DMA quiesce",
+    "Bounded native diagnostic stop/watchdog and capture"
+  ],
+  "private_raw_evidence_published": false
+}

@@ -13,9 +13,9 @@ export OMARCHY_PATH=$ROOT
 export OMARCHY_PROC_ROOT=$work/board/proc
 export PATH=$work/board/bin:$ROOT/bin:$PATH
 
-for profile in darcy mdarcy; do
-  if [[ $profile == "darcy" ]]; then
-    board=nvidia,p2894-0050-a08
+for profile in darcy-a04 darcy-a08 mdarcy; do
+  if [[ $profile == darcy-* ]]; then
+    board=nvidia,p2894-0050-${profile#darcy-}
     soc=nvidia,tegra210
   else
     board=nvidia,p2894-2551-b00
@@ -38,6 +38,8 @@ printf '%s\0' nvidia,p2894-0050-a08 nvidia,p2894-2551-b00 nvidia,tegra210b01 nvi
 ! omarchy-hw-platform >/dev/null 2>&1 || fail "two different Shield boards are contradictory"
 printf '%s\0' nvidia,p2894-2551-b00 nvidia,tegra210b01 apple,t6021 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
 ! omarchy-hw-platform >/dev/null 2>&1 || fail "mixed Apple and Shield identity is contradictory"
+printf '%s\0' nvidia,p2894-0050-a04 nvidia,p2894-0050-a08 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
+! omarchy-hw-platform >/dev/null 2>&1 || fail "A04 and A08 cannot be combined"
 pass "other Shield models and contradictory board/SoC pairs are refused"
 
 export OMARCHY_SYS_ROOT=$work/board/sys
@@ -45,6 +47,9 @@ mkdir -p "$OMARCHY_SYS_ROOT/firmware/devicetree/base"
 printf '%s\0' nvidia,p2894-0050-a08 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
 printf '%s\0' nvidia,p2894-2551-b00 nvidia,tegra210b01 >"$OMARCHY_SYS_ROOT/firmware/devicetree/base/compatible"
 ! omarchy-hw-platform >/dev/null 2>&1 || fail "proc/sysfs cannot disagree about the Shield generation"
+printf '%s\0' nvidia,p2894-0050-a04 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
+printf '%s\0' nvidia,p2894-0050-a08 nvidia,tegra210 >"$OMARCHY_SYS_ROOT/firmware/devicetree/base/compatible"
+! omarchy-hw-platform >/dev/null 2>&1 || fail "proc/sysfs cannot disagree about A04 versus A08"
 rm "$OMARCHY_SYS_ROOT/firmware/devicetree/base/compatible"
 unset OMARCHY_SYS_ROOT
 pass "proc and sysfs must agree on the Shield generation"

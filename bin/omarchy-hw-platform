@@ -162,6 +162,8 @@ for source in "${sources[@]}"; do
   qcom=0
   shield=0
   shield_darcy=0
+  shield_darcy_a04=0
+  shield_darcy_a08=0
   shield_mdarcy=0
   tegra_210=0
   tegra_b01=0
@@ -170,7 +172,8 @@ for source in "${sources[@]}"; do
     [[ $token == "apple,"* ]] && apple=1
     [[ $token == "qcom,"* ]] && qcom=1
     case $token in
-      nvidia,p2894-0050-a08) shield=1; shield_darcy=1 ;;
+      nvidia,p2894-0050-a04) shield=1; shield_darcy=1; shield_darcy_a04=1 ;;
+      nvidia,p2894-0050-a08) shield=1; shield_darcy=1; shield_darcy_a08=1 ;;
       nvidia,p2894-2551-b00) shield=1; shield_mdarcy=1 ;;
       nvidia,tegra210) tegra_210=1 ;;
       nvidia,tegra210b01) tegra_b01=1 ;;
@@ -182,8 +185,12 @@ for source in "${sources[@]}"; do
   elif (( apple + qcom + shield > 1 )); then
     contradiction "$source names incompatible hardware families"
   elif (( shield )); then
-    if (( shield_darcy && !shield_mdarcy && tegra_210 && !tegra_b01 )); then
-      found="shield-darcy"
+    if (( shield_darcy && shield_darcy_a04 + shield_darcy_a08 == 1 && !shield_mdarcy && tegra_210 && !tegra_b01 )); then
+      if (( shield_darcy_a04 )); then
+        found="shield-darcy-a04"
+      else
+        found="shield-darcy-a08"
+      fi
     elif (( shield_mdarcy && !shield_darcy && tegra_b01 )); then
       found="shield-mdarcy"
     else
@@ -205,7 +212,7 @@ for source in "${sources[@]}"; do
 done
 
 case $vendor in
-  apple | qcom | shield-darcy | shield-mdarcy)
+  apple | qcom | shield-darcy-a04 | shield-darcy-a08 | shield-mdarcy)
     [[ $machine == "aarch64" ]] || contradiction "$vendor_source names $vendor hardware but the CPU is $machine"
     if [[ $vendor == "apple" ]]; then
       echo aarch64-apple

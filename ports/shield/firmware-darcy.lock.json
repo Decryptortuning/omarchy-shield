@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "board_variant": "darcy-t210",
+  "board_variant": "darcy-t210-a04",
   "physical_board_sku_confirmed": false,
   "purpose": "Reproducible inactive staging only; no firmware activation or binary redistribution",
   "sources": [
@@ -596,11 +596,12 @@
       "download_url": null,
       "usage": "driver-candidate",
       "subsystem": "wifi",
-      "runtime_request": "brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt",
+      "runtime_request": "brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a04.txt",
       "activation_allowed": false,
       "license_status": "Redistribution permission not established; local owner research only",
       "format": null,
-      "requires_board_mac_review": true
+      "requires_board_mac_review": true,
+      "a04_source_evidence": "Captured live A04 nv_path and tuned_nv_path both select nvram_darcy_a00.txt; bytes remain inactive and owner calibration/MAC handling remains required."
     },
     {
       "id": "official-current-ota/payloads/firmware/tegra21x/nvhost_nvdec020_ns.fw",
@@ -649,5 +650,6 @@
     }
   ],
   "installed_into_runtime": false,
-  "hardware_qualified": false
+  "hardware_qualified": false,
+  "bootloader_selected_board_revision": "a04"
 }

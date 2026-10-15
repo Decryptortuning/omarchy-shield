@@ -14,7 +14,7 @@ from tools.board_firmware import checked_path, verify_bytes
 def stage(lock_path, input_root, output, download=False):
   raw = lock_path.read_bytes()
   lock = json.loads(raw)
-  if lock['board_variant'] != 'darcy-t210' or lock['installed_into_runtime'] is not False:
+  if lock['board_variant'] not in ('darcy-t210-a04', 'darcy-t210-a08') or lock['installed_into_runtime'] is not False:
     raise ValueError('This staging lock must describe inactive original-T210 Darcy inputs')
   output = output.resolve()
   if output.exists() or any(output.parts[i:i + 2] == ('lib', 'firmware') for i in range(len(output.parts) - 1)):
@@ -69,10 +69,11 @@ def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--input-root', required=True, type=Path, help='Previously acquired firmware harvest directory')
   parser.add_argument('--output', required=True, type=Path)
+  parser.add_argument('--lock', type=Path, default=Path(__file__).resolve().parent / 'firmware-darcy.lock.json')
   parser.add_argument('--download-upstream', action='store_true', help='Fetch missing upstream files over HTTPS; stock OTA inputs must be local')
   args = parser.parse_args()
   try:
-    report = stage(Path(__file__).resolve().parent / 'firmware-darcy.lock.json',
+    report = stage(args.lock,
                    args.input_root.resolve(), args.output, args.download_upstream)
   except (ValueError, OSError) as error:
     raise SystemExit(str(error)) from error

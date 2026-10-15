@@ -1,12 +1,12 @@
 {
-  "target": "Omarchy connected Darcy / original Tegra210 A02; A08 evaluation DT candidate, physical board SKU unconfirmed",
+  "target": "Omarchy connected Darcy / original Tegra210 A02; bootloader-selected A04 with matching physical stock DTB",
   "kernel": {
     "repository": "ack-tegra",
     "url": "https://git.thomasmak.in/tmakin/ack-tegra.git",
     "branch": "testing-7.1",
     "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
     "version": "7.1.0",
-    "device_tree": "nvidia/tegra210-p2894-0050-a08.dtb",
+    "device_tree": "nvidia/tegra210-p2894-0050-a04.dtb",
     "build_toolchain": "LLVM 18.1.3",
     "source_archive": {
       "url": "https://git.thomasmak.in/tmakin/ack-tegra/archive/9336ceeebe1d75021d9fd98c94abaec522ba39b3.tar.gz",
@@ -22,9 +22,14 @@
         "path": "ports/shield/kernel-patches/0002-darcy-inverted-fan.patch",
         "sha256": "8652026eef2097e967f808f39c4c16a767ff614a4f9fa66e3a80ccf1449eb62d",
         "reason": "Support inverse power-only PWM, defined fan idle/resume and ascending Darcy A08 cooling; preserve the GPU regulator normal-polarity specifier. Source-tested candidate, physical behavior unqualified."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0003-darcy-a04.patch",
+        "sha256": "eee85f2583713f124f79b9a7be202d7c7b28b6c45af2f4f8d47d21abc6f05199",
+        "reason": "Distinct A04 leaf and binding with exact-stock TMP451 wiring and modern monitor-only sensor zones; shared electrical definitions retained. Physical modern-kernel behavior unqualified."
       }
     ],
-    "variant": "omarchy-integration",
+    "variant": "omarchy-a04",
     "config_fragment": "ports/shield/kernel.fragment",
     "device_tree_overlays": [
       {
@@ -77,9 +82,9 @@
       "role": "Previously built and QEMU-validated Linux 6.12.69 baseline"
     }
   ],
-  "board_variant": "darcy-t210",
+  "board_variant": "darcy-t210-a04",
   "hardware_matrix": {
     "path": "ports/shield/hardware-darcy.json",
-    "sha256": "ce8cd509cba291e83e0053bd31e7fc73a75b7f16f0514d758a2a97bb42b07c07"
+    "sha256": "2dbd4f401fdd898894783f5104309f88f376aacd07b7ecb5ab0c8b5ea8bb84b6"
   }
 }
