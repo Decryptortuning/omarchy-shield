@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+from tools.kernel_profile import verify_kernel_profile
 
 
 def device_tree_status(dtb, path):
@@ -27,7 +28,15 @@ def main():
   parser.add_argument('--rootfs', type=Path)
   parser.add_argument('--output', type=Path, default=port / 'build/hardware-audit.json')
   args = parser.parse_args()
-  requirements = json.loads((port / 'hardware.json').read_text())
+  try:
+    lock, dtb = verify_kernel_profile(args.kernel_dir, allow_legacy=True)
+  except (ValueError, OSError, KeyError) as error:
+    raise SystemExit(str(error)) from error
+  matrix = args.kernel_dir / 'hardware.json'
+  if 'hardware_matrix' not in lock:
+    # Historical B01 bundles predate portable acceptance-matrix snapshots.
+    matrix = port / 'hardware.json'
+  requirements = json.loads(matrix.read_text())
   config = {}
   for line in (args.kernel_dir / 'kernel.config').read_text().splitlines():
     if re.match(r'^CONFIG_\w+=', line):
@@ -41,7 +50,6 @@ def main():
   module_names = {Path(entry).name.split('.ko', 1)[0].replace('_', '-')
           for entry in modules if '.ko' in Path(entry).name}
   items = []
-  dtb = args.kernel_dir / 'tegra210b01-p2894-2551-b00.dtb'
   for item in requirements['subsystems']:
     symbols = {name: config.get(name, 'n') for name in item.get('config', [])}
     absent = [name for name, value in symbols.items() if value not in ('m', 'y')]
@@ -58,7 +66,8 @@ def main():
            'compiled_device_tree': tree,
            'physical_status': 'untested',
            'build_config_complete': (not absent and all(module_checks.values())) if symbols else None})
-  report = {'target': requirements['target'], 'subsystems': items,
+  report = {'target': requirements['target'], 'board_variant': lock.get('board_variant', 'mdarcy-t210b01'),
+       'device_tree': dtb.name, 'subsystems': items,
        'all_physical_tests_passed': False, 'physical_shield_boot_tested': False,
        'meaning': 'Configured/packaged drivers and firmware candidates are not proof that hardware works.'}
   args.output.parent.mkdir(parents=True, exist_ok=True)

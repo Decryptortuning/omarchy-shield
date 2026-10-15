@@ -35,7 +35,7 @@ pacman -Q linux-shield omarchy omarchy-settings omarchy-shield hyprland quickshe
 echo 'CHECK: installed package database and complete requested package set'
 [[ $(/usr/bin/omarchy-hw-platform) == aarch64 ]]
 echo 'CHECK: QEMU hardware remains plain aarch64, never a physical Shield pass'
-for module in nouveau brcmfmac r8152 hci_uart tegra_cec snd_hda_tegra tegra_xudc; do
+for module in nouveau brcmfmac r8152 r8169 hci_uart tegra_cec snd_hda_tegra tegra_xudc; do
   version=$(modinfo -k "$(uname -r)" -F vermagic "$module")
   [[ $version == "$(uname -r) "* ]]
   modprobe --dry-run "$module"

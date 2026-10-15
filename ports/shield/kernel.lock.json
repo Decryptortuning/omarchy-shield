@@ -1,12 +1,12 @@
 {
-  "target": "Omarchy Shield TV Pro 2019 full hardware enablement candidate; physical board unconfirmed",
+  "target": "Omarchy connected Darcy / original Tegra210 A02; A08 evaluation DT candidate, physical board SKU unconfirmed",
   "kernel": {
     "repository": "ack-tegra",
     "url": "https://git.thomasmak.in/tmakin/ack-tegra.git",
     "branch": "testing-7.1",
     "commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
     "version": "7.1.0",
-    "device_tree": "nvidia/tegra210b01-p2894-2551-b00.dtb",
+    "device_tree": "nvidia/tegra210-p2894-0050-a08.dtb",
     "build_toolchain": "LLVM 18.1.3",
     "source_archive": {
       "url": "https://git.thomasmak.in/tmakin/ack-tegra/archive/9336ceeebe1d75021d9fd98c94abaec522ba39b3.tar.gz",
@@ -23,9 +23,9 @@
     "config_fragment": "ports/shield/kernel.fragment",
     "device_tree_overlays": [
       {
-        "path": "ports/shield/tegra210b01-shield-cec.dtso",
+        "path": "ports/shield/tegra210-shield-cec.dtso",
         "sha256": "9cdd1caf920fb801848e612b122d979a8460cc6bcb3d15a8f0c73245b754de9e",
-        "reason": "Enable the Tegra CEC controller on the inherited P2894 PCC0 CEC pinmux; physical operation remains untested."
+        "reason": "Enable CEC on the shared P2894 PCC0 pinmux for this original Tegra210 evaluation DT; physical operation remains untested."
       }
     ]
   },
@@ -71,5 +71,10 @@
       "commit": "23386fcdd84c3a7bd474a4019c80b515572a7956",
       "role": "Previously built and QEMU-validated Linux 6.12.69 baseline"
     }
-  ]
+  ],
+  "board_variant": "darcy-t210",
+  "hardware_matrix": {
+    "path": "ports/shield/hardware-darcy.json",
+    "sha256": "2fcb496a4212b3eb71fb4073b712631fecc5584fa404b8ce33ab4d0523e71ada"
+  }
 }

@@ -1,19 +1,21 @@
 pkgname=omarchy-shield
 pkgver=0.1.0
-pkgrel=3
-pkgdesc='NVIDIA Shield TV Pro 2019 experimental Omarchy platform integration'
+pkgrel=4
+pkgdesc='NVIDIA Shield TV experimental Omarchy platform integration'
 arch=('aarch64')
 license=('MIT')
 depends=('bash' 'kmod' 'python' 'omarchy' 'linux-shield')
-source=('lifecycle' 'collect-shield-linux.py' 'hardware.json')
-sha256sums=('28a2af6cdf824f8111e9ff43746b775157318bed558a2a04817a15840f503a45'
-  '9b0578ef21d7cd93dba6b1313db3fad0f00f40059b35818cfbb36a473a59d1e6'
-  'd91cbc584a8a4c2de03c57f918e91969758a847034cd15055a2579ea758d893a')
+source=('lifecycle' 'collect-shield-linux.py' 'hardware.json' 'hardware-darcy.json')
+sha256sums=('b4107398484437f344d8959d7920a5164769b083b7f67ba3439a815208c19fee'
+  'ed90d9be0338c0b2078e959c3fcee9c53c799f647e996551e9ab6cc896d7e1d6'
+  'd91cbc584a8a4c2de03c57f918e91969758a847034cd15055a2579ea758d893a'
+  '2fcb496a4212b3eb71fb4073b712631fecc5584fa404b8ce33ab4d0523e71ada')
 
 package() {
   install -Dm755 lifecycle "$pkgdir/usr/lib/omarchy/shield/lifecycle"
   install -Dm755 collect-shield-linux.py "$pkgdir/usr/lib/omarchy/shield/collect-shield-linux.py"
   install -Dm644 hardware.json "$pkgdir/usr/lib/omarchy/shield/hardware.json"
+  install -Dm644 hardware-darcy.json "$pkgdir/usr/lib/omarchy/shield/hardware-darcy.json"
   for operation in provision-prepare provision-commit provision-verify \
     reset-prepare reset-verify reset-commit reset-rollback update-verify \
     update-takeover luks-slots setup-boot setup-system setup-user post-install pre-remove; do

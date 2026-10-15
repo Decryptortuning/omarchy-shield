@@ -63,9 +63,24 @@ $state = Read-Native $adb ($adbSelector + @('get-state'))
 if ($state.exit_code -eq 0 -and $state.stdout -eq 'device') {
   $identity = Read-Native $adb ($adbSelector + @('shell', 'getprop', 'ro.product.device'))
   $report.identity = $identity
-  if ($identity.stdout -eq 'mdarcy') {
+  $manufacturer = Read-Native $adb ($adbSelector + @('shell', 'getprop', 'ro.product.manufacturer'))
+  $model = Read-Native $adb ($adbSelector + @('shell', 'getprop', 'ro.product.model'))
+  $chip = Read-Native $adb ($adbSelector + @('shell', 'cat', '/sys/module/tegra_fuse/parameters/tegra_chip_id'))
+  $major = Read-Native $adb ($adbSelector + @('shell', 'cat', '/sys/module/tegra_fuse/parameters/tegra_chip_major_rev'))
+  $report.soc_identity = [ordered]@{ manufacturer = $manufacturer; model = $model; chip_id = $chip; major_revision = $major }
+  $variant = ''
+  if ($manufacturer.stdout -eq 'NVIDIA' -and $model.stdout -match '^SHIELD' -and
+      $identity.stdout -in @('darcy', 'mdarcy') -and
+      $chip.exit_code -eq 0 -and $chip.stdout -eq '33' -and $major.exit_code -eq 0) {
+    if ($major.stdout -eq '1' -and $identity.stdout -eq 'darcy') { $variant = 'darcy-t210' }
+    if ($major.stdout -eq '2') { $variant = 'mdarcy-t210b01' }
+  }
+  if ($variant) {
     $report.state = 'stock-adb'
     $report.identity_confirmed = $true
+    $report.board_variant = $variant
+    $report.board_sku_confirmed = $false
+    $report.boot_image_compatibility_confirmed = $false
     $report.properties = [ordered]@{}
     foreach ($name in @('ro.product.device', 'ro.product.model', 'ro.board.platform',
       'ro.bootloader', 'ro.boot.hardware.sku', 'ro.boot.boardid', 'ro.boot.sku',
@@ -94,7 +109,10 @@ if ($state.exit_code -eq 0 -and $state.stdout -eq 'device') {
       $report.bootloader_variables = [ordered]@{}
       foreach ($name in @('product', 'variant', 'version-bootloader', 'secure', 'unlocked',
         'hw-revision', 'partition-type:boot', 'partition-size:boot', 'partition-size:recovery', 'has-slot:boot')) {
-        $report.bootloader_variables[$name] = Read-Native $fastboot ($fastbootSelector + @('getvar', $name))
+        $value = Read-Native $fastboot ($fastbootSelector + @('getvar', $name))
+        $value.available = $value.exit_code -eq 0 -and -not $value.timed_out -and
+          ($value.stdout + $value.stderr) -notmatch 'Unknown var!|No partition present|FAILED'
+        $report.bootloader_variables[$name] = $value
       }
     }
   } elseif ($devices.Count -gt 1) {
@@ -102,7 +120,8 @@ if ($state.exit_code -eq 0 -and $state.stdout -eq 'device') {
   }
 }
 $report.limitations = @(
-  'Fastboot product names alone do not establish a 2019 Pro board revision.',
+  'Android product names and fastboot t210ref alone do not establish the Tegra generation or board SKU.',
+  'Original Tegra210 and Tegra210B01 require separate matching device trees and firmware; never infer one from darcy alone.',
   'This inventory does not back up partitions or validate firmware payload compatibility.',
   'Review generated reports before publication; they can contain device identifiers.'
 )

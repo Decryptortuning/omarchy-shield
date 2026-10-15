@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
+from tools.kernel_profile import verify_kernel_profile
 
 
 def git(repository, *arguments, **options):
@@ -46,6 +47,10 @@ def main():
   recipe_commit = lock['packaging']['commit']
   git(recipes, 'cat-file', '-e', f'{recipe_commit}^{{commit}}')
   subprocess.run(['sha256sum', '--check', 'SHA256SUMS'], cwd=kernel, check=True)
+  try:
+    verify_kernel_profile(kernel)
+  except (ValueError, OSError, KeyError) as error:
+    raise SystemExit(str(error)) from error
   build = rootfs / 'build'
   if build.exists():
     raise SystemExit(f'Refusing to replace an existing build: {build}')
@@ -63,14 +68,14 @@ def main():
       destination = build / package
       shutil.copytree(staged / 'pkgbuilds' / package, destination)
       recipe = destination / 'PKGBUILD'
-      replacements = {'pkgver': version, 'pkgrel': '99.2', '_commit': repr(commit), '_tag': "''"}
+      replacements = {'pkgver': version, 'pkgrel': '99.3', '_commit': repr(commit), '_tag': "''"}
       lines = []
       for line in recipe.read_text().splitlines():
         key = line.split('=', 1)[0]
         lines.append(f'{key}={replacements[key]}' if key in replacements else line)
       recipe.write_text('\n'.join(lines) + '\n')
   shutil.copytree(exported / 'ports/shield/omarchy-shield', build / 'omarchy-shield')
-  for asset in ('hardware.json', 'collect-shield-linux.py'):
+  for asset in ('hardware.json', 'hardware-darcy.json', 'collect-shield-linux.py'):
     shutil.copy2(exported / 'ports/shield' / asset, build / 'omarchy-shield' / asset)
   shutil.copytree(exported / 'ports/shield/linux-shield', build / 'linux-shield')
   shutil.copytree(kernel, build / 'kernel-inputs')
@@ -79,9 +84,10 @@ def main():
     shutil.copy2(exported / 'ports/shield' / script, rootfs / 'var/lib/shield-linux' / destination)
   provenance = {
     'omarchy_commit': commit, 'packaging_commit': recipe_commit,
-    'pkgver': version, 'pkgrel': '99.2', 'architecture': 'aarch64',
+    'pkgver': version, 'pkgrel': '99.3', 'architecture': 'aarch64',
     'package_names': ['omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'],
     'kernel_source_commit': json.loads((kernel / 'sources.lock.json').read_text())['kernel']['commit'],
+    'board_variant': json.loads((kernel / 'sources.lock.json').read_text())['board_variant'],
     'physical_shield_tested': False, 'flashable_image': False,
   }
   (rootfs / 'var/lib/shield-linux/package-build.json').write_text(json.dumps(provenance, indent=2) + '\n')

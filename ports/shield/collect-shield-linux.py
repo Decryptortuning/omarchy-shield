@@ -28,6 +28,19 @@ def command(arguments):
     return {'command': arguments, 'unavailable': str(error)}
 
 
+def board_variant(compatible):
+  tokens = set(compatible)
+  darcy = 'nvidia,p2894-0050-a08' in tokens
+  mdarcy = 'nvidia,p2894-2551-b00' in tokens
+  if any(token.startswith(('apple,', 'qcom,')) for token in tokens):
+    return None
+  if darcy and not mdarcy and 'nvidia,tegra210' in tokens and 'nvidia,tegra210b01' not in tokens:
+    return 'darcy-t210'
+  if mdarcy and not darcy and 'nvidia,tegra210b01' in tokens:
+    return 'mdarcy-t210b01'
+  return None
+
+
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--output', type=Path, required=True)
@@ -36,8 +49,9 @@ def main():
   compatible = read('/proc/device-tree/compatible')
   if not isinstance(compatible, str):
     compatible = read('/sys/firmware/devicetree/base/compatible')
-  if platform.machine() != 'aarch64' or not isinstance(compatible, str) or 'nvidia,tegra210b01' not in compatible.splitlines():
-    raise SystemExit('This collector requires the Tegra210B01 target; it will not inventory the development PC')
+  variant = board_variant(compatible.splitlines()) if isinstance(compatible, str) else None
+  if platform.machine() != 'aarch64' or variant is None:
+    raise SystemExit('This collector requires a supported Shield board/SoC pair; it will not inventory the development PC')
   paths = ['/proc/device-tree/model', '/proc/cmdline', '/proc/cpuinfo', '/proc/meminfo', '/proc/partitions',
       '/sys/power/state', '/sys/power/mem_sleep']
   patterns = [
@@ -61,7 +75,8 @@ def main():
   if args.graphics:
     commands.extend([['eglinfo', '-B'], ['vulkaninfo', '--summary']])
   report = {
-    'target': 'Tegra210B01 Shield candidate',
+    'target': 'NVIDIA Shield TV candidate', 'board_variant': variant,
+    'acceptance_matrix': 'hardware-darcy.json' if variant == 'darcy-t210' else 'hardware.json',
     'collected_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
     'uname': list(platform.uname()), 'compatible': compatible.splitlines(),
     'files': {path: read(path) for path in dict.fromkeys(paths)},

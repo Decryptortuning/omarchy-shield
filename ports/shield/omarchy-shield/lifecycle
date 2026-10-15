@@ -6,7 +6,7 @@ set -euo pipefail
 [[ $- == *p* ]] || exit 126
 operation=${1:?Missing lifecycle operation}
 shift
-[[ $(/usr/bin/omarchy-hw-platform) == aarch64-shield ]] || { echo 'This operation requires a supported Shield 2019 device tree' >&2; exit 1; }
+[[ $(/usr/bin/omarchy-hw-platform) == aarch64-shield ]] || { echo 'This operation requires a supported Shield board/SoC pair' >&2; exit 1; }
 case $operation in
   setup-user | post-install | pre-remove)
     (( EUID != 0 )) || { echo 'Run user setup as the target user' >&2; exit 1; }

@@ -1,5 +1,7 @@
 # Pre-USB validation: 2026-10-14
 
+This historical report covers the original B01 candidate and paired package release `99.2`. USB inspection subsequently identified the owner's connected original-Tegra210 Darcy; [DARCY.md](DARCY.md) records the updated target. Current build defaults and package releases differ from the artifacts listed here.
+
 The custom ARM kernel and installed Omarchy development filesystem pass the whole-filesystem QEMU test. Four ARM packages have been built and installed together. No physical Shield boot, GPU or peripheral has passed qualification, and these artifacts are not a flashable installer. Full hardware support remains the acceptance goal in [hardware.json](hardware.json).
 
 ## Built artifacts

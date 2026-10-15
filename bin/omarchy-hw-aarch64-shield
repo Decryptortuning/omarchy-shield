@@ -1,6 +1,6 @@
 #!/bin/bash -p
 
-# omarchy:summary=Detect a supported NVIDIA Shield TV Pro 2019 device tree.
+# omarchy:summary=Detect a supported NVIDIA Shield TV device tree.
 
 # Match the detector's privileged startup boundary; root never accepts a
 # platform identity supplied through the caller's environment.

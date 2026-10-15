@@ -1,19 +1,21 @@
-# Shield TV Pro 2019 port
+# NVIDIA Shield TV port
 
-This is an experimental Omarchy platform port for `mdarcy` / Tegra210B01. Full hardware support is the acceptance goal, and outstanding capabilities stay visible in [hardware.json](hardware.json). No physical Shield boot or peripheral test has passed yet. There is no flashable installer.
+This experimental Omarchy port targets the owner's connected `darcy` / original Tegra210 A02 Shield. The earlier `mdarcy` / Tegra210B01 candidate is retained as a separate board profile. Full hardware support remains the acceptance goal in [hardware-darcy.json](hardware-darcy.json) and [hardware.json](hardware.json), respectively. No native Linux Shield boot or peripheral test has passed yet. There is no flashable installer.
 
 The [pre-USB validation report](VALIDATION.md) records four successfully built ARM packages and the passing custom-kernel/Omarchy filesystem VM test, including encrypted snapshots, config verification and virtual USB serial data. Package hashes and exact provenance are in [validation.json](validation.json).
 
+USB inspection identified original Tegra210 silicon, Android 11, and a locked bootloader. The owner confirmed this connected unit as the target. The current default lock selects a Darcy A08 evaluation DTB; its exact board SKU is still unconfirmed. The Windows fastboot driver is installed, read-only fastboot inspection worked, and the device returned to stock Android. No unlock, erase or flash has occurred. See [DARCY.md](DARCY.md) for the current scope.
+
 ## Current implementation
 
-- The `aarch64-shield` detector recognizes the verified A08 and B00 mainline board compatibles together with Tegra210B01. Older Shields, Switches and Jetsons do not select this platform. The physical unit's board revision remains unconfirmed.
+- The `aarch64-shield` detector recognizes A08 with original Tegra210, and B00 with Tegra210B01. Cross-generation pairs, conflicting proc/sysfs identities, 2015 Shields, Switches and Jetsons are rejected. Compatible strings identify supported evaluation DTs; they do not qualify the physical unit.
 - Package composition retains Omarchy's base and ARM defaults and adds the Shield platform, firmware candidates, Nouveau/Mesa/NVK and hardware diagnostics. The existing ARM edge repository supplies the desktop packages.
 - Image manifests and pacman templates understand the Shield platform. Boot, provisioning, reset and update operations dispatch to the local `omarchy-shield` package, whose unfinished boot-changing operations refuse to run rather than use a PC boot path.
 - The pinned ACK Tegra 7.1 kernel and diagnostic initramfs have compiled and booted under QEMU `virt`. The hardware configuration enables PCIe Wi-Fi, USB host/device mode, UAS storage, Bluetooth HID, HDMI audio, CEC, Nouveau and the host1x userspace interface. The matching kernel modules have been built. QEMU's virtual board does not exercise the Shield DTB or physical peripherals.
-- The B00 device-tree overlay enables the CEC controller on the inherited P2894 CEC pinmux. Firmware matching and all physical behavior remain untested.
+- Each board profile selects its own DTB, acceptance matrix and CEC overlay. The original Darcy profile includes PCIe Ethernet and PWM regulator requirements; B01 retains its own USB firmware and radio requirements. Firmware matching and all physical behavior remain untested.
 - The kernel profile includes Omarchy's zstd compressed swap and encrypted-root driver requirements. `linux-shield` owns the custom kernel modules without installing a boot image. Btrfs and Snapper are included; native snapshot boot integration remains unfinished.
 
-The current firmware audit finds GM20B ACR firmware and VIC firmware in the signed Linux firmware packages. The Tegra210B01 XUSB blob, Bluetooth HCD files, and NVDEC/NVENC blobs are absent. Generic Tegra210 firmware is not a replacement for the B01 XUSB blob. Board-specific Wi-Fi calibration also needs stock-device evidence. These remain unresolved runtime/qualification gaps. Checksum-pinned inactive XUSB, Bluetooth and video candidates have been extracted from NVIDIA's L4T 32.2.1 archive through `fetch-firmware-candidates.py`; none is enabled or physically qualified.
+The firmware audit finds GM20B ACR, VIC and original Tegra210 XUSB files in the signed Linux firmware packages. Tegra210B01 XUSB, matching Bluetooth HCD files, and NVDEC/NVENC blobs remain absent from the development runtime. Tegra210 XUSB is not a B01 replacement. Board-specific Wi-Fi calibration still needs evidence. Inactive XUSB, Bluetooth and video candidates from NVIDIA's pinned L4T 32.2.1 archive remain unqualified. Stock Android denied direct firmware and raw boot-partition reads; those payloads have not been backed up through ADB.
 
 ## Boot design
 
@@ -23,15 +25,16 @@ The initial target keeps native kernel/boot-image installation outside desktop u
 
 ## Inputs
 
-- [kernel.lock.json](kernel.lock.json): pinned ACK kernel, regulator build fix and board overlay.
+- [kernel.lock.json](kernel.lock.json): default original Tegra210 Darcy candidate, with pinned kernel, matrix and CEC overlay.
+- [kernel-mdarcy.lock.json](kernel-mdarcy.lock.json): separate Tegra210B01 B00 candidate; never substitute it for the connected original-X1 device.
 - [kernel.fragment](kernel.fragment): additional Shield hardware configuration, merged after a normal ARM64 diagnostic configuration.
 - [tegra210b01-shield-cec.dtso](tegra210b01-shield-cec.dtso): B00 evaluation board overlay; it is not confirmation of the owner's actual board revision.
 - [userspace.lock.json](userspace.lock.json): upstream source, packaging, ARM repository metadata and signed rootfs provenance. It records the upstream base rather than claiming that the public binary packages include this fork's changes.
 - [omarchy-shield](omarchy-shield/PKGBUILD): local ARM platform package. Build on Arch Linux ARM with `makepkg` after building/installing this fork's paired `omarchy` and `omarchy-settings` packages from the same source checkout through `OMARCHY_SRC` in the pinned upstream packaging recipes.
 - [BUILD.md](BUILD.md): checked build tools for the kernel/modules, signed ARM filesystem, four local packages, and isolated whole-filesystem QEMU tests.
-- [collect-shield-linux.py](collect-shield-linux.py): bounded evidence collection on the actual Tegra210B01 system. Run `sudo python3 collect-shield-linux.py --output hardware-report.json` after a native boot and basic cooling verification. `--graphics` additionally initializes EGL/Vulkan. Generated device reports must be reviewed before publishing.
+- [collect-shield-linux.py](collect-shield-linux.py): bounded evidence collection on either supported Shield board/SoC pair. Run `sudo python3 collect-shield-linux.py --output hardware-report.json` after a native boot and basic cooling verification. `--graphics` additionally initializes EGL/Vulkan. Generated device reports must be reviewed before publishing.
 
-The source branch reports `4.0.0.alpha`. Local paired packages use that source version with release `99.2`; do not mix the fork's runtime with settings built from another source commit. The upstream MIT license applies to Omarchy; the copied kernel patch and device-tree inputs retain their stated GPL licenses.
+The source branch reports `4.0.0.alpha`. Current paired-package recipes use release `99.3`; the historical pre-USB packages use `99.2`. Do not mix runtime/settings source commits or board kernel inputs. The upstream MIT license applies to Omarchy; copied kernel and device-tree inputs retain their stated GPL licenses.
 
 ## Qualification
 
