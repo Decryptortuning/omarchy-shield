@@ -1,8 +1,8 @@
 {
   "date": "2026-10-15",
   "timezone": "America/Phoenix",
-  "source_commit": "5801cbdfa679f416eb31dc4c648467442e14d00b",
-  "scope": "Owner-approved unlock, two temporary boots, installed stock recovery control and approved recovery-only diagnostic flash",
+  "source_commit": "997befdb08a267d2c90fc5917360a5e21aeed816",
+  "scope": "Owner-approved unlock, recovery-only restoration/custom-recovery controls, root ADB inventory and read-only physical partition capture",
   "device": {
     "android_device": "darcy",
     "soc": "original Tegra210 A02",
@@ -63,16 +63,19 @@
   },
   "conclusion": {
     "temporary_recovery_entry_qualified": false,
-    "root_cause": "Unresolved; both RAM controls and the flashed diagnostic returned to Android, while installed stock recovery worked before the diagnostic write",
+    "root_cause": "Custom stock-inventory image failure unresolved; matching stock restoration and official Lineage recovery direct menu boot both succeeded",
     "automatic_partition_flash_fallback_used": false,
     "partition_image_flash_performed": true,
-    "physical_partition_backup_obtained": false,
-    "physical_restoration_qualified": false,
+    "physical_partition_backup_obtained": true,
+    "physical_restoration_qualified": true,
     "modern_kernel_or_kexec_started": false,
     "physical_acceptance_passes_added": 0,
     "partitions_flashed": [
       "recovery"
-    ]
+    ],
+    "restoration_qualification_scope": "Matching exact-release recovery write and direct controller menu entry only",
+    "custom_recovery_menu_boot_verified": true,
+    "privileged_recovery_inventory_verified": true
   },
   "offline_a04_review": {
     "input_a04_dtb_sha256": "2a1762ce27b855b4a6b8f01060a05241af5c98fa656cc3e57263cb97b3ce55ec",
@@ -82,7 +85,7 @@
     "physical_sensor_detection_verified": false,
     "modern_a04_profile_implemented": false
   },
-  "next_step": "Restore the exact matching stock recovery and immediately select Boot recovery kernel without booting Android between; investigate executed cmdline and early-init observability before another custom revision",
+  "next_step": "Review captured A04 memory/reservation and EMC data against modern bindings, implement the distinct A04 profile and preserve the working recovery route before any modern kernel/kexec trial",
   "installed_stock_recovery": {
     "boot_route": "Fastboot menu Boot recovery kernel",
     "owner_observed_display": "Android Recovery NVIDIA/darcy/darcy Android 11 build 13961458_4387.0822",
@@ -127,7 +130,101 @@
     "kernel_release": "4.9.141-g9d1bd583388e",
     "foster_source_commit": "666d034739cd89e5a2628129e2141927e9d65592",
     "source_includes_darcy_a04": true,
-    "flashed": false,
-    "physical_boot_or_adb_shell_qualified": false
+    "flashed": true,
+    "physical_boot_qualified": true,
+    "adb_shell_qualified": true
+  },
+  "matching_stock_restoration": {
+    "image_sha256": "ebe2fc16c2b82114712f18bd78781b63c8d4b9a52de2294239b08a817098341d",
+    "image_bytes": 20575528,
+    "command": "fastboot flash recovery matching-stock-recovery.img",
+    "flash_exit_code": 0,
+    "flash_seconds": 1.634,
+    "boot_route": "Immediate controller Boot recovery kernel; B opens menu",
+    "owner_observed_display": "Dead robot, then Android Recovery menu",
+    "restoration_and_menu_entry_verified": true,
+    "other_partition_image_flashed": false,
+    "image_is_physical_partition_preimage": false
+  },
+  "official_recovery_control": {
+    "image_sha256": "99a0b27ed43d16fc1a9a7995f4b4428f1761c0216932dd9599400bbaa6b6cf9b",
+    "image_bytes": 21917696,
+    "command": "fastboot flash recovery official-lineage-foster-recovery.img",
+    "flash_exit_code": 0,
+    "flash_seconds": 1.692,
+    "boot_route": "Immediate controller Boot recovery kernel",
+    "owner_observed_display": "Lineage Recovery screen",
+    "custom_recovery_menu_boot_verified": true,
+    "usb_vid": "18d1",
+    "usb_pid": "d001",
+    "adb_state": "recovery",
+    "adb_root_shell_verified": true,
+    "inventory_captured": true,
+    "other_partition_image_flashed": false,
+    "full_rom_sent": false,
+    "interruption": "Owner accidentally rebooted before enabling main-menu ADB",
+    "post_reboot_recovery_contents_verified": true,
+    "resume": {
+      "same_image_rewritten_after_owner_reboot": true,
+      "flash_exit_code": 0,
+      "flash_seconds": 1.58,
+      "owner_enabled_advanced_adb": true,
+      "physical_sos_prefix_matches_official_control": true
+    }
+  },
+  "native_inventory": {
+    "kernel_release": "4.9.141-g9d1bd583388e",
+    "uid": 0,
+    "architecture": "aarch64",
+    "compatible": [
+      "nvidia,darcy",
+      "nvidia,foster-e",
+      "nvidia,tegra210"
+    ],
+    "metadata_files": 15,
+    "failed_optional_reads": 0,
+    "live_fdt_bytes": 565070,
+    "raw_evidence_private": true,
+    "skip_initramfs_present_in_this_recovery_cmdline": false,
+    "earlier_failed_boot_cmdlines_obtained": false,
+    "pstore_files": 0,
+    "fan_modules_loaded": [
+      "pwm_fan",
+      "therm_fan_est"
+    ],
+    "idle_cpu_temperature_millicelsius": 53000,
+    "idle_gpu_temperature_millicelsius": 51000,
+    "external_a04_sensor_zones_observed": [
+      "Tboard_tegra",
+      "Tdiode_tegra"
+    ],
+    "full_cooling_or_desktop_qualification": false
+  },
+  "physical_backups": {
+    "device_reads_only": true,
+    "device_host_sha256_agreement": true,
+    "labels": {
+      "LNX": {
+        "bytes": 26738688,
+        "official_boot_prefix_bytes": 11044132,
+        "official_boot_prefix_sha256": "a1111a6924a5bdffa8e88c960219b299a7b80d4690bffe92e415c6afb29ddd75",
+        "prefix_matches": true
+      },
+      "SOS": {
+        "bytes": 26738688,
+        "contains": "Current Lineage recovery control; not original stock preimage",
+        "official_control_prefix_bytes": 21917696,
+        "official_control_prefix_matches": true
+      },
+      "DTB": {
+        "bytes": 4194304,
+        "stored_a04_fdt_bytes": 302926,
+        "stored_a04_fdt_sha256": "2a1762ce27b855b4a6b8f01060a05241af5c98fa656cc3e57263cb97b3ce55ec",
+        "matches_harvested_a04": true
+      }
+    },
+    "initial_dd_capture_rejected": "Legacy exec-out included dd diagnostic stderr in binary stream",
+    "accepted_transfer": "Quiet cat, exact byte count and independent device sha256sum",
+    "raw_binaries_published": false
   }
 }
