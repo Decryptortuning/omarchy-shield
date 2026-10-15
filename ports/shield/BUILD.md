@@ -132,7 +132,7 @@ The diagnostic tool checks kernel compression identity, stock input hashes/heade
 
 The A04 kernel includes a default-off experimental `tegra_smmu.reset_inherited=1` parameter. It is for a reviewed recovery-to-Linux handoff after old DMA masters have been quiesced. It clears and verifies only the enable bit of the 39 SWGROUP registers already described by the T210 SoC table, before the existing cache flush, global enable and IOMMU registration. The register set is documented by [upstream commit 4a91b11c](https://github.com/torvalds/linux/commit/4a91b11c0a100532c466e07a1372d134ab0e753d), citing the Tegra X1 TRM with NVIDIA maintainer acknowledgement. Client registers, PTB slots and the default identity policy stay unchanged.
 
-A requested unsupported, repeated or rejected reset panics. A completion gate runs after the MC's architecture initcall and before the target DMA drivers; this also stops boot if MC probing never reaches the helper or fails before successful SMMU registration. The normal kernel behavior is unchanged while the parameter is off. This does not stop old DMA, fix the RAM/EMC handoff or establish a working native boot.
+A requested unsupported, repeated or rejected reset panics. A completion gate runs at subsystem phase 4, after the MC driver's architecture registration and OF platform population at phase 3s, and before the selected DMA drivers at phase 6; this also stops boot if MC probing never reaches the helper or fails before successful SMMU registration. The normal kernel behavior is unchanged while the parameter is off. This does not stop old DMA, fix the RAM/EMC handoff or establish a working native boot.
 
 After the frozen source review and build, test the actual driver functions with fake MMIO and the missing-provider boot guard:
 
@@ -142,3 +142,9 @@ SHIELD_DIST_DIR="$build_root/kernel" bash ports/shield/tools/smoke-smmu-gate.sh
 ```
 
 The host harness checks all 39 registers and 128 ASID values, crossed-profile rejection, protected-write failure, an absent MC and the completion latch. The second command intentionally requests the reset on QEMU `virt`, where no Tegra MC can complete it, and requires a kernel panic before userspace. Neither is a physical SMMU or DMA qualification.
+
+### Early persistent diagnostic console
+
+The diagnostic configuration builds ramoops, its console and pmsg support into the kernel. For the attended RAM probe, a private command line supplies the measured reserved-memory address/size and the legacy record/console/pmsg split, with explicit zero ftrace and ECC. This creates one backend at postcore phase 2 and can capture failures before OF platform population. Retain the memory reservation without adding a second ramoops-compatible DT node. Do not substitute another board's layout or assume the modern ftrace default matches recovery.
+
+The probe's one-way background logger mirrors bounded lines into kernel messages; the independent reset worker performs no console writes. A warm recovery boot is intended to expose the console through its existing pstore reader. USB capture and physical retrieval are separate measurements; the [handoff receipt](validation-ram-handoff.json) records their current result. These components are not an installer or a full hardware pass.

@@ -44,3 +44,9 @@ CONFIG_EFI_PARTITION=y
 CONFIG_DEBUG_INFO_NONE=y
 # CONFIG_DEBUG_INFO is not set
 # CONFIG_DEBUG_INFO_BTF is not set
+
+# Capture early diagnostic boot through the explicitly reserved RAM backend.
+CONFIG_PSTORE=y
+CONFIG_PSTORE_RAM=y
+CONFIG_PSTORE_CONSOLE=y
+CONFIG_PSTORE_PMSG=y

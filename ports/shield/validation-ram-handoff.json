@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-15",
+  "scope": "Measured legacy recovery RAM handoff and corrected early-logging component build; modern Shield userspace not verified",
+  "base_source_commit": "db6cb0f28a63254c9f73d22b619fd904dd6caed3",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "board_variant": "darcy-t210-a04",
+  "source_files": {
+    "build-kernel.sh": "d3b9665858cb85c85cbfcdc1dd27653a94bdbf8a53cf643b45fec96dc808f22e",
+    "config/bringup.fragment": "821f7aabb29a63a196727e2febb2ebb61a2535d349d56659dda04391f9282b32",
+    "kernel-patches/0004-darcy-smmu-handoff.patch": "11386a1db93487b93aa8bf7fe3c990f36c94363c515f90d8777f50b71bd729c7",
+    "kernel.lock.json": "8ad82915c4c912162a1eb50a1c30004fead1c4903777a1343be43ee3920817f6",
+    "tools/build-kexec.sh": "dafc797011ec6c2bc808c900b60c15c2424b4bcf43c80c43de8008791e8f0d94",
+    "tools/check-smmu-handoff.py": "685a212a67efaa321a8826a69146f40d20b230e9d588f3d8081a0761dbba4386"
+  },
+  "artifacts": {
+    "Image": {
+      "bytes": 45812224,
+      "sha256": "62312734cc6e5e7873f7b3a4013746dad8bd97c59bb4e130d8d04b5e458d3998"
+    },
+    "Image.gz": {
+      "bytes": 17269719,
+      "sha256": "559957300e140e9068c25a818008ccd80004b45e789960fa8dfe19aba833cc97"
+    },
+    "initramfs.cpio.gz": {
+      "bytes": 733511,
+      "sha256": "a62cbbdecd9a1121ccae346797ccd27cf993dcfe9593205eb4270c9b1e2ea844"
+    },
+    "tegra210-p2894-0050-a04.dtb": {
+      "bytes": 72718,
+      "sha256": "361401229f0975df14578b0521e6fe8fa9af3f9bd79ae87182b83134eb0e9f80"
+    },
+    "kernel-modules.tar.zst": {
+      "bytes": 19131745,
+      "sha256": "a170d3356001aa44a016e565dd03fda7d7dc705f01048c1b3bd72852c742428e"
+    }
+  },
+  "checks": {
+    "complete_kernel_modules_USB_initramfs_build": "passed",
+    "QEMU_normal_boot": "passed",
+    "QEMU_missing_MC_fail_closed": "passed",
+    "actual_source_MMIO_groups": 39,
+    "ASIDs_tested": 128,
+    "port_python_tests": 33,
+    "actual_ARM_shell_deadline_and_sensor_cases": 5,
+    "native_Windows_USB_identity_cases": 12,
+    "segment_parser_cases": 10,
+    "linked_init_order": [
+      "ramoops2",
+      "MC_driver3",
+      "OF_population3s",
+      "SMMU_completion_gate4",
+      "selected_DMA_drivers6"
+    ],
+    "builder_fresh_directory": "passed: actual fresh startup stopped at a fake git boundary before fetch/compile; parent directory is created before mktemp. This directory-only correction followed the component build."
+  },
+  "native": {
+    "reversible_RAM_load_and_review": "passed",
+    "legacy_UI_stop_and_DC_disable": "observed",
+    "legacy_host_force_idle_readback": "observed; channel callback not established",
+    "post_idle_EMC_hz": 1600000000,
+    "USB_configfs_disconnect": "observed",
+    "kexec_jump_and_secondary_CPU_shutdown": "confirmed in legacy persistent console",
+    "first_attempt_return_to_recovery": "owner confirmed automatic",
+    "modern_kernel_userspace": "not verified",
+    "diagnostic_ACM_enumeration": "not observed in two capture windows",
+    "second_attempt_recovery_log": "pending owner HDMI/recovery ADB access",
+    "physical_full_hardware_passes": 0,
+    "physical_full_hardware_entries": 19
+  },
+  "USB_rootfs": {
+    "fresh_owner_rootfs_signed_base_and_paired_packages": "offline image audit passed",
+    "Windows_full_payload_readback": "passed",
+    "Shield_size_partition_identity_and_sampled_payload_readback": "passed",
+    "mounted_under_legacy_recovery": false,
+    "bootable_Shield_desktop_qualified": false
+  },
+  "limitations": [
+    "Initial completion gate ran before OF platform population; corrected gate waits until subsystem phase",
+    "Generic host force-idle returns success with power-state warning and can skip channel suspend; successful readback does not establish all old-master shutdown",
+    "Persistent console uses explicitly reserved existing RAM layout; physical modern log retrieval still pending",
+    "No modern cooling, USB host, GPU, desktop, main boot image or full recovery-chain qualification",
+    "Current logging components are diagnostic artifacts, not replacement paired desktop packages or an installer"
+  ],
+  "raw_device_identifiers_published": false,
+  "new_boot_DTB_or_early_firmware_partition_writes": false
+}

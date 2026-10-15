@@ -14,6 +14,17 @@ git -C "$repository" cat-file -e "$commit^{commit}"
 mkdir -p "$destination"
 destination=$(realpath -- "$destination")
 git -C "$repository" archive "$commit" | tar -xf - -C "$destination"
+# Keep userspace --debug output without passing its newer kernel debug bit to
+# the Shield recovery kernel's legacy kexec_load ABI. Integrity checks stay on.
+python3 - "$destination/kexec/kexec.c" <<'PYDEBUG'
+from pathlib import Path
+import sys
+path = Path(sys.argv[1])
+source = path.read_text()
+line = "\t\t\tkexec_flags |= KEXEC_DEBUG;\n"
+assert source.count(line) == 1, 'Pinned kexec debug boundary changed'
+path.write_text(source.replace(line, "", 1))
+PYDEBUG
 (
   cd "$destination"
   sh bootstrap
@@ -33,7 +44,9 @@ size, count = struct.unpack_from('<HH', data, 54)
 assert all(struct.unpack_from('<I', data, offset + i * size)[0] != 3 for i in range(count)), 'Unexpected dynamic interpreter'
 report = {'source_commit': commit, 'path': 'build/sbin/kexec', 'bytes': len(data),
           'sha256': hashlib.sha256(data).hexdigest(), 'architecture': 'AArch64',
-          'dynamic_interpreter': False, 'load_or_execute_operation_tested': False,
+          'dynamic_interpreter': False, 'legacy_kernel_debug_flag_suppressed': True,
+          'patched_kexec_source_sha256': hashlib.sha256((root / 'kexec/kexec.c').read_bytes()).hexdigest(),
+          'load_or_execute_operation_tested': False,
           'physical_kexec_tested': False, 'device_actions_performed': []}
 (root / 'shield-build.json').write_text(json.dumps(report, indent=2) + '\n')
 print(json.dumps(report, indent=2))

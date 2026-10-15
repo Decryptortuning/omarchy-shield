@@ -28,19 +28,21 @@ def main():
   parser.add_argument('--kernel-source', required=True, type=Path)
   parser.add_argument('--output', required=True, type=Path)
   args = parser.parse_args()
-  paths = ('drivers/iommu/tegra-smmu.c', 'drivers/memory/tegra/tegra210.c', 'drivers/memory/tegra/mc.c')
+  paths = ('drivers/iommu/tegra-smmu.c', 'drivers/memory/tegra/tegra210.c', 'drivers/memory/tegra/mc.c', 'drivers/of/platform.c')
   files = {name: (args.kernel_source / name).read_text() for name in paths}
-  source, soc, parent = (files[name] for name in paths)
+  source, soc, parent = (files[name] for name in paths[:3])
   table = re.search(r'static const struct tegra_smmu_swgroup tegra210_swgroups\[\] = \{(.*?)\n\};', soc, re.S).group(1)
   registers = [int(value, 16) for value in re.findall(r'\.reg = (0x[0-9a-fA-F]+)', table)]
   if len(registers) != 39 or len(set(registers)) != 39 or 0xaa8 in registers:
     raise ValueError('Re-review the documented original T210 SWGROUP register set')
   if 'module_param_named(reset_inherited, reset_inherited, bool, 0400);' not in source:
     raise ValueError('The handoff reset must remain a read-only, default-off module parameter')
-  if 'static bool reset_inherited;' not in source or 'arch_initcall_sync(tegra_smmu_check_handoff_reset);' not in source:
+  if 'static bool reset_inherited;' not in source or 'subsys_initcall(tegra_smmu_check_handoff_reset);' not in source:
     raise ValueError('Missing default-off state or pre-device completion gate')
   if 'arch_initcall(tegra_mc_init);' not in parent:
     raise ValueError('Re-review parent MC probe ordering')
+  if 'arch_initcall_sync(of_platform_default_populate_init);' not in files['drivers/of/platform.c']:
+    raise ValueError('Re-review OF population before the subsystem completion gate')
   probe = source.split('struct tegra_smmu *tegra_smmu_probe(', 1)[1].split('\nvoid tegra_smmu_remove', 1)[0]
   ordered = ['tegra_smmu_reset_handoff(smmu);', 'SMMU_PTC_CONFIG_ENABLE',
              'smmu_flush_ptc_all(smmu);', 'smmu_flush_tlb(smmu);',

@@ -9,8 +9,9 @@ Add a default-off tegra_smmu.reset_inherited=1 bring-up parameter scoped to
 original Darcy A04/T210. Clear/read back only ASID_ENABLE through the existing
 SoC table before cache flush/global enable/registration. Keep client bits,
 PTB slots and the existing default-domain policy. Panic on an unsupported or
-failed requested reset, and require successful probe at arch_initcall_sync:
-the parent MC driver otherwise swallows SMMU errors before DMA device probes.
+failed requested reset, and require successful probe at subsys_initcall:
+run after OF population creates MC and before normal DMA device probes.
+The parent MC driver can otherwise swallow SMMU probe errors.
 
 All 39 T210 SWGROUP registers are backed by upstream commit
 4a91b11c0a100532c466e07a1372d134ab0e753d, which cites the Tegra X1 TRM and
@@ -52,7 +53,7 @@ It does not quiesce DMA and is not authorization or qualification for kexec.
 +
 +	return 0;
 +}
-+arch_initcall_sync(tegra_smmu_check_handoff_reset);
++subsys_initcall(tegra_smmu_check_handoff_reset);
  
  struct tegra_smmu_group {
  	struct list_head list;
