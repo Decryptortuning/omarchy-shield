@@ -45,7 +45,7 @@ sudo bash ports/shield/chroot.sh "$build_root/rootfs" \
   /bin/bash /var/lib/shield-linux/build-target-packages.sh
 ```
 
-The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Current paired runtime/settings recipes use release `99.5`; the previous integration build used `99.4`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes all three acceptance matrices and the guarded collector.
+The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Current paired runtime/settings recipes use release `99.6`; the previous integration build used `99.4`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes all three acceptance matrices and the guarded collector.
 
 The chroot uses private mount/PID namespaces, temporary device nodes and Cortex-A57 user emulation. It serializes its temporary binfmt registration, exposes no host block devices or sysfs tree, and starts no host daemons. Pacman signature validation stays enabled. Its sandbox exception applies to this emulated build command because Landlock is unavailable through QEMU user emulation; the installed configuration keeps normal sandbox settings. Fork packages are ignored by repository upgrades until a tested Shield release/update path exists.
 
@@ -127,3 +127,18 @@ bash ports/shield/tools/build-kexec.sh ../kexec-tools \
 ```
 
 The diagnostic tool checks kernel compression identity, stock input hashes/header format, the compiled fan/GPU specifiers, the USB ramdisk and aligned size budget. It creates raw components plus a review manifest, with unresolved native gates recorded. It creates no Android boot image or device command. The helper build executes no kexec operation; a static ELF or a passing `--help` invocation is not proof of stock-kernel entry or mainline handoff. A04 identity, unlocking, recovery entry and privileged collection are established in [validation-native-entry.json](validation-native-entry.json). Modern RAM/EMC reservations, CBoot address interpretation, CPU/device shutdown and native modern boot remain open.
+
+## A04 inherited SMMU state
+
+The A04 kernel includes a default-off experimental `tegra_smmu.reset_inherited=1` parameter. It is for a reviewed recovery-to-Linux handoff after old DMA masters have been quiesced. It clears and verifies only the enable bit of the 39 SWGROUP registers already described by the T210 SoC table, before the existing cache flush, global enable and IOMMU registration. The register set is documented by [upstream commit 4a91b11c](https://github.com/torvalds/linux/commit/4a91b11c0a100532c466e07a1372d134ab0e753d), citing the Tegra X1 TRM with NVIDIA maintainer acknowledgement. Client registers, PTB slots and the default identity policy stay unchanged.
+
+A requested unsupported, repeated or rejected reset panics. A completion gate runs after the MC's architecture initcall and before the target DMA drivers; this also stops boot if MC probing never reaches the helper or fails before successful SMMU registration. The normal kernel behavior is unchanged while the parameter is off. This does not stop old DMA, fix the RAM/EMC handoff or establish a working native boot.
+
+After the frozen source review and build, test the actual driver functions with fake MMIO and the missing-provider boot guard:
+
+```sh
+python3 ports/shield/tools/check-smmu-handoff.py --kernel-source "$kernel_source" --output "$build_root/smmu-regression.json"
+SHIELD_DIST_DIR="$build_root/kernel" bash ports/shield/tools/smoke-smmu-gate.sh
+```
+
+The host harness checks all 39 registers and 128 ASID values, crossed-profile rejection, protected-write failure, an absent MC and the completion latch. The second command intentionally requests the reset on QEMU `virt`, where no Tegra MC can complete it, and requires a kernel panic before userspace. Neither is a physical SMMU or DMA qualification.
