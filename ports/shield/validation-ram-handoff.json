@@ -92,5 +92,6 @@
   ],
   "raw_device_identifiers_published": false,
   "new_boot_DTB_or_early_firmware_partition_writes": false,
-  "source_files_scope": "Historical second-attempt component inputs; subsequent diagnostic policy is separately reviewed and not covered by these build hashes"
+  "source_files_scope": "Historical second-attempt component inputs; subsequent diagnostic policy is separately reviewed and not covered by these build hashes",
+  "latest_native_userspace_result": "See validation-disabled-gpu-probe.json for the subsequent successful GPU-disabled initramfs probe; historical component hashes here remain unchanged."
 }
