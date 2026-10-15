@@ -2,7 +2,7 @@
 
 This experimental Omarchy port targets the owner's connected `darcy` / original Tegra210 A02 Shield. The earlier `mdarcy` / Tegra210B01 candidate is retained as a separate board profile. Full hardware support remains the acceptance goal in [hardware-darcy.json](hardware-darcy.json) and [hardware.json](hardware.json), respectively. No native Linux Shield boot or peripheral test has passed yet. There is no flashable installer.
 
-The [Darcy validation report](DARCY.md#verified-build-2026-10-14) records four successfully rebuilt ARM packages and the passing custom-kernel/Omarchy filesystem VM test, including encrypted snapshots, config verification and virtual USB serial data. Current package hashes and exact provenance are in [validation-darcy.json](validation-darcy.json). The [pre-USB report](VALIDATION.md) preserves the earlier B01 build separately.
+The [latest integration build](INTEGRATION.md) adds the Shield controller driver, the reviewed fan/PWM candidate, verified inactive firmware staging and diagnostic component validation. Four matching ARM packages and the complete filesystem VM test pass; [validation-darcy-integration.json](validation-darcy-integration.json) records exact hashes and scope. The [earlier Darcy report](DARCY.md#verified-build-2026-10-14) and [pre-USB B01 report](VALIDATION.md) remain separate historical builds.
 
 USB inspection identified original Tegra210 silicon, Android 11, and a locked bootloader. The owner confirmed this connected unit as the target. The current default lock selects a Darcy A08 evaluation DTB; its exact board SKU is still unconfirmed. The Windows fastboot driver is installed, read-only fastboot inspection worked, and the device returned to stock Android. No unlock, erase or flash has occurred. See [DARCY.md](DARCY.md) for the current scope.
 
@@ -40,7 +40,7 @@ The initial target keeps native kernel/boot-image installation outside desktop u
 - [BUILD.md](BUILD.md): checked build tools for the kernel/modules, signed ARM filesystem, four local packages, and isolated whole-filesystem QEMU tests.
 - [collect-shield-linux.py](collect-shield-linux.py): bounded evidence collection on either supported Shield board/SoC pair. Run `sudo python3 collect-shield-linux.py --output hardware-report.json` after a native boot and basic cooling verification. `--graphics` additionally initializes EGL/Vulkan. Generated device reports must be reviewed before publishing.
 
-The source branch reports `4.0.0.alpha`. Current paired-package recipes use release `99.3`; the historical pre-USB packages use `99.2`. Do not mix runtime/settings source commits or board kernel inputs. The upstream MIT license applies to Omarchy; copied kernel and device-tree inputs retain their stated GPL licenses.
+The source branch reports `4.0.0.alpha`. Current paired-package recipes use release `99.4`; the earlier Darcy packages use `99.3` and pre-USB packages use `99.2`. Do not mix runtime/settings source commits or board kernel inputs. The upstream MIT license applies to Omarchy; copied kernel and device-tree inputs retain their stated GPL licenses.
 
 ## Qualification
 

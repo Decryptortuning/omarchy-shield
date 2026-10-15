@@ -1,0 +1,484 @@
+{
+  "date": "2026-10-14",
+  "timezone": "America/Phoenix",
+  "target": "Connected NVIDIA Shield TV / darcy / original Tegra210 A02",
+  "board_variant": "darcy-t210",
+  "physical_board_sku_confirmed": false,
+  "evaluation_device_tree": "tegra210-p2894-0050-a08.dtb",
+  "runtime_settings_source_commit": "fb3d99c4dd3476a4134327e506a04f58bf8ec436",
+  "upstream_packaging_commit": "c505828452be1e9d95c28183889ee4c922b4d7da",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "kernel_release": "7.1.0-shield-bringup",
+  "packages": [
+    {
+      "filename": "linux-shield-7.1.0-4-aarch64.pkg.tar.xz",
+      "bytes": 42228236,
+      "sha256": "9dd407c89521d976c506302701a6446f9fd9ffa1c559925f1bedc3e722411fc9",
+      "pkgname": "linux-shield",
+      "pkgver": "7.1.0-4",
+      "arch": "aarch64",
+      "pkgbuild_sha256": "a411fa569e8ce6bcb8b87e17dbbed92fc8110df51dd04b2a4548a0309587199d"
+    },
+    {
+      "filename": "omarchy-4.0.0.alpha-99.4-aarch64.pkg.tar.xz",
+      "bytes": 163231284,
+      "sha256": "7f677b2e941f880cf0ec39e167765d70aa6bf2fb544036528bf0a28002fa42b2",
+      "pkgname": "omarchy",
+      "pkgver": "4.0.0.alpha-99.4",
+      "arch": "aarch64",
+      "pkgbuild_sha256": "59d4e404ff2a017836a4375eecfaaaabecda0b444c3c80749630f6bf3ab4be78"
+    },
+    {
+      "filename": "omarchy-settings-4.0.0.alpha-99.4-aarch64.pkg.tar.xz",
+      "bytes": 1371000,
+      "sha256": "73c8e952b6bbad79c7d542c3625239ff4f5dca7f72d8ee814e5172bd3b8d1bce",
+      "pkgname": "omarchy-settings",
+      "pkgver": "4.0.0.alpha-99.4",
+      "arch": "aarch64",
+      "pkgbuild_sha256": "097fb20318a1a8a58cb3fd82c86ee9799a00e471e160d569fe531e7324e9395a"
+    },
+    {
+      "filename": "omarchy-shield-0.1.0-5-aarch64.pkg.tar.xz",
+      "bytes": 15104,
+      "sha256": "ba64835c329da310895f1a560b7a7ac2b8c46f83f4669bcf8395e1469001196e",
+      "pkgname": "omarchy-shield",
+      "pkgver": "0.1.0-5",
+      "arch": "aarch64",
+      "pkgbuild_sha256": "e6a005279f15739d21994df4e1b2e061bb5a6121507d512d0ad33bd0c56a59cf"
+    }
+  ],
+  "installed_package_count": 890,
+  "kernel_components": [
+    {
+      "path": "Image",
+      "sha256": "28dbdabcaebf0c90350e13d0fcdaaa6e30785a549e5cb3f7955ec96f8ca29af8",
+      "bytes": 45746688
+    },
+    {
+      "path": "Image.gz",
+      "sha256": "216c73703393af5beaafcae82e07ae28e85daafe98daa4b8ee9375ec353e8d3b",
+      "bytes": 17245512
+    },
+    {
+      "path": "initramfs.cpio.gz",
+      "sha256": "3eb5b0c8a31b3ba1882faa1ef0850f73c8504b39dfea36ee2cd4545a03b230ff",
+      "bytes": 732074
+    },
+    {
+      "path": "tegra210-p2894-0050-a08.dtb",
+      "sha256": "1983ab6e732c407810265555a0a2f5525d876c1495ff5445302220dea6b21630",
+      "bytes": 72338
+    },
+    {
+      "path": "kernel.config",
+      "sha256": "4221bb2633d09e07b36bdfff6343d3e993fb9a380e7b9c10c444822d2cf9696f",
+      "bytes": 324449
+    },
+    {
+      "path": "busybox.config",
+      "sha256": "27d1988bd9bd7e2d21617d206d6c5b67071bbbc2916b09b55c34b88ced8e59a7",
+      "bytes": 37942
+    },
+    {
+      "path": "sources.lock.json",
+      "sha256": "437d74aea82ed286016f99f82d82f7a3a3d19b33ae7295eb94e597071d016c88",
+      "bytes": 4082
+    },
+    {
+      "path": "compiler.txt",
+      "sha256": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53",
+      "bytes": 110
+    },
+    {
+      "path": "ramdisk-profile.json",
+      "sha256": "c91561c586ab20f6daef268d9388f7a843be7197c343f23dd1f8b37bb7a90ff9",
+      "bytes": 185
+    },
+    {
+      "path": "hardware.json",
+      "sha256": "ce8cd509cba291e83e0053bd31e7fc73a75b7f16f0514d758a2a97bb42b07c07",
+      "bytes": 11532
+    },
+    {
+      "path": "source-verification.json",
+      "sha256": "b63dc9928194a1ed444471c1082761e54e5ee41857ede10212d984df7146e5fe",
+      "bytes": 218
+    },
+    {
+      "path": "applied-patches.json",
+      "sha256": "632b20a91398f57f2d59b350fdd6ae4f6da69fb8e24fbc26573df0c0613e6d1b",
+      "bytes": 783
+    },
+    {
+      "path": "device-tree-overlays.json",
+      "sha256": "5f00cdb6832d082a8409472a2b83b8f606bb7070a32a367ff57c43e1aec7063c",
+      "bytes": 495
+    },
+    {
+      "path": "kernel-release.txt",
+      "sha256": "b9cf517bf62a6d338d261cac6eac2bccd5f3f04415f85748f623af937ffee44c",
+      "bytes": 21
+    },
+    {
+      "path": "kernel-modules.tar.zst",
+      "sha256": "ea77654bf7ec4569fcef75a199dbe39c2ca78bcd611ff61c910da4b4ec35e831",
+      "bytes": 19166751
+    }
+  ],
+  "whole_filesystem_vm": {
+    "result": "PASS",
+    "machine": "virt",
+    "cpu": "cortex-a57",
+    "cpus": 4,
+    "memory_mib": 3072,
+    "network_adapter": false,
+    "disposable_snapshot": true,
+    "kernel_matches_installed_package": true,
+    "checks": [
+      "systemd PID1",
+      "paired package dependencies and modules",
+      "PSI/systemd-oomd/zstd zram",
+      "user manager",
+      "desktop version/session assets and Hyprland config validation",
+      "LUKS2/Btrfs/Snapper snapshot data",
+      "virtual USB CDC ACM and bidirectional serial data"
+    ],
+    "native_graphics_rendered": false
+  },
+  "fan_source_regression": {
+    "source_sha256": {
+      "drivers/pwm/pwm-tegra.c": "4f29b014e43fc1fc0430989567bdadef06e031c55dd7accd0d357b006725ea18",
+      "drivers/hwmon/pwm-fan.c": "59d79e8521e54cee5f36ccef558dd128f6c1f88dfbbb5d490c1cc31b88c9e1da"
+    },
+    "tested_actual_kernel_functions": [
+      "tegra_pwm_apply",
+      "pwm_fan_enable_mode_2_state",
+      "pwm_fan_switch_power",
+      "pwm_fan_power_on",
+      "pwm_fan_power_off",
+      "__set_pwm",
+      "pwm_fan_update_state",
+      "pwm_fan_update_enable"
+    ],
+    "result": "PASS: cold start, 256 duties, cooling states, idle/resume/disable, normal GPU duty, polarity rejection and power failures",
+    "scope": "Host-compiled actual driver functions with fake PWM, power and delay callbacks; no MMIO, clock, electrical, RPM or thermal qualification",
+    "physical_fan_tested": false,
+    "device_actions_performed": []
+  },
+  "compiled_fan_contract": {
+    "pwm_cells": [
+      3
+    ],
+    "fan_specifier": [
+      107,
+      3,
+      65536,
+      1
+    ],
+    "gpu_regulator_specifier": [
+      107,
+      1,
+      8000,
+      0
+    ],
+    "cooling_levels": [
+      0,
+      127,
+      191,
+      255
+    ],
+    "binding_contract_matches": true,
+    "physical_fan_qualified": false
+  },
+  "controller_module": {
+    "usb_alias_present": true,
+    "bluetooth_alias_present": true,
+    "force_feedback_dependency_present": true,
+    "dry_run_dependency_resolution_passed": true,
+    "physical_accessory_tested": false
+  },
+  "firmware": {
+    "lock_sha256": "ebf4399c12724ccfee2d10d06fd3b239be7b847cec34ae2a4b500cd2e2a498e9",
+    "staged_files_verified": 41,
+    "installed_byte_identical_candidates": 32,
+    "staged_candidates_absent_from_runtime": [
+      "official-current-ota/payloads/firmware/bcm4350.hcd",
+      "official-current-ota/payloads/firmware/nvram_darcy_a00.txt"
+    ],
+    "missing_installed_firmware_requirements": {
+      "wifi": [
+        "brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt*"
+      ],
+      "bluetooth": [
+        "brcm/BCM4354.hcd*"
+      ],
+      "video": [
+        "nvidia/tegra210/nvdec.bin*",
+        "nvidia/tegra210/nvenc.bin*"
+      ]
+    },
+    "stock_radio_payloads_activated": false,
+    "codec_reference_payloads_activated": false,
+    "hardware_qualified": false
+  },
+  "elf_audit": {
+    "target_elf_machine": 183,
+    "elf_files_by_machine": {
+      "183": 7823,
+      "0": 350,
+      "247": 9
+    },
+    "non_cpu_elf_containers": {
+      "guile_bytecode": 350,
+      "bpf_objects": 9
+    },
+    "scanned_trees": [
+      "usr",
+      "opt"
+    ],
+    "foreign_executable_or_shared_library": [],
+    "unreadable_paths": [],
+    "all_cpu_elf_payloads_aarch64": true,
+    "excluded": [
+      "device firmware",
+      "symlink duplicates",
+      "PE/.NET assemblies"
+    ],
+    "scope": "ELF machine headers only; CPU instructions, application behavior and physical hardware remain unqualified"
+  },
+  "usb_diagnostic": {
+    "qemu_boot": "PASS",
+    "busybox_module_dependency_resolution": "PASS",
+    "physical_enumeration_tested": false
+  },
+  "diagnostic_boot_review": {
+    "board_variant": "darcy-t210",
+    "profile_sha256": "d7fc157ce69cc1355569530b85763451148f4aaabd597f479ac23d7defd199b8",
+    "stock_inputs": [
+      {
+        "path": "ota-metadata/boot.img",
+        "bytes": 11044132,
+        "sha256": "a1111a6924a5bdffa8e88c960219b299a7b80d4690bffe92e415c6afb29ddd75",
+        "matches_pinned_release_input": true
+      },
+      {
+        "path": "recovery-inputs/recovery.img",
+        "bytes": 20575528,
+        "sha256": "ebe2fc16c2b82114712f18bd78781b63c8d4b9a52de2294239b08a817098341d",
+        "matches_pinned_release_input": true
+      }
+    ],
+    "files": [
+      {
+        "path": "Image",
+        "bytes": 45746688,
+        "sha256": "28dbdabcaebf0c90350e13d0fcdaaa6e30785a549e5cb3f7955ec96f8ca29af8"
+      },
+      {
+        "path": "Image.gz",
+        "bytes": 17245512,
+        "sha256": "216c73703393af5beaafcae82e07ae28e85daafe98daa4b8ee9375ec353e8d3b"
+      },
+      {
+        "path": "initramfs.cpio.gz",
+        "bytes": 732074,
+        "sha256": "3eb5b0c8a31b3ba1882faa1ef0850f73c8504b39dfea36ee2cd4545a03b230ff"
+      },
+      {
+        "path": "tegra210-p2894-0050-a08.dtb",
+        "bytes": 72338,
+        "sha256": "1983ab6e732c407810265555a0a2f5525d876c1495ff5445302220dea6b21630"
+      },
+      {
+        "path": "kernel.config",
+        "bytes": 324449,
+        "sha256": "4221bb2633d09e07b36bdfff6343d3e993fb9a380e7b9c10c444822d2cf9696f"
+      },
+      {
+        "path": "sources.lock.json",
+        "bytes": 4082,
+        "sha256": "437d74aea82ed286016f99f82d82f7a3a3d19b33ae7295eb94e597071d016c88"
+      },
+      {
+        "path": "hardware.json",
+        "bytes": 11532,
+        "sha256": "ce8cd509cba291e83e0053bd31e7fc73a75b7f16f0514d758a2a97bb42b07c07"
+      },
+      {
+        "path": "ramdisk-profile.json",
+        "bytes": 185,
+        "sha256": "c91561c586ab20f6daef268d9388f7a843be7197c343f23dd1f8b37bb7a90ff9"
+      },
+      {
+        "path": "kernel-release.txt",
+        "bytes": 21,
+        "sha256": "b9cf517bf62a6d338d261cac6eac2bccd5f3f04415f85748f623af937ffee44c"
+      },
+      {
+        "path": "applied-patches.json",
+        "bytes": 783,
+        "sha256": "632b20a91398f57f2d59b350fdd6ae4f6da69fb8e24fbc26573df0c0613e6d1b"
+      },
+      {
+        "path": "device-tree-overlays.json",
+        "bytes": 495,
+        "sha256": "5f00cdb6832d082a8409472a2b83b8f606bb7070a32a367ff57c43e1aec7063c"
+      },
+      {
+        "path": "source-verification.json",
+        "bytes": 218,
+        "sha256": "b63dc9928194a1ed444471c1082761e54e5ee41857ede10212d984df7146e5fe"
+      }
+    ],
+    "android_compressed_payload_budget_bytes": 17983488,
+    "compiled_fan_contract": {
+      "pwm_cells": [
+        3
+      ],
+      "fan_specifier": [
+        107,
+        3,
+        65536,
+        1
+      ],
+      "gpu_regulator_specifier": [
+        107,
+        1,
+        8000,
+        0
+      ],
+      "cooling_levels": [
+        0,
+        127,
+        191,
+        255
+      ],
+      "binding_contract_matches": true,
+      "physical_fan_qualified": false
+    },
+    "observed_limit_bytes": 26738688,
+    "dtb_bytes_separate_from_android_dtbo": 72338,
+    "unresolved_native_gates": [
+      "Controlled privileged stock-kernel entry and temporary boot behavior",
+      "Actual owner PCB/SKU, RAM code and live DT identity",
+      "Memory reservations, trained EMC tables and bootloader fixup propagation",
+      "CBoot load-address interpretation for any Android-format custom entry image",
+      "Tegra CPU/cache/device shutdown state across legacy kexec",
+      "Physical fan supply, PWM polarity, tach response and conservative stop conditions",
+      "Physical backups, restoration procedure and owner unlocking/data-wipe decision"
+    ],
+    "planned_ramdisk_arguments": [
+      "rdinit=/init",
+      "shield.usb-console=1"
+    ],
+    "native_boot_ready": false,
+    "android_boot_image_created": false,
+    "boot_command_generated": false,
+    "physical_shield_boot_tested": false,
+    "device_actions_performed": []
+  },
+  "kexec_helper": {
+    "source_commit": "0fd0d8e9ea975696fdc05ad267a65f3efd415612",
+    "path": "build/sbin/kexec",
+    "bytes": 1520200,
+    "sha256": "b112e29a048bd2a44cc8676acf158a670e2d8ea5a4f9536331792f2e267ff02f",
+    "architecture": "AArch64",
+    "dynamic_interpreter": false,
+    "load_or_execute_operation_tested": false,
+    "physical_kexec_tested": false,
+    "device_actions_performed": [],
+    "informational_arm_emulation_checks": [
+      "--help",
+      "--version"
+    ],
+    "static_elf_sha256_rechecked": true
+  },
+  "stock_recovery_entry": {
+    "recovery_properties": {
+      "ro.secure": "1",
+      "ro.debuggable": "0",
+      "ro.adb.secure": "1"
+    },
+    "stock_kernel_usb_config": [
+      "CONFIG_KEXEC_CORE=y",
+      "CONFIG_KEXEC=y",
+      "CONFIG_DEVTMPFS=y",
+      "CONFIG_DEVTMPFS_MOUNT=y",
+      "CONFIG_USB_TEGRA_XUDC=y",
+      "CONFIG_USB_CONFIGFS=y",
+      "CONFIG_USB_CONFIGFS_ACM=y",
+      "CONFIG_USB_CONFIGFS_NCM=y",
+      "CONFIG_USB_CONFIGFS_ECM=y",
+      "CONFIG_USB_CONFIGFS_RNDIS=y",
+      "CONFIG_USB_CONFIGFS_MASS_STORAGE=y",
+      "CONFIG_USB_CONFIGFS_F_LB_SS=y",
+      "CONFIG_USB_CONFIGFS_F_FS=y",
+      "CONFIG_USB_CONFIGFS_F_MTP=y",
+      "CONFIG_USB_CONFIGFS_F_PTP=y",
+      "CONFIG_USB_CONFIGFS_F_ACC=y",
+      "CONFIG_USB_CONFIGFS_F_AUDIO_SRC=y",
+      "CONFIG_USB_CONFIGFS_UEVENT=y",
+      "CONFIG_USB_CONFIGFS_F_MIDI=y",
+      "CONFIG_TMPFS=y",
+      "CONFIG_TMPFS_POSIX_ACL=y",
+      "CONFIG_TMPFS_XATTR=y"
+    ],
+    "debug_adbd_autostart_enabled_by_default": false,
+    "physical_privileged_shell_tested": false,
+    "source_review_receipt_sha256": "3e92b3faea868020483dbdbbbec83f19462da1e3de14c079f6eaa9642630a1c6",
+    "scope": "Exact-release recovery uses production security properties; a controlled privileged entry is still required and has not been qualified."
+  },
+  "hardware_build_audit": {
+    "subsystems": 19,
+    "missing_config": {},
+    "missing_packaged_modules": {},
+    "disabled_reference_dt_nodes": {},
+    "physical_qualification": "0 of 19; no native boot"
+  },
+  "source_checks": {
+    "python_tests_passed": 23,
+    "focused_bash_suites_passed": [
+      "shield-platform",
+      "hw-platform",
+      "platform-packages",
+      "pacman-templates",
+      "lifecycle-dispatch",
+      "image-target-platform",
+      "image-deferred-hardware",
+      "hyprland-startup-cursor"
+    ],
+    "shellcheck": "PASS",
+    "input_lock_verification": "PASS"
+  },
+  "local_receipt_sha256": {
+    "fan-regression.json": "bbef0574dd42ad6fcc0641e06aa0ff9385722885c476d1a99d63c4bf098b466c",
+    "qemu-kernel.log": "574ab1fbacd7b99c6679cc120fba9a5782ccdf3677ddea02fd7b73ea999b36b1",
+    "qemu-userspace.log": "5c58bf5e366a005b1f6374714074254bf7528936c469f9f8bdc1a6c58aa234bf",
+    "check-ramdisk.log": "fd3d5ead567478d8d7b64f21fcd14b28857bb13739e9b6f1a3b06e82b59ad74e",
+    "hardware-audit.json": "834f38c6e18dce17c95bf37bc7fce0ccf78c66ec0400a31ad1470e548bcd1ffd",
+    "hardware-summary.json": "e09652ca3fc93e3d8809ceb0e932843d69e43e64acdc3821efc5c806c6b1e85e",
+    "userspace-abi-audit.json": "58844a8ea0ef972d6657846ce755fa235be6a776cc010893d22c64661d931b6b",
+    "controller-module.txt": "db8cf735ce1e45a7f4d6c3e5c55c42a4c27e4f45123144dc0580125b7c3f9edd",
+    "controller-dependencies.txt": "096ee63282202f3f73559b51742a7129c823e81639296dfcdbedc3d01e500e46",
+    "kexec-help.txt": "a5962e4efbf2cf93fb6de389279be40b43c224da1f187cb3c623c79e7ec501c4",
+    "kexec-version.txt": "57d9980e0c3d4856adf46e0e98e44de8de0830129b84bd49a1f055b576c693d4",
+    "stock-recovery-entry-review.json": "3e92b3faea868020483dbdbbbec83f19462da1e3de14c079f6eaa9642630a1c6",
+    "unit-tests.log": "755a1b020e91ea8268263d04d3665fb881357914a109c597e59efe8b0c63127c",
+    "shield-platform-test.log": "00917e47e8d9ea8a25ccc8077b1f6905db136735021d083d3b38a50f3eebef62",
+    "hw-platform-test.log": "d0b1b9940657ef7bdd147f8953f9c233d4070198bedb12bb43cfa0dc3bf3f831",
+    "platform-packages-test.log": "5b2cea10dc61e29e879380b85c687fe0d159d4c86ab7eadd3f82a88f24adff11",
+    "pacman-templates-test.log": "912c84b75e83d2f8e46462a1c4160200a69b7425a052821509b096f23bfa6767",
+    "lifecycle-dispatch-test.log": "97c10401b2ad4fcfc22500047c2892effe0b6c7a466a6f2dabf47af50c1f1ee5",
+    "image-target-platform-test.log": "5dfa33f5d0b642a483100501062dc9251d4bd973fbbaa849c513551cc52d9f57",
+    "image-deferred-hardware-test.log": "3b0d7bbebbb15bafc5fcd5ecc831e46a8a25375a34c0f5a03aaa0395fafb0889",
+    "hyprland-startup-cursor-test.log": "0d73c0e2d51c310ca40fce155f27fd3ea022cecb7a1da2bef90e10ad8bcd62bb"
+  },
+  "device_actions_performed": [],
+  "physical_acceptance_entries": 19,
+  "physical_passes": 0,
+  "physical_shield_boot_tested": false,
+  "native_graphics_tested": false,
+  "flashable_image": false,
+  "development_filesystem_deployable": false,
+  "local_build_root": "/home/jresp/build/omarchy-shield/integration-2026-10-14"
+}

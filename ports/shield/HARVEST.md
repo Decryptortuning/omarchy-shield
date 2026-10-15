@@ -1,5 +1,7 @@
 # Shield integration harvest: October 14, 2026
 
+The subsequent [integration build](INTEGRATION.md) implements and tests the first offline batch. This report preserves the acquisition scope and findings.
+
 Three agents harvested board, boot/recovery and firmware inputs; the coordinating agent harvested graphics/media sources and checked the combined results. The target remains the connected original Tegra210 A02 `darcy`. Its exact PCB/SKU is unresolved. This acquisition changes no tested runtime inputs and passes no physical hardware acceptance entries.
 
 The combined check verified **728 recorded local files, 1,234,676,427 bytes**, against their recorded sizes and SHA-256 hashes. Counts include duplicate source content staged by different groups. There are 668 top-level artifact records plus 60 additional boot-source snapshots. The [index and verification receipt](harvest/index.json) pins all four reports; original source notices, acquisition scripts and binaries remain under `/home/jresp/build/omarchy-shield/harvest-2026-10-14/`. Public Git contains research metadata and documentation only.

@@ -1,6 +1,6 @@
 # Darcy integration candidate review
 
-Review date: October 14, 2026. Scope: inactive firmware staging, controller configuration, fan/PWM producer and consumers, diagnostic component validation and a static ARM64 kexec helper. The source/interface review is complete for this candidate; build and test evidence is recorded separately. No native execution, firmware activation, bootloader change or device write is part of this batch.
+Review date: October 14, 2026. Scope: inactive firmware staging, controller configuration, fan/PWM producer and consumers, diagnostic component validation and a static ARM64 kexec helper. The source/interface review is complete for this candidate; [build and test evidence](validation-darcy-integration.json) records the resulting artifacts separately. No native execution, firmware activation, bootloader change or device write is part of this batch.
 
 ## Reviewed interfaces
 

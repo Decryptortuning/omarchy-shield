@@ -8,6 +8,8 @@ Plan date: October 14, 2026. The [current validation receipt](validation-darcy.j
 
 The [completed harvest](HARVEST.md) now supplies verified local board/source snapshots, exact-build boot/recovery inputs and radio firmware. It also identifies concrete fan/controller changes, NVK's default Tegra rejection and incompatible vendor/modern media interfaces. This closes acquisition work within the selected scope; the implementation, boot qualification and hardware acceptance phases below remain open.
 
+The [first integration build](INTEGRATION.md) now adds the controller/fan candidate, reproducible inactive staging and diagnostic component checks, with four rebuilt packages and a passing whole-filesystem VM test. Native entry, radio activation, graphics/media work and all physical qualification remain open.
+
 ## What each project contributes
 
 | Source | Integration work | Compatibility check |
