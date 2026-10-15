@@ -1,0 +1,215 @@
+{
+  "date": "2026-10-14",
+  "timezone": "America/Phoenix",
+  "target": "Connected NVIDIA Shield TV / darcy / original Tegra210 A02",
+  "board_variant": "darcy-t210",
+  "physical_board_sku_confirmed": false,
+  "evaluation_device_tree": "tegra210-p2894-0050-a08.dtb",
+  "runtime_settings_source_commit": "05dbb78eb68d63dc3c95969f5e0ff33a5411602b",
+  "upstream_packaging_commit": "c505828452be1e9d95c28183889ee4c922b4d7da",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "kernel_release": "7.1.0-shield-bringup",
+  "packages": [
+    {
+      "filename": "linux-shield-7.1.0-3-aarch64.pkg.tar.xz",
+      "bytes": 42196384,
+      "sha256": "f82289053b2ea38ca16c0d2fefdc53314b3ea0624030bb5902b1260ca4ee2558",
+      "pkgname": "linux-shield",
+      "pkgver": "7.1.0-3",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "b4ee498e841b92954c125093d637e982a1d39715fd66f6539811216d6daaba72"
+    },
+    {
+      "filename": "omarchy-4.0.0.alpha-99.3-aarch64.pkg.tar.xz",
+      "bytes": 163231288,
+      "sha256": "cf7dbb06f0aa968ed24e5b93f493b6abb80b5193b73420590bf520646d988376",
+      "pkgname": "omarchy",
+      "pkgver": "4.0.0.alpha-99.3",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "16a9aa72c282a651b070038cbeed6f7e5a251ad01441d1a14712131bc18b3fc6"
+    },
+    {
+      "filename": "omarchy-settings-4.0.0.alpha-99.3-aarch64.pkg.tar.xz",
+      "bytes": 1370820,
+      "sha256": "55a54a56f300761c9a1366d01f18e12e12f86df4bf5fc836b261a387a8799016",
+      "pkgname": "omarchy-settings",
+      "pkgver": "4.0.0.alpha-99.3",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "06b4902966a6ab327673cbd997654a978e5d383e3bd6e8c08276c3b713773d7a"
+    },
+    {
+      "filename": "omarchy-shield-0.1.0-4-aarch64.pkg.tar.xz",
+      "bytes": 14972,
+      "sha256": "6305c4080fc5d0323fb3d649ab36057126e5e7ca58228a2f121b5245295887d3",
+      "pkgname": "omarchy-shield",
+      "pkgver": "0.1.0-4",
+      "pkgarch": "aarch64",
+      "pkgbuild_sha256sum": "7c4c87102762986b189acec3bd9ce331baaa474e3125c0f530cbbdc37e2fdf84"
+    }
+  ],
+  "installed_package_count": 890,
+  "whole_filesystem_vm": {
+    "result": "pass",
+    "machine": "virt",
+    "cpu": "cortex-a57",
+    "cpus": 4,
+    "memory_mib": 3072,
+    "network_adapter": false,
+    "disposable_snapshot": true,
+    "kernel_matches_installed_package": true,
+    "success_marker": "SHIELD_OMARCHY_QEMU_USERSPACE_PASS",
+    "checks": [
+      "systemd PID 1",
+      "package dependency database and required packages",
+      "matching driver module metadata and dependency resolution",
+      "pressure-stall reporting and systemd-oomd",
+      "zstd zram swap",
+      "virtual CDC ACM enumeration and bidirectional data",
+      "systemd user manager",
+      "desktop and peripheral userspace version commands",
+      "user defaults and Omarchy session assets",
+      "LUKS2 encrypted loop device",
+      "Btrfs independent snapshot data",
+      "Snapper independent snapshot data",
+      "installed Hyprland configuration verification",
+      "original-Tegra210 r8169 module metadata and dependency resolution"
+    ]
+  },
+  "elf_audit": {
+    "target_elf_machine": 183,
+    "elf_files_by_machine": {
+      "183": 7822,
+      "0": 350,
+      "247": 9
+    },
+    "non_cpu_elf_containers": {
+      "guile_bytecode": 350,
+      "bpf_objects": 9
+    },
+    "scanned_trees": [
+      "usr",
+      "opt"
+    ],
+    "foreign_executable_or_shared_library": [],
+    "unreadable_paths": [],
+    "all_cpu_elf_payloads_aarch64": true,
+    "excluded": [
+      "device firmware",
+      "symlink duplicates",
+      "PE/.NET assemblies"
+    ],
+    "scope": "ELF machine headers only; CPU instructions, application behavior and physical hardware remain unqualified"
+  },
+  "usb_diagnostic": {
+    "qemu_boot": "pass",
+    "busybox_module_dependency_resolution": "pass",
+    "usb_console_opt_in": "shield.usb-console=1",
+    "physical_enumeration_tested": false,
+    "checksums": {
+      "Image": "8dfd56c802cf7577139b10ea31b3c69c598505f1a905174f11fec01389219ccd",
+      "Image.gz": "33f085360ce8ab39fc2e1dd0033c9fe66aacfaea86ad36e49d150c2504f595fc",
+      "initramfs.cpio.gz": "5a8207ae0184f38cc1649a27a8feb3eb9c6d603dec1f0fa80412869c53b80e2b",
+      "tegra210-p2894-0050-a08.dtb": "53e2625e4b9a0e12ce43850542f30c2f66e5cb85ba6753430a621eb210732343",
+      "kernel.config": "d37483162a4fc47e4542fa777227329d00f0ddeff21725ce2e94795c1bfb6434",
+      "busybox.config": "a342d4469bbe8d9f8a11e7ff77e82f35541abdb5a4e0b7f07225bfd9170a6f51",
+      "sources.lock.json": "0fd6b5b5e8e523b6459681e638a2459ea3d884369944c68901e327eeb60b19b9",
+      "compiler.txt": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53",
+      "ramdisk-profile.json": "c91561c586ab20f6daef268d9388f7a843be7197c343f23dd1f8b37bb7a90ff9",
+      "hardware.json": "2fcb496a4212b3eb71fb4073b712631fecc5584fa404b8ce33ab4d0523e71ada",
+      "source-verification.json": "b63dc9928194a1ed444471c1082761e54e5ee41857ede10212d984df7146e5fe",
+      "applied-patches.json": "e567aaf6d1b75d4e92be0f3d2ed4b5f22b7ad86ffc6af9d280efe421e72d3bf5",
+      "device-tree-overlays.json": "837180ef4b4d57dc873f1dfa311f3f6ae9d8921602a88db563ebba03e4ca9a5a",
+      "kernel-release.txt": "b9cf517bf62a6d338d261cac6eac2bccd5f3f04415f85748f623af937ffee44c",
+      "kernel-modules.tar.zst": "179315255b7ee1d2f6010117f5d7b18f5264949f0bf84f68e75856d030d4bb04"
+    }
+  },
+  "hardware_build_audit": {
+    "subsystems": 19,
+    "missing_config": [],
+    "missing_packaged_modules": [],
+    "disabled_reference_dt_nodes": [],
+    "missing_firmware_candidates": {
+      "bluetooth": [
+        "brcm/BCM4354*",
+        "brcm/BCM4356*"
+      ],
+      "video": [
+        "nvidia/tegra210/nvdec.bin*",
+        "nvidia/tegra210/nvenc.bin*"
+      ]
+    },
+    "unmatched_board_wifi_calibration": true,
+    "physical_qualification": false
+  },
+  "stock_usb_inspection": {
+    "android_device": "darcy",
+    "chip_id": 33,
+    "silicon_major": 1,
+    "revision_enum": 3,
+    "android_version": "11",
+    "android_build": "13961458_4387.0822",
+    "kernel": "4.9.141-tegra",
+    "fastboot_product": "t210ref",
+    "fastboot_secure": true,
+    "bootloader_unlocked": false,
+    "boot_partition_bytes": 26738688,
+    "recovery_partition_bytes": 26738688,
+    "max_download_bytes": 33554432,
+    "official_signed_windows_driver_installed_with_owner_approval": true,
+    "returned_to_android_adb": true,
+    "successful_stock_firmware_copies": 0,
+    "raw_stock_boot_backup_obtained": false,
+    "device_unlock_erase_or_flash_performed": false,
+    "identifiers_omitted": true
+  },
+  "boot_image_constraints": {
+    "uncompressed_kernel_bytes": 45746688,
+    "compressed_kernel_bytes": 17246875,
+    "diagnostic_ramdisk_bytes": 732023,
+    "evaluation_dtb_bytes": 72330,
+    "uncompressed_kernel_exceeds_boot_partition_and_download_limit": true,
+    "compressed_payload_fits_partition_before_header_alignment": true,
+    "bootloader_compressed_payload_support_verified": false,
+    "stock_header_load_addresses_and_dt_handoff_verified": false
+  },
+  "source_checks": {
+    "variant_python_tests": 11,
+    "focused_bash_suites": 8,
+    "github_actions": "https://github.com/Decryptortuning/omarchy-shield/actions/runs/38674519735",
+    "github_actions_result": "success",
+    "github_actions_head": "05dbb78eb68d63dc3c95969f5e0ff33a5411602b"
+  },
+  "local_test_receipt_sha256": {
+    "qemu-userspace.log": "44f01161bff6324ac430cfab0a33d2fea5a48e475814ec1b63868b91363c6d31",
+    "qemu-darcy-diagnostic.log": "6a0edf5bd46261533be539f903113d71f70464d3779c88d140f7c259272983f8",
+    "check-darcy-ramdisk.log": "144371a41b1ed3f8e0c45fa178f1e11f70a00b2b9d8d383fe257b579981de113",
+    "hardware-audit-darcy.json": "a98a39f9f0f9e2deda8397fa81536b5d9916566dedfba38ba616bcfc3d476132",
+    "userspace-abi-audit-darcy.json": "483f20a5ca8c3243f7d352ceaa1d048a2a742b73c302315aa74a0a24deb62431"
+  },
+  "physical_acceptance_entries": 19,
+  "physical_passes": 0,
+  "physical_shield_boot_tested": false,
+  "native_graphics_tested": false,
+  "flashable_image": false,
+  "prior_virtual_graphics_attempt": {
+    "result": "incomplete",
+    "device": "virtio-gpu-pci (2D, no virgl)",
+    "software_rendering_requested": true,
+    "hyprland_starts": true,
+    "monitor_query_succeeded": true,
+    "queried_resolution": [
+      1280,
+      800
+    ],
+    "usable_desktop_rendered": false,
+    "observed_failure": "Aquamarine cannot match an EGL rendering device; renderer-state updates fail. Screenshots remain black.",
+    "physical_gpu_qualified": false,
+    "historical_pre_usb_fixture": true
+  },
+  "remaining_boot_prerequisites": [
+    "Confirm physical board SKU and compare stock device tree",
+    "Obtain compatible stock boot/recovery inputs and establish restoration route",
+    "Verify stock boot header, compressed-kernel support and device-tree handoff",
+    "Prepare a recoverable diagnostic image before requesting the data-wiping unlock decision"
+  ]
+}

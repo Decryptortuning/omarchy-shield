@@ -10,4 +10,27 @@ The default [kernel.lock.json](kernel.lock.json) selects the pinned ACK kernel a
 
 The original Tegra210 XUSB firmware and generic BCM4354 SDIO firmware are present in the development filesystem. Board-specific radio calibration, matching Bluetooth firmware, NVDEC/NVENC firmware, native graphics, cooling and all physical acceptance remain open. A 2019-only AI upscaling feature is not an acceptance requirement for this original-X1 hardware; capabilities actually present on the owner’s Shield remain in scope.
 
+## Verified build: 2026-10-14
+
+The Darcy diagnostic kernel, modules and USB ramdisk have built successfully. Four AArch64 packages from fork commit `05dbb78eb68d63dc3c95969f5e0ff33a5411602b` have been built and installed together in the 890-package development filesystem. [validation-darcy.json](validation-darcy.json) records package hashes, built-recipe hashes, source pins, component checksums and test scope. [VALIDATION.md](VALIDATION.md) and [validation.json](validation.json) remain historical B01 results.
+
+| Package | Version |
+| --- | --- |
+| linux-shield | 7.1.0-3 |
+| omarchy | 4.0.0.alpha-99.3 |
+| omarchy-settings | 4.0.0.alpha-99.3 |
+| omarchy-shield | 0.1.0-4 |
+
+The installed filesystem boots under the matching packaged kernel on QEMU `virt`, four Cortex-A57 CPUs and 3 GB RAM, without a network adapter and with a disposable disk snapshot. The test passes systemd PID 1, the requested package/dependency set, matching module metadata including `r8169`, pressure reporting, `systemd-oomd`, zstd compressed swap, virtual USB CDC ACM enumeration and bidirectional transfers, the user manager, desktop/peripheral version commands, session assets, LUKS2/Btrfs/Snapper snapshot data and actual ARM `Hyprland --verify-config`. This does not render or qualify the native desktop. The separate diagnostic ramdisk boots in QEMU, and ARM BusyBox resolves its included Tegra USB gadget module dependencies.
+
+The ELF header audit finds 7,822 AArch64 payloads, 350 Guile bytecode containers and nine BPF objects, with no foreign CPU executables/shared libraries or unreadable paths under `usr` and `opt`. Instruction compatibility and application behavior remain outside this audit. The 19-subsystem build audit finds no missing requested configuration, packaged modules or disabled reference-DT nodes; firmware matching and all 19 physical acceptance entries remain unresolved. Eleven variant/profile Python tests and eight focused Bash suites pass in [CI for the built source](https://github.com/Decryptortuning/omarchy-shield/actions/runs/38674519735).
+
+The local review bundle is `ports/shield/build/darcy-2026-10-14/` in the native Linux checkout. It contains the four packages, the coherent raw diagnostic component set, source/provenance and sanitized test receipts. It excludes the development filesystem, device identifiers, keys and stock firmware binaries. It is not an installable or flashable image.
+
+## Native boot prerequisites
+
+The raw `Image` is 45,746,688 bytes, exceeding both the observed 25.5 MiB boot partition and 32 MiB download limit. `Image.gz` is 17,246,875 bytes; together with the 732,023-byte diagnostic ramdisk and 72,330-byte evaluation DTB, its raw payload fits that partition before header/alignment overhead. This is a size check only: the stock bootloader's compressed-kernel support, load addresses, Android header and DT handoff still require compatible stock-image evidence.
+
+NVIDIA's [recovery download catalog](https://developer.nvidia.com/tools-downloads.json) lists a 2017 recovery 9.2.1 image, but the official download redirects to developer login when checked. No recovery image has been obtained. Its compatibility with the installed newer stock build has not been established; an older catalog entry is not a verified downgrade or restoration route.
+
 Before any device write, the remaining work is to confirm the actual board SKU, obtain compatible stock recovery/boot inputs, verify the Android boot header and device-tree handoff, and prepare a recoverable diagnostic boot. The locked bootloader prevents a native test at this stage; unlocking would erase Android user data and requires a separate owner decision after the boot/recovery preparation is reviewable. The ARM development filesystem still contains build accounts and signing state and is not an installable SSD image.
