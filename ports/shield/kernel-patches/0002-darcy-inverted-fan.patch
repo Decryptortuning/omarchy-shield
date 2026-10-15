@@ -115,7 +115,7 @@ Physical PWM, fan supply, RPM and suspend behavior remain unqualified.
 +};
 +
 +&vdd_gpu {
-+	pwms = <&pwm 1 8000 PWM_POLARITY_NORMAL>;
++	pwms = <&pwm 1 8000 0>;
 +};
 +
 +&fan {
