@@ -106,9 +106,11 @@
         "brcmfmac"
       ],
       "firmware_patterns": [
-        "brcm/brcmfmac4354-sdio*"
+        "brcm/brcmfmac4354-sdio.bin*",
+        "brcm/brcmfmac4354-sdio.clm_blob*",
+        "brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt*"
       ],
-      "acceptance": "Stock enumerates SDIO and PCIe buses; establish the actual radio ID and board-specific NVRAM/calibration before testing both bands, traffic and reconnect.",
+      "acceptance": "Confirm actual SDIO chip/revision, correct Darcy calibration and unique platform MAC; test both bands, regulatory behavior, traffic and reconnect.",
       "required_status": "hardware-validated or an explicit unresolved capability gap",
       "device_tree_nodes": [
         "/mmc@700b0200/wifi@1"
@@ -129,8 +131,7 @@
         "uhid"
       ],
       "firmware_patterns": [
-        "brcm/BCM4354*",
-        "brcm/BCM4356*"
+        "brcm/BCM4354.hcd*"
       ],
       "acceptance": "Identify the combo chip and exact firmware; test pairing, input and reconnect.",
       "required_status": "hardware-validated or an explicit unresolved capability gap",
@@ -144,13 +145,16 @@
       "config": [
         "CONFIG_HIDRAW",
         "CONFIG_UHID",
-        "CONFIG_INPUT_EVDEV"
+        "CONFIG_INPUT_EVDEV",
+        "CONFIG_HID_NVIDIA_SHIELD",
+        "CONFIG_NVIDIA_SHIELD_FF"
       ],
       "modules": [
-        "uhid"
+        "uhid",
+        "hid-nvidia-shield"
       ],
       "firmware_patterns": [],
-      "acceptance": "Test each remote button, voice/microphone transport, pairing, IR programming and wake individually; vendor features remain open.",
+      "acceptance": "Identify each actual accessory. Test Thunderstrike USB/Bluetooth buttons/axes, battery, LEDs and rumble, then each remote button, voice/microphone transport, pairing, IR and wake separately.",
       "required_status": "hardware-validated or an explicit unresolved capability gap",
       "device_tree_nodes": []
     },

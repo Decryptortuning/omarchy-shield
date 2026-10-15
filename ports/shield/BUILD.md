@@ -45,7 +45,7 @@ sudo bash ports/shield/chroot.sh "$build_root/rootfs" \
   /bin/bash /var/lib/shield-linux/build-target-packages.sh
 ```
 
-The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Current paired runtime/settings recipes use release `99.3`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes both acceptance matrices and the guarded collector.
+The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Current paired runtime/settings recipes use release `99.4`; the prior Darcy build used `99.3`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes both acceptance matrices and the guarded collector.
 
 The chroot uses private mount/PID namespaces, temporary device nodes and Cortex-A57 user emulation. It serializes its temporary binfmt registration, exposes no host block devices or sysfs tree, and starts no host daemons. Pacman signature validation stays enabled. Its sandbox exception applies to this emulated build command because Landlock is unavailable through QEMU user emulation; the installed configuration keeps normal sandbox settings. Fork packages are ignored by repository upgrades until a tested Shield release/update path exists.
 
@@ -88,3 +88,42 @@ python3 ports/shield/inspect-boot-image.py --tools ../mkbootimg \
 ```
 
 This preserves the input and extracts the header and payloads into a new directory. Generated command arguments are recorded as a JSON array, never executed. Four upstream Android v0/v1/v2 image tests and a synthetic wrapper fixture have passed; no actual Shield image, load address, device-tree handoff or temporary-boot route has been validated. This tool neither repacks nor flashes an image.
+
+
+## Integration candidate: firmware, fan and diagnostic handoff
+
+The current Darcy candidate adds the Thunderstrike controller driver/force feedback and an explicit inverted fan PWM contract. The Tegra provider complements duty only for `usage_power` consumers. The A08 candidate uses three-cell specifiers: fan channel 3 is inverted, GPU regulator channel 1 remains normal. `pwm-fan` holds an enabled inactive signal at logical zero and restores that state on resume. Source regression does not qualify electrical levels, fan startup or RPM; verify those before load.
+
+Use a new kernel cache because the pinned patch set changed. Preserve the previous validated cache and components. After the combined source/interface review:
+
+```sh
+SHIELD_BUILD_ROOT="$HOME/build/shield-linux-integration" \
+  SHIELD_DIST_DIR="$build_root/integration-2026-10-14/kernel" \
+  SHIELD_USB_CONSOLE=1 bash ports/shield/build-kernel.sh
+python3 ports/shield/tools/check-fan-behavior.py \
+  --kernel-source "$HOME/build/shield-linux-integration/sources/kernel-9336ceeebe1d75021d9fd98c94abaec522ba39b3" \
+  --output "$build_root/integration-2026-10-14/fan-regression.json"
+python3 ports/shield/stage-board-firmware.py \
+  --input-root "$build_root/harvest-2026-10-14/firmware" \
+  --output "$build_root/integration-2026-10-14/firmware"
+python3 ports/shield/audit-hardware.py \
+  --kernel-dir "$build_root/integration-2026-10-14/kernel" \
+  --rootfs "$build_root/rootfs" \
+  --firmware-stage "$build_root/integration-2026-10-14/firmware" \
+  --output "$build_root/integration-2026-10-14/hardware-audit.json"
+```
+
+[firmware-darcy.lock.json](firmware-darcy.lock.json) pins selected original-T210 upstream firmware, exact-release radio inputs, codec interface references and notices. The stager verifies hashes and publishes a complete new inactive directory only after all inputs pass. `--download-upstream` optionally fetches missing upstream files; stock inputs must be supplied locally from the harvest. It never modifies runtime search paths or calibration/MAC data. The audit reports staged availability separately from exact installed byte identity, including compressed firmware. Codec references are not install candidates.
+
+[diagnostic-boot.lock.json](diagnostic-boot.lock.json) pins the exact stock boot/recovery digests, measured v1/2048-byte header format, observed size limits and a legacy-kexec source candidate. Prepare the component bundle and build the static ARM64 helper separately:
+
+```sh
+python3 ports/shield/prepare-diagnostic-boot.py \
+  --kernel-dir "$build_root/integration-2026-10-14/kernel" \
+  --stock-root "$build_root/harvest-2026-10-14/boot/current-build" \
+  --output "$build_root/integration-2026-10-14/diagnostic-review"
+bash ports/shield/tools/build-kexec.sh ../kexec-tools \
+  "$build_root/integration-2026-10-14/kexec-tools"
+```
+
+The diagnostic tool checks kernel compression identity, stock input hashes/header format, the compiled fan/GPU specifiers, the USB ramdisk and aligned size budget. It creates raw components plus a review manifest, with unresolved native gates recorded. It creates no Android boot image or device command. The helper build executes no kexec operation; a static ELF or a passing `--help` invocation is not proof of stock-kernel entry or mainline handoff. Actual SKU, RAM/EMC reservations, CBoot addresses, privileged entry, CPU/device shutdown, physical recovery and unlocking remain open.

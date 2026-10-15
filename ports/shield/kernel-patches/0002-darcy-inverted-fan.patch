@@ -1,0 +1,138 @@
+From: Omarchy Shield contributors
+Subject: [PATCH] pwm: tegra: support inverted fan power and defined idle output
+
+Tegra has no hardware polarity bit. For usage_power consumers only, complement
+its duty cycle to preserve average power with a phase-shifted waveform. Keep
+phase-sensitive inverted requests rejected. Describe the optional flags cell.
+
+Use explicit polarity and ascending logical fan levels on the Darcy A08
+candidate. Keep its other PWM consumer, the GPU regulator, at normal polarity.
+For inverted fans default to pwm-fan mode 2, whose enabled zero-duty output
+holds a defined inactive level. Handle idle/resume and cleanup while logical
+speed is zero and propagate regulator power-off errors.
+
+Based on ACK Tegra 9336ceeebe1d75021d9fd98c94abaec522ba39b3.
+PWM usage_power semantics: https://docs.kernel.org/driver-api/pwm.html
+Existing inverted board wiring and curve: tegra210-p2894.dtsi.
+Downstream logical inversion corroboration: Switch L4T pwm_fan.c at
+7d95822acda1f6dab3f3d1d099b43ff9e0d0e626; no vendor code is copied.
+Physical PWM, fan supply, RPM and suspend behavior remain unqualified.
+
+--- a/drivers/pwm/pwm-tegra.c
++++ b/drivers/pwm/pwm-tegra.c
+@@ -242,9 +242,14 @@
+ {
+ 	int err;
+ 	bool enabled = pwm->state.enabled;
+-
+-	if (state->polarity != PWM_POLARITY_NORMAL)
+-		return -EINVAL;
++	u64 duty_cycle = state->duty_cycle;
++
++	/* A shifted waveform is valid only for power-only consumers. */
++	if (state->polarity == PWM_POLARITY_INVERSED) {
++		if (!state->usage_power)
++			return -EINVAL;
++		duty_cycle = state->period - duty_cycle;
++	}
+ 
+ 	if (!state->enabled) {
+ 		if (enabled)
+@@ -253,7 +258,7 @@
+ 		return 0;
+ 	}
+ 
+-	err = tegra_pwm_config(chip, pwm, state->duty_cycle, state->period);
++	err = tegra_pwm_config(chip, pwm, duty_cycle, state->period);
+ 	if (err)
+ 		return err;
+ 
+--- a/drivers/hwmon/pwm-fan.c
++++ b/drivers/hwmon/pwm-fan.c
+@@ -178,7 +178,9 @@
+ 	bool enable_regulator = false;
+ 	int ret;
+ 
+-	if (!ctx->enabled)
++	/* Mode 2 keeps a defined inactive signal, including after resume. */
++	if (!ctx->enabled && !state->enabled && !ctx->regulator_enabled &&
++	    ctx->enable_mode != pwm_enable_reg_enable)
+ 		return 0;
+ 
+ 	pwm_fan_enable_mode_2_state(ctx->enable_mode,
+@@ -194,7 +196,9 @@
+ 		return ret;
+ 	}
+ 
+-	pwm_fan_switch_power(ctx, enable_regulator);
++	ret = pwm_fan_switch_power(ctx, enable_regulator);
++	if (ret)
++		return ret;
+ 
+ 	ctx->enabled = false;
+ 
+@@ -277,7 +281,7 @@
+ 
+ 	if (val == 0) {
+ 		/* Disable pwm-fan unconditionally */
+-		if (ctx->enabled)
++		if (ctx->enabled || ctx->pwm_state.enabled)
+ 			ret = __set_pwm(ctx, 0);
+ 		else
+ 			ret = pwm_fan_switch_power(ctx, false);
+@@ -550,7 +554,12 @@
+ 		return -EINVAL;
+ 	}
+ 
+-	ctx->enable_mode = pwm_disable_reg_enable;
++	/*
++	 * A disabled PWM has no guaranteed output level. Inverted fans need
++	 * an enabled, zero-duty PWM to hold their inactive (high) signal.
++	 */
++	ctx->enable_mode = ctx->pwm_state.polarity == PWM_POLARITY_INVERSED ?
++		pwm_enable_reg_enable : pwm_disable_reg_enable;
+ 
+ 	ret = pwm_fan_get_cooling_data(dev, ctx);
+ 	if (ret)
+--- a/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a08.dts
++++ b/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a08.dts
+@@ -1,5 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /dts-v1/;
++
++#include <dt-bindings/pwm/pwm.h>
+ 
+ #include "tegra210.dtsi"
+ #include "tegra210-p2894.dtsi"
+@@ -27,3 +29,17 @@
+ 		};
+ 	};
+ };
++
++/* Keep the GPU rail normal while adding an explicit fan polarity cell. */
++&pwm {
++	#pwm-cells = <3>;
++};
++
++&vdd_gpu {
++	pwms = <&pwm 1 8000 PWM_POLARITY_NORMAL>;
++};
++
++&fan {
++	pwms = <&pwm 3 65536 PWM_POLARITY_INVERTED>;
++	cooling-levels = <0 127 191 255>;
++};
+--- a/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/nvidia,tegra20-pwm.yaml
+@@ -50,7 +50,10 @@
+       - const: pwm
+ 
+   "#pwm-cells":
+-    const: 2
++    description:
++      The optional third cell specifies polarity. Inverted polarity requires
++      a power-only consumer because Tegra emulates it by shifting the waveform.
++    enum: [2, 3]
+ 
+   pinctrl-names:
+     items:

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "board_variant": "darcy-t210",
+  "stock_build": "13961458_4387.0822",
+  "stock_inputs": [
+    {
+      "path": "ota-metadata/boot.img",
+      "bytes": 11044132,
+      "sha256": "a1111a6924a5bdffa8e88c960219b299a7b80d4690bffe92e415c6afb29ddd75"
+    },
+    {
+      "path": "recovery-inputs/recovery.img",
+      "bytes": 20575528,
+      "sha256": "ebe2fc16c2b82114712f18bd78781b63c8d4b9a52de2294239b08a817098341d"
+    }
+  ],
+  "android_header": {
+    "version": 1,
+    "page_bytes": 2048,
+    "kernel_compression": "gzip",
+    "raw_addresses_are_validated_load_addresses": false,
+    "recovery_dtbo_handoff_supported": false
+  },
+  "observed_limits": {
+    "boot_partition_bytes": 26738688,
+    "recovery_partition_bytes": 26738688,
+    "fastboot_download_bytes": 33554432
+  },
+  "kexec": {
+    "repository": "kexec-tools",
+    "url": "https://github.com/horms/kexec-tools.git",
+    "commit": "0fd0d8e9ea975696fdc05ad267a65f3efd415612",
+    "license": "GPL-2.0-only; retain per-file notices",
+    "syscall": "legacy kexec_load with explicit DTB and initrd",
+    "stock_config_enabled": true,
+    "physical_entry_or_handoff_verified": false
+  },
+  "unresolved_native_gates": [
+    "Controlled privileged stock-kernel entry and temporary boot behavior",
+    "Actual owner PCB/SKU, RAM code and live DT identity",
+    "Memory reservations, trained EMC tables and bootloader fixup propagation",
+    "CBoot load-address interpretation for any Android-format custom entry image",
+    "Tegra CPU/cache/device shutdown state across legacy kexec",
+    "Physical fan supply, PWM polarity, tach response and conservative stop conditions",
+    "Physical backups, restoration procedure and owner unlocking/data-wipe decision"
+  ],
+  "flashable_image": false
+}
