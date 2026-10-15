@@ -157,4 +157,10 @@ The owner-specific recovery now returns authenticated root ADB without menu inpu
 
 The serial-only diagnostic and inventory sources use upstream `serial.c`'s donated CDC-ACM identity `0525:a4a7`. The Windows inventory consumer requires that pair and the exact `shield-stock-inventory` parent serial. The private RAM collector similarly requires `shield-diagnostic`. Keep producers and consumers paired. Reusing the old multifunction ID `1d6b:0104` caused Windows to bind an existing RNDIS driver on this workstation, despite successful SuperSpeed enumeration. The corrected physical diagnostic transferred 67,611 bytes; an inventory boot with the updated identity has not been retried.
 
-The successful physical USB probe also used temporary DT supply dependencies to avoid destructive padctl probe deferral. They do not change electrical settings and are not a production binding. A production driver dependency fix remains required; the stock board DT and ordinary build alone are not yet qualified for the measured transfer.
+The successful physical USB probe also used temporary DT supply dependencies to avoid destructive padctl probe deferral. They do not change electrical settings and are not a production binding. The next A04 source candidate resolves child VBUS suppliers before entering the hardware probe, and balances temporary handles while preserving the port devices' normal regulator ownership. It adds no voltage/enable calls or PHY settings. Its build and physical qualification are pending; the ordinary board DT alone is not yet qualified for the measured transfer.
+
+The A04 build runs the actual-source provider/refcount harness before compilation. It checks ready, missing/disabled/optional nodes, first/later deferral, permanent supplier errors and the SoC port-count limit, with balanced OF and regulator references. It also checks that failures return before hardware probe, MMIO mapping or reset:
+
+```sh
+python3 ports/shield/tools/check-xusb-supplies.py --kernel-source "$kernel_source" --output "$build_root/xusb-supplies-regression.json"
+```

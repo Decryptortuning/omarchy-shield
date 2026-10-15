@@ -32,6 +32,11 @@
         "path": "ports/shield/kernel-patches/0004-darcy-smmu-handoff.patch",
         "sha256": "71ce47ebada995ec3a23513c73926a856aa498fd012bca250579c97c6193faa2",
         "reason": "Default-off A04 inherited SMMU reset and post-OF completion gate; separately gated stamped GPU-disabled RAM probe can retain GPUB while denying every paging ASID. Native target userspace unqualified."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0005-xusb-child-supplies.patch",
+        "sha256": "99c41f5bc990a08b3c28dd92b143e50a0850afe65b4a6fbf507a35dc9ac79e64",
+        "reason": "Resolve real child USB2 VBUS providers before padctl initialization/reset can destroy inherited UPHY configuration on deferred probe; temporary DT ordering experiment restored native SuperSpeed, driver build/native qualification pending."
       }
     ],
     "variant": "omarchy-a04",
