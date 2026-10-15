@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-15",
+  "scope": "A04 opt-in inherited SMMU reset component build; no native execution",
+  "base_commit": "7b5058dbe6c7b1e52d970f790bbd27555c5df45b",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "board_variant": "darcy-t210-a04",
+  "kernel_package": "7.1.0-6",
+  "paired_runtime_settings_release": "99.6",
+  "artifacts": {
+    "Image": {
+      "bytes": 45746688,
+      "sha256": "5dcd05eae73121125609d076a60c301b0799759fe1ebca30c9733a331e399110"
+    },
+    "Image.gz": {
+      "bytes": 17257154,
+      "sha256": "0a03acd2a0f984aff95b0e34ee5c269f8e9295c11b29686eee64576be3130a37"
+    },
+    "initramfs.cpio.gz": {
+      "bytes": 731743,
+      "sha256": "83bc7447199545adbdec459d61392d9d5304d7eb5965967719f782853f532097"
+    },
+    "tegra210-p2894-0050-a04.dtb": {
+      "bytes": 72718,
+      "sha256": "361401229f0975df14578b0521e6fe8fa9af3f9bd79ae87182b83134eb0e9f80"
+    },
+    "kernel-modules.tar.zst": {
+      "bytes": 19152366,
+      "sha256": "22fb79c5c18fe8b426aa31483b804ec817ef2c091a1747f8efa71402089d71b9"
+    }
+  },
+  "checks": {
+    "reviewed_inputs_unchanged": true,
+    "fresh_kernel_modules_and_USB_ramdisk_build": "passed",
+    "QEMU_normal_boot": "passed",
+    "actual_source_fake_MMIO_harness": {
+      "swgroups": 39,
+      "ASIDs": 128,
+      "scope_and_failed_write_rejection": "passed",
+      "probe_completion_order": "passed"
+    },
+    "missing_MC_guard": "passed: intentional panic before userspace, observed through QEMU PL011 earlycon",
+    "DTB_byte_identical_to_validation_a04": true,
+    "schema_result": "Inherited from byte-identical validation-a04.json; full schema pass remains false"
+  },
+  "native": {
+    "kexec_loaded_or_executed": false,
+    "modern_kernel_booted_on_Shield": false,
+    "physical_acceptance_passes_added": 0,
+    "full_hardware_passes": 0,
+    "full_hardware_entries": 19
+  },
+  "limitations": [
+    "No physical SMMU or DMA qualification",
+    "Default-off parameter requires independently quiesced old DMA masters",
+    "Live memory banks/reservations, trained memory/clock state and bounded diagnostic boot remain open"
+  ],
+  "private_raw_evidence_published": false
+}

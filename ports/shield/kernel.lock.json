@@ -27,6 +27,11 @@
         "path": "ports/shield/kernel-patches/0003-darcy-a04.patch",
         "sha256": "eee85f2583713f124f79b9a7be202d7c7b28b6c45af2f4f8d47d21abc6f05199",
         "reason": "Distinct A04 leaf and binding with exact-stock TMP451 wiring and modern monitor-only sensor zones; shared electrical definitions retained. Physical modern-kernel behavior unqualified."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0004-darcy-smmu-handoff.patch",
+        "sha256": "7303c45b0490efcdf363370786e7e13da20033ec0d62a10cd49d68d9d99de62d",
+        "reason": "Default-off A04-only inherited SMMU reset with per-group readback and an early completion gate; old DMA must be quiesced separately. Native behavior unqualified."
       }
     ],
     "variant": "omarchy-a04",
