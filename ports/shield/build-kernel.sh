@@ -174,6 +174,15 @@ python3 "$port_dir/tools/apply-device-tree-overlays.py" "$project_root" "$lock_f
 cp "$kernel_out/.config" "$dist/kernel.config"
 cp "$busybox_out/.config" "$dist/busybox.config"
 cp "$lock_file" "$dist/sources.lock.json"
+python3 - "$project_root" "$lock_file" "$dist/hardware.json" <<'PY'
+import hashlib, json, pathlib, shutil, sys
+project, lock_file, destination = map(pathlib.Path, sys.argv[1:])
+entry = json.loads(lock_file.read_text())['hardware_matrix']
+source = (project / entry['path']).resolve()
+if not source.is_relative_to(project.resolve()) or hashlib.sha256(source.read_bytes()).hexdigest() != entry['sha256']:
+    raise SystemExit('Hardware acceptance matrix differs from its locked input')
+shutil.copy2(source, destination)
+PY
 if [[ -f "$kernel_src/.shield-source-verification.json" ]]; then
   cp "$kernel_src/.shield-source-verification.json" "$dist/source-verification.json"
 fi
@@ -189,7 +198,7 @@ fi
   cd "$dist"
   sha256sum Image Image.gz initramfs.cpio.gz "$(basename -- "$dtb")" \
     kernel.config busybox.config sources.lock.json compiler.txt > SHA256SUMS
-  sha256sum ramdisk-profile.json >> SHA256SUMS
+  sha256sum ramdisk-profile.json hardware.json >> SHA256SUMS
   if [[ -f source-verification.json ]]; then
     sha256sum source-verification.json >> SHA256SUMS
   fi

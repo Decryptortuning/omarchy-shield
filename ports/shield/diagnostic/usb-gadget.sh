@@ -1,5 +1,18 @@
 # POSIX library shared by the BusyBox diagnostic init and the Bash VM test.
 # This configures USB serial only; it never starts a shell or changes storage.
+shield_usb_supported_board() {
+  shield_usb_tokens=$1
+  if printf '%s\n' "$shield_usb_tokens" | grep -Eq '^(apple,|qcom,)'; then return 1; fi
+  if printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,p2894-0050-a08'; then
+    printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,tegra210' || return 1
+    if printf '%s\n' "$shield_usb_tokens" | grep -Eq '^nvidia,(tegra210b01|p2894-2551-b00)$'; then return 1; fi
+  elif printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,p2894-2551-b00'; then
+    printf '%s\n' "$shield_usb_tokens" | grep -qx 'nvidia,tegra210b01' || return 1
+  else
+    return 1
+  fi
+}
+
 shield_usb_gadget_create() {
   shield_usb_mode=$1
   shield_usb_udc=$2
@@ -11,8 +24,7 @@ shield_usb_gadget_create() {
       case "$shield_usb_udc" in dummy_udc.*) ;; *) return 1 ;; esac
       ;;
     shield)
-      tr '\000' '\n' < /proc/device-tree/compatible | grep -qx 'nvidia,tegra210b01' || return 1
-      tr '\000' '\n' < /proc/device-tree/compatible | grep -Eq '^nvidia,p2894-(0050-a08|2551-b00)$' || return 1
+      shield_usb_supported_board "$(tr '\000' '\n' < /proc/device-tree/compatible)" || return 1
       [ "$shield_usb_udc" = '700d0000.usb' ] || return 1
       ;;
     *) return 1 ;;

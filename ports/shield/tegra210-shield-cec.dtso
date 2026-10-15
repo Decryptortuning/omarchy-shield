@@ -1,0 +1,9 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/dts-v1/;
+/plugin/;
+
+// The P2894 pinmux already selects HDMI CEC on PCC0. The SoC controller
+// inherited status="disabled"; enable it for this B00 evaluation DTB only.
+&{/cec@70015000} {
+  status = "okay";
+};

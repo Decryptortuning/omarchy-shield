@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Install check tools
-        run: sudo apt-get update -qq && sudo apt-get install -y shellcheck pacman-package-manager lua5.4
+        run: sudo apt-get update -qq && sudo apt-get install -y shellcheck pacman-package-manager lua5.4 device-tree-compiler
       - name: Check Shield build scripts
         run: |
           python3 ports/shield/validate-inputs.py
@@ -32,6 +32,7 @@ jobs:
           PY
       - name: Exercise platform integration
         run: |
+          python3 -m unittest discover -s ports/shield/tests
           for suite in shield-platform hw-platform platform-packages pacman-templates lifecycle-dispatch image-target-platform image-deferred-hardware hyprland-startup-cursor; do
             bash "test/shell.d/$suite-test.sh"
           done

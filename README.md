@@ -1,8 +1,8 @@
-# Omarchy — NVIDIA Shield TV Pro 2019 port
+# Omarchy — NVIDIA Shield TV port
 
-Experimental fork for the **2019 NVIDIA Shield TV Pro (`mdarcy`, Tegra210B01)**. The target is the full Omarchy desktop with complete hardware enablement. **Physical Shield boot and hardware support are not yet validated; there is no ready-to-flash installation image.**
+Experimental fork for the owner's connected **Shield TV (`darcy`, original Tegra210 A02)**, retaining the earlier **2019 Pro (`mdarcy`, Tegra210B01)** candidate as a separate profile. The target is the full Omarchy desktop with complete hardware enablement. **Native Linux boot and hardware support are not yet validated; there is no ready-to-flash installation image.**
 
-This branch adds the `aarch64-shield` platform, Arch Linux ARM package integration and Shield lifecycle handling. Start with the [port status and build inputs](ports/shield/README.md), [hardware acceptance matrix](ports/shield/hardware.json) and [platform integration notes](docs/shield-port.md).
+This branch adds `aarch64-shield`, Arch Linux ARM integration and guarded Shield lifecycle handling. Start with [port status and build inputs](ports/shield/README.md), [connected Darcy findings](ports/shield/DARCY.md), its [hardware acceptance matrix](ports/shield/hardware-darcy.json) and [platform integration notes](docs/shield-port.md).
 
 Upstream: [omacom/omarchy](https://github.com/omacom/omarchy). Omarchy's desktop, applications and themes remain the basis of this port.
 

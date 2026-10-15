@@ -13,21 +13,41 @@ export OMARCHY_PATH=$ROOT
 export OMARCHY_PROC_ROOT=$work/board/proc
 export PATH=$work/board/bin:$ROOT/bin:$PATH
 
-for board in nvidia,p2894-0050-a08 nvidia,p2894-2551-b00; do
-  printf '%s\0' "$board" nvidia,darcy nvidia,tegra210b01 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
+for profile in darcy mdarcy; do
+  if [[ $profile == "darcy" ]]; then
+    board=nvidia,p2894-0050-a08
+    soc=nvidia,tegra210
+  else
+    board=nvidia,p2894-2551-b00
+    soc=nvidia,tegra210b01
+  fi
+  printf '%s\0' "$board" nvidia,darcy "$soc" nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
   [[ $(omarchy-hw-platform) == "aarch64-shield" ]] || fail "$board selects the Shield platform"
   omarchy-hw-aarch64-shield || fail "$board passes the Shield predicate"
 done
-pass "verified 2019 Pro board identifiers select Shield"
+pass "each supported Shield board selects its matching Tegra generation"
 
 printf '%s\0' nvidia,p2571 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
 [[ $(omarchy-hw-platform) == "aarch64" ]] || fail "an older Shield is not a 2019 Pro"
 ! omarchy-hw-aarch64-shield || fail "the predicate rejects an older Shield"
 printf '%s\0' nvidia,p2894-2551-b00 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
 ! omarchy-hw-platform >/dev/null 2>&1 || fail "a Shield board without B01 is contradictory"
+printf '%s\0' nvidia,p2894-0050-a08 nvidia,tegra210b01 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
+! omarchy-hw-platform >/dev/null 2>&1 || fail "an original Darcy board cannot claim B01"
+printf '%s\0' nvidia,p2894-0050-a08 nvidia,p2894-2551-b00 nvidia,tegra210b01 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
+! omarchy-hw-platform >/dev/null 2>&1 || fail "two different Shield boards are contradictory"
 printf '%s\0' nvidia,p2894-2551-b00 nvidia,tegra210b01 apple,t6021 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
 ! omarchy-hw-platform >/dev/null 2>&1 || fail "mixed Apple and Shield identity is contradictory"
-pass "older hardware and contradictory device trees are refused"
+pass "other Shield models and contradictory board/SoC pairs are refused"
+
+export OMARCHY_SYS_ROOT=$work/board/sys
+mkdir -p "$OMARCHY_SYS_ROOT/firmware/devicetree/base"
+printf '%s\0' nvidia,p2894-0050-a08 nvidia,tegra210 >"$OMARCHY_PROC_ROOT/device-tree/compatible"
+printf '%s\0' nvidia,p2894-2551-b00 nvidia,tegra210b01 >"$OMARCHY_SYS_ROOT/firmware/devicetree/base/compatible"
+! omarchy-hw-platform >/dev/null 2>&1 || fail "proc/sysfs cannot disagree about the Shield generation"
+rm "$OMARCHY_SYS_ROOT/firmware/devicetree/base/compatible"
+unset OMARCHY_SYS_ROOT
+pass "proc and sysfs must agree on the Shield generation"
 
 fake_platform "$work/board" aarch64-shield
 defaults=$(omarchy-pkg-defaults)
