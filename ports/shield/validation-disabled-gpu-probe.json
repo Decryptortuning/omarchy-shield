@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-15",
+  "scope": "Built and offline-tested diagnostic-only GPUB retention; physical attempt awaiting recovery log",
+  "base_source_commit": "c1252d0c1374934cfab891d5f25a59c55278dd6b",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "board_variant": "darcy-t210-a04",
+  "source_files": {
+    "kernel-patches/0004-darcy-smmu-handoff.patch": "71ce47ebada995ec3a23513c73926a856aa498fd012bca250579c97c6193faa2",
+    "kernel.lock.json": "e9e21b6daafb5827b79ae280d37978535a71a92d48b685d9864b1e51a76f36ae",
+    "tools/check-smmu-handoff.py": "30a031477c0676e1ad42e433aaaad8725e9ccd8bda24cf9f13462951bec4a134",
+    "tests/smmu-harness.c": "a1fd2883aaec0a7a873cf0367cac26f23c557e25c68d4954e3ecadba30351575",
+    "build-kernel.sh": "d3b9665858cb85c85cbfcdc1dd27653a94bdbf8a53cf643b45fec96dc808f22e",
+    "config/bringup.fragment": "821f7aabb29a63a196727e2febb2ebb61a2535d349d56659dda04391f9282b32"
+  },
+  "artifacts": {
+    "Image": {
+      "bytes": 45812224,
+      "sha256": "cad3aae6189b26f5dfab10f66088f9e830b0de8569cd9a9d9a64bfe6419853e6"
+    },
+    "Image.gz": {
+      "bytes": 17270078,
+      "sha256": "28e5d4f09dffe069dc4fe3fd552105c7648b96ab567c714674b1eda83d2d3a23"
+    },
+    "initramfs.cpio.gz": {
+      "bytes": 733512,
+      "sha256": "1a8bc75cc26b3607e977d79bc72dfc4e6856767023530b204c101b07213f9efb"
+    },
+    "tegra210-p2894-0050-a04.dtb": {
+      "bytes": 72718,
+      "sha256": "361401229f0975df14578b0521e6fe8fa9af3f9bd79ae87182b83134eb0e9f80"
+    },
+    "kernel-modules.tar.zst": {
+      "bytes": 19131623,
+      "sha256": "df5e91f6b2b3f49624e870071920c9fdaadd92f45d7c5e9d1597f95e7d449d85"
+    }
+  },
+  "checks": {
+    "fresh_verified_source_and_complete_build": "passed",
+    "actual_source_reset_gate_allocator_fake_MMIO": "passed; 39 groups, 128 ASIDs, invalid contracts and paging refusal",
+    "port_python_tests": 33,
+    "actual_ARM_shell_deadline_sensor_cases": 5,
+    "actual_ARM_PID1_parse_and_64bit_arithmetic": "passed",
+    "QEMU_normal_boot": "passed",
+    "QEMU_missing_MC_fail_closed": "passed",
+    "linked_init_order": "ramoops2 < MC3 < OF3s < SMMUgate4 < selected DMA6",
+    "native_component_hash_readback_and_four_segment_review": "passed"
+  },
+  "native": {
+    "physical_attempt": 3,
+    "legacy_shutdown_checks": "passed; display disabled, GPU unbound, media clients suspended, USB teardown initiated",
+    "start_temperature_range_C": [
+      49,
+      53
+    ],
+    "post_idle_EMC_hz": 1600000000,
+    "diagnostic_USB_capture_bytes": 0,
+    "modern_persistent_log": "awaiting recovery ADB",
+    "modern_userspace": "not verified",
+    "physical_full_hardware_passes": 0,
+    "physical_full_hardware_entries": 19
+  },
+  "policy": [
+    "Separate default-off preserve_disabled_gpu requires reset_inherited and exact A04/T210 MC",
+    "Exact chosen first-probe stamp and literal disabled GM20B required",
+    "GPUB register read/log only; other38 groups retain strict reset/readback",
+    "All128 paging ASIDs denied before IOMMU registration; no PTB slot replacement by new paging attachments",
+    "Old page-table RAM is not preserved; old GPU must remain quiescent",
+    "Failed original GPUB write does not establish read-only or secure ownership"
+  ],
+  "not_qualified": [
+    "Native modern userspace/cooling/USB",
+    "Enabled GPU or desktop handoff",
+    "Full hardware support or independent Linux boot",
+    "Replacement paired desktop packages or installer"
+  ],
+  "raw_device_identifiers_published": false,
+  "partition_writes": false
+}
