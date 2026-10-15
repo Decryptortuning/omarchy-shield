@@ -1,5 +1,7 @@
 # Darcy integration build: October 14, 2026
 
+Later read-only bootloader inspection selects A04 on the owner device. The A08 candidate documented here remains a historical evaluation build. The [stock-kernel inventory candidate](STOCK_BOOTSTRAP.md) preserves that actual board handoff for the proposed first hardware inventory; the modern kernel needs an A04 definition before native testing.
+
 The first integration candidate has built and passed its offline checks. It adds the Shield controller driver, a source-tested fan/PWM correction, reproducible inactive firmware staging and diagnostic boot-component validation. [validation-darcy-integration.json](validation-darcy-integration.json) records exact hashes, source commit `fb3d99c4dd3476a4134327e506a04f58bf8ec436` and test scope. The earlier [Darcy receipt](validation-darcy.json) and [harvest](HARVEST.md) remain separate historical evidence.
 
 | Package built and installed | Version |
