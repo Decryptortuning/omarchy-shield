@@ -10,6 +10,7 @@
     "test_unpack_boot_image_v2",
     "test_boot_image_v2_cmdline_null_terminator"
   ],
-  "synthetic_fixtures_only": true,
-  "actual_shield_boot_image_tested": false
+  "synthetic_fixtures_only": false,
+  "actual_shield_boot_image_tested": true,
+  "actual_image_scope": "Read-only inspection of exact installed-build official boot and reconstructed recovery inputs; no native boot, load-address or DT-handoff qualification"
 }

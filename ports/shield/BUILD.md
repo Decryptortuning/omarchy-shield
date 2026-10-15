@@ -87,7 +87,7 @@ python3 ports/shield/inspect-boot-image.py --tools ../mkbootimg \
   --image "$build_root/stock-boot.img" --output "$build_root/stock-boot-inspection"
 ```
 
-This preserves the input and extracts the header and payloads into a new directory. Generated command arguments are recorded as a JSON array, never executed. Four upstream Android v0/v1/v2 image tests and a synthetic wrapper fixture have passed; no actual Shield image, load address, device-tree handoff or temporary-boot route has been validated. This tool neither repacks nor flashes an image.
+This preserves the input and extracts the header and payloads into a new directory. Generated command arguments are recorded as a JSON array, never executed. Four upstream Android v0/v1/v2 image tests and a synthetic wrapper fixture have passed. Exact installed-build stock boot and reconstructed recovery have also been inspected; load-address interpretation, device-tree handoff and temporary-boot behavior remain unqualified. This tool neither repacks nor flashes an image.
 
 
 ## Integration candidate: firmware, fan and diagnostic handoff
@@ -97,11 +97,11 @@ The current Darcy candidate adds the Thunderstrike controller driver/force feedb
 Use a new kernel cache because the pinned patch set changed. Preserve the previous validated cache and components. After the combined source/interface review:
 
 ```sh
-SHIELD_BUILD_ROOT="$HOME/build/shield-linux-integration" \
+SHIELD_BUILD_ROOT="$HOME/build/shield-linux-integration-v2" \
   SHIELD_DIST_DIR="$build_root/integration-2026-10-14/kernel" \
   SHIELD_USB_CONSOLE=1 bash ports/shield/build-kernel.sh
 python3 ports/shield/tools/check-fan-behavior.py \
-  --kernel-source "$HOME/build/shield-linux-integration/sources/kernel-9336ceeebe1d75021d9fd98c94abaec522ba39b3" \
+  --kernel-source "$HOME/build/shield-linux-integration-v2/sources/kernel-9336ceeebe1d75021d9fd98c94abaec522ba39b3" \
   --output "$build_root/integration-2026-10-14/fan-regression.json"
 python3 ports/shield/stage-board-firmware.py \
   --input-root "$build_root/harvest-2026-10-14/firmware" \
