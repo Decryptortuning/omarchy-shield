@@ -6,6 +6,8 @@ from pathlib import Path
 import re
 import subprocess
 from tools.kernel_profile import verify_kernel_profile
+from tools.board_firmware import verify_stage, installed_identity
+from tools.fan_profile import inspect_fan_contract
 
 
 def device_tree_status(dtb, path):
@@ -26,6 +28,7 @@ def main():
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--kernel-dir', type=Path, default=port / 'build/kernel')
   parser.add_argument('--rootfs', type=Path)
+  parser.add_argument('--firmware-stage', type=Path, help='Verify inactive Darcy staging separately from installed firmware')
   parser.add_argument('--output', type=Path, default=port / 'build/hardware-audit.json')
   args = parser.parse_args()
   try:
@@ -37,6 +40,20 @@ def main():
     # Historical B01 bundles predate portable acceptance-matrix snapshots.
     matrix = port / 'hardware.json'
   requirements = json.loads(matrix.read_text())
+  staged = []
+  staging_report = None
+  if args.firmware_stage:
+    try:
+      firmware_lock, staging_report = verify_stage(args.firmware_stage, port / 'firmware-darcy.lock.json', lock['board_variant'])
+    except (ValueError, OSError, KeyError) as error:
+      raise SystemExit(str(error)) from error
+    for entry in firmware_lock['entries']:
+      if entry['usage'] == 'notice':
+        continue
+      staged.append({'id': entry['id'], 'subsystem': entry['subsystem'], 'usage': entry['usage'],
+                     'runtime_request': entry['runtime_request'], 'staged_bytes_verified': True,
+                     'installed_identity': installed_identity(args.rootfs / 'usr/lib/firmware', entry)
+                     if args.rootfs else {'status': 'not-inspected'}, 'physical_status': 'untested'})
   config = {}
   for line in (args.kernel_dir / 'kernel.config').read_text().splitlines():
     if re.match(r'^CONFIG_\w+=', line):
@@ -64,10 +81,14 @@ def main():
     items.append({**item, 'config_values': symbols, 'missing_config': absent,
            'packaged_modules': module_checks, 'firmware_candidates': firmware,
            'compiled_device_tree': tree,
+           'staged_firmware': [entry for entry in staged if entry['subsystem'] == item['id']],
            'physical_status': 'untested',
            'build_config_complete': (not absent and all(module_checks.values())) if symbols else None})
   report = {'target': requirements['target'], 'board_variant': lock.get('board_variant', 'mdarcy-t210b01'),
        'device_tree': dtb.name, 'subsystems': items,
+       'darcy_fan_contract': inspect_fan_contract(dtb) if lock.get('board_variant') == 'darcy-t210' else None,
+       'inactive_firmware_stage': {'lock_sha256': staging_report['lock_sha256'], 'verified_files': len(staging_report['files'])}
+       if staging_report else None,
        'all_physical_tests_passed': False, 'physical_shield_boot_tested': False,
        'meaning': 'Configured/packaged drivers and firmware candidates are not proof that hardware works.'}
   args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -80,6 +101,9 @@ def main():
                           for item in items if any(not state['enabled'] for state in item['compiled_device_tree'].values())},
            'missing_firmware_candidates': {item['id']: [pattern for pattern, matches in item['firmware_candidates'].items() if not matches]
                            for item in items if any(not matches for matches in item['firmware_candidates'].values())},
+           'staged_files_verified': len(staging_report['files']) if staging_report else 0,
+           'installed_firmware_identity': {entry['id']: entry['installed_identity']['status'] for entry in staged
+                                           if entry['usage'] == 'driver-candidate'},
            'physical_tests_passed': 0}, indent=2))
 
 
