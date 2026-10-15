@@ -8,6 +8,8 @@ The inventory init requires explicit opt-in, original Darcy compatible strings, 
 
 USB serial uses stock's `700d0000.xudc` controller and built-in ACM function. The root console is intended only for this physical diagnostic session. The session powers off after 60 seconds, sooner for a detected 70°C CPU/GPU reading or absent plausible sensor data. It runs no kexec operation automatically. Evidence disappears at power-off unless transferred to the PC; any real device dumps must stay private until reviewed.
 
+The Windows [collector](tools/collect-stock-inventory.ps1) waits for a unique USB serial interface whose parent has the inventory gadget's VID/PID and explicit serial string. It opens no arbitrary COM port. Its fixed command creates a tar in device RAM and transfers a nonce/length-framed binary stream into a new private PC directory. It bounds the transfer and saves a SHA-256 receipt; it never extracts or publishes the archive, writes a device partition or invokes kexec. Start it before a separately authorized temporary boot so collection fits the bounded session. Synthetic binary-stream tests do not qualify physical USB enumeration or transfer.
+
 Build from verified local inputs into new directories:
 
 ```sh

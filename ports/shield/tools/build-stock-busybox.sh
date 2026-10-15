@@ -19,6 +19,7 @@ version=$(python3 - "$port/stock-bootstrap.lock.json" <<'PY'
 import json, sys
 print(json.load(open(sys.argv[1]))['busybox']['version'])
 PY
+)
 source_dir=$destination/busybox-$version
 output_dir=$destination/out
 mkdir "$output_dir"
