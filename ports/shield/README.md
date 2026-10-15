@@ -6,6 +6,8 @@ The [Darcy validation report](DARCY.md#verified-build-2026-10-14) records four s
 
 USB inspection identified original Tegra210 silicon, Android 11, and a locked bootloader. The owner confirmed this connected unit as the target. The current default lock selects a Darcy A08 evaluation DTB; its exact board SKU is still unconfirmed. The Windows fastboot driver is installed, read-only fastboot inspection worked, and the device returned to stock Android. No unlock, erase or flash has occurred. See [DARCY.md](DARCY.md) for the current scope.
 
+The [reusable board-source map](BOARD_SOURCES.md) identifies the original Darcy definitions inside LineageOS's T210 Foster hardware project, its compressed-kernel boot recipe and specific Linux radio firmware mappings. [board-sources.lock.json](board-sources.lock.json) pins these research inputs independently of the built kernel/component lock.
+
 ## Current implementation
 
 - The `aarch64-shield` detector recognizes A08 with original Tegra210, and B00 with Tegra210B01. Cross-generation pairs, conflicting proc/sysfs identities, 2015 Shields, Switches and Jetsons are rejected. Compatible strings identify supported evaluation DTs; they do not qualify the physical unit.
