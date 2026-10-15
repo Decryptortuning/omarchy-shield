@@ -2,7 +2,7 @@
 
 This experimental Omarchy port targets the owner's connected `darcy` / original Tegra210 A02 Shield. The earlier `mdarcy` / Tegra210B01 candidate is retained as a separate board profile. Full hardware support remains the acceptance goal in [hardware-darcy.json](hardware-darcy.json) and [hardware.json](hardware.json), respectively. No native Linux Shield boot or peripheral test has passed yet. There is no flashable installer.
 
-The [pre-USB validation report](VALIDATION.md) records four successfully built ARM packages and the passing custom-kernel/Omarchy filesystem VM test, including encrypted snapshots, config verification and virtual USB serial data. Package hashes and exact provenance are in [validation.json](validation.json).
+The [Darcy validation report](DARCY.md#verified-build-2026-10-14) records four successfully rebuilt ARM packages and the passing custom-kernel/Omarchy filesystem VM test, including encrypted snapshots, config verification and virtual USB serial data. Current package hashes and exact provenance are in [validation-darcy.json](validation-darcy.json). The [pre-USB report](VALIDATION.md) preserves the earlier B01 build separately.
 
 USB inspection identified original Tegra210 silicon, Android 11, and a locked bootloader. The owner confirmed this connected unit as the target. The current default lock selects a Darcy A08 evaluation DTB; its exact board SKU is still unconfirmed. The Windows fastboot driver is installed, read-only fastboot inspection worked, and the device returned to stock Android. No unlock, erase or flash has occurred. See [DARCY.md](DARCY.md) for the current scope.
 
