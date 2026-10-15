@@ -12,3 +12,9 @@ Review date: October 14, 2026. Scope: inactive firmware staging, controller conf
 - The kexec helper is exported from a pinned source commit, cross-built statically for ARM64 and inspected for architecture/interpreter. Only informational invocation may be tested. Loading/executing kernels and any physical device operation remain outside this batch.
 
 The prior [Darcy build receipt](validation-darcy.json) and [harvest receipt](harvest/index.json) remain historical evidence for their exact inputs. New locks, recipes and components must travel together. A virtual pass or source regression does not pass a physical acceptance entry.
+
+## Stock entry follow-up
+
+The [stock inventory candidate](STOCK_BOOTSTRAP.md) has a separate source review before its build: retain the exact signed-release recovery kernel, copy only the checksum-pinned cooling modules/XUSB payload, replace the ramdisk/cmdline and recompute the v1 image ID. Every other header field, including its raw address fields, remains unchanged; the original signature is omitted. No DTB or early firmware payload is included for replacement. A newc serializer handles binary files, symlinks and initial console devices; bounds/path/format tests and an independent AOSP repack check are required.
+
+The new init is ramdisk PID 1 only. It requires explicit opt-in, original Darcy identity and measured original-T210 fuses before any module/gadget setup. It follows the matching release's two-module cooling sequence, applies a profile-bounded idle window/temperature stop, keeps all evidence and GPT-label-selected read-only backups in RAM, and starts stock's built-in ACM interface. It runs no Android service, persistent filesystem mount, partition write or kexec operation. Physical entry and temporary boot support remain unverified and must not trigger an automatic flash fallback. Owner unlocking/data erasure requires a later explicit decision after artifact review.

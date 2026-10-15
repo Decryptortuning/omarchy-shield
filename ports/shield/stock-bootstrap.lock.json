@@ -1,0 +1,49 @@
+{
+  "board_variant": "darcy-t210",
+  "purpose": "Local unsigned stock-kernel RAM inventory entry candidate; not a mainline desktop installer",
+  "stock_recovery": {
+    "path": "recovery-inputs/recovery.img",
+    "bytes": 20575528,
+    "sha256": "ebe2fc16c2b82114712f18bd78781b63c8d4b9a52de2294239b08a817098341d"
+  },
+  "stock_kernel_release": "4.9.141-tegra",
+  "stock_ramdisk_inputs": [
+    {
+      "path": "lib/modules/pwm_fan.ko",
+      "bytes": 61152,
+      "sha256": "e9ff4bcfe202946c17cbfb68a8384dc5dc3d270cd2f8ed5fcfe4c48fd9eee71c"
+    },
+    {
+      "path": "lib/modules/therm_fan_est.ko",
+      "bytes": 44992,
+      "sha256": "96a4dc343309c09a69d3a3495f69ace85c9fb9a902979f662554029b3e75c233"
+    },
+    {
+      "path": "lib/firmware/tegra21x_xusb_firmware",
+      "bytes": 126464,
+      "sha256": "d8546e8a0202bf78fe33deb02de7e7673bf2c8383bf223efe4806b69136ec7a3"
+    }
+  ],
+  "busybox": {
+    "version": "1.37.0",
+    "url": "https://busybox.net/downloads/busybox-1.37.0.tar.bz2",
+    "sha256": "3311dff32e746499f4df0d5df04d7eb396382d7e108bb9250e7b519b837043a4"
+  },
+  "kexec": {
+    "repository": "kexec-tools",
+    "url": "https://github.com/horms/kexec-tools.git",
+    "commit": "0fd0d8e9ea975696fdc05ad267a65f3efd415612",
+    "license": "GPL-2.0-only; retain per-file notices",
+    "syscall": "legacy kexec_load with explicit DTB and initrd",
+    "stock_config_enabled": true,
+    "physical_entry_or_handoff_verified": false
+  },
+  "inventory_window_seconds": 60,
+  "maximum_temperature_millicelsius": 70000,
+  "expected_udc": "700d0000.xudc",
+  "requires_unlocked_bootloader": true,
+  "temporary_boot_supported": false,
+  "physical_entry_tested": false,
+  "partition_write_authorized": false,
+  "binary_redistribution_permission_established": false
+}
