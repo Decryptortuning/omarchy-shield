@@ -1,0 +1,147 @@
+{
+  "source_recovery_sha256": "ebe2fc16c2b82114712f18bd78781b63c8d4b9a52de2294239b08a817098341d",
+  "profile_sha256": "f4399136b8e45c3ade8d38dacc6df6c8a01c43539b951a163cafd0d9c9f0afbc",
+  "image_bytes": 12384256,
+  "image_sha256": "2f37d27e9b7c1a17cd777adf35c622314bce5dc98927f8a7593b4788f9d29a1e",
+  "stock_kernel_unchanged": true,
+  "stock_kernel_sha256": "2a280c0d5b734991e5df3f458fca7a075026fa6ac41d677f012ac20e84fe752d",
+  "raw_load_address_fields_preserved": true,
+  "effective_load_addresses_qualified": false,
+  "dtb_or_early_firmware_packaged": false,
+  "signed": false,
+  "requires_unlocked_bootloader": true,
+  "temporary_boot_support_verified": false,
+  "physical_boot_or_restore_tested": false,
+  "automatic_partition_writes": [],
+  "automatic_kexec_operations": [],
+  "inventory_window_seconds": 60,
+  "files": [
+    {
+      "path": "bin/busybox",
+      "bytes": 1187904,
+      "sha256": "20644a920cf56fc25df4f8b6d25cf4210feb9a8dcc4f77609d96c2850dc9e54a"
+    },
+    {
+      "path": "lib/modules/pwm_fan.ko",
+      "bytes": 61152,
+      "sha256": "e9ff4bcfe202946c17cbfb68a8384dc5dc3d270cd2f8ed5fcfe4c48fd9eee71c"
+    },
+    {
+      "path": "lib/modules/therm_fan_est.ko",
+      "bytes": 44992,
+      "sha256": "96a4dc343309c09a69d3a3495f69ace85c9fb9a902979f662554029b3e75c233"
+    },
+    {
+      "path": "lib/firmware/tegra21x_xusb_firmware",
+      "bytes": 126464,
+      "sha256": "d8546e8a0202bf78fe33deb02de7e7673bf2c8383bf223efe4806b69136ec7a3"
+    },
+    {
+      "path": "bin/kexec",
+      "bytes": 1520200,
+      "sha256": "b112e29a048bd2a44cc8676acf158a670e2d8ea5a4f9536331792f2e267ff02f"
+    },
+    {
+      "path": "init",
+      "bytes": 5221,
+      "sha256": "559247d840fd92496f90370db7967433cd3e29dc3e6aa076ce8d62d6f9bb9b6e"
+    },
+    {
+      "path": "identity.sh",
+      "bytes": 395,
+      "sha256": "1d571850d47709cf06a9700583bedfa65ceb304ccfacee288f667dec51eec183"
+    },
+    {
+      "path": "inventory.conf",
+      "bytes": 62,
+      "sha256": "3cd7b1a8ef749feb0c4f0f1a4f7337802ce663201570ff7d831be9902ed4183c"
+    },
+    {
+      "path": "notices/README",
+      "bytes": 234,
+      "sha256": "c4f861dfe94d157bb2545a4a0a3ffcbbfdc699a3d6e8d11a4890517701d6b890"
+    }
+  ],
+  "device_actions_performed": [
+    "read-only ADB identity verification",
+    "temporary reboot to fastboot",
+    "documented OEM dtbname read query with lock-state checks",
+    "reboot to Android; authorized ADB returned"
+  ],
+  "date": "2026-10-14",
+  "timezone": "America/Phoenix",
+  "source_commit": "bd6218f9fc687685ff6789467ee07c1504fa51a1",
+  "bootloader_selected_stock_dtb": "tegra210-darcy-p2894-0050-a04-00.dtb",
+  "stock_dtb_query": {
+    "source": "NVIDIA README_SHIELD documents oem dtbname as a product DTB-name query",
+    "reboot_to_bootloader": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "bootloader_seen": true,
+    "device_unlock_erase_or_flash_performed": false,
+    "serial_omitted": true,
+    "product": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "product: t210ref\nFinished. Total time: 0.003s"
+    },
+    "unlocked_before": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "unlocked: No\nFinished. Total time: 0.003s"
+    },
+    "dtbname": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "(bootloader) tegra210-darcy-p2894-0050-a04-00.dtb\nOKAY [  0.003s]\nFinished. Total time: 0.003s"
+    },
+    "unlocked_after": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "unlocked: No\nFinished. Total time: 0.003s"
+    },
+    "reboot_to_android": {
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Rebooting                                          OKAY [  0.009s]\nFinished. Total time: 0.009s"
+    },
+    "returned_adb_state": {
+      "exit_code": 0,
+      "stdout": "device",
+      "stderr": ""
+    }
+  },
+  "physical_pcb_eeprom_or_part_number_read": false,
+  "mainline_a08_profile_matches_bootloader_selection": false,
+  "aosp_roundtrip": {
+    "aosp_commit": "d2bb0af5ba6d3198a3e99529c97eda1be0b5a093",
+    "repacked_own_unsigned_image": true,
+    "byte_identical": true,
+    "bytes": 12384256,
+    "sha256": "2f37d27e9b7c1a17cd777adf35c622314bce5dc98927f8a7593b4788f9d29a1e",
+    "scope": "Independent AOSP reassembly of the owned image confirms format/digest packing, not CBoot or temporary-boot support",
+    "device_actions_performed": []
+  },
+  "ramdisk_startup_under_modern_qemu_kernel": "PASS; original stock kernel and real USB/cooling were not exercised",
+  "busybox_required_applets_verified": true,
+  "python_tests_passed": 30,
+  "shellcheck": "PASS",
+  "windows_collector_parser": {
+    "result": "PASS",
+    "environment": "Windows 2025 GitHub Actions",
+    "run": "https://github.com/Decryptortuning/omarchy-shield/actions/runs/38686684307",
+    "physical_com_port_opened": false
+  },
+  "local_windows_script_policy": "All execution-policy scopes observed Undefined; default client policy blocked PS1 test execution. No policy changed.",
+  "native_boot_attempted": false,
+  "owner_unlock_and_data_wipe_approval_received": false,
+  "local_receipt_sha256": {
+    "aosp-roundtrip.json": "3a19c69b96242ccd9f6d653ed919bcfaa64128422da44494c6cf10f25387bee0",
+    "qemu-ramdisk.log": "e1293232a9692b99aa432c5a73246db4892c22fe7a0e4bf1d4bfeb93c58a3624",
+    "busybox-applet-check.txt": "0b6193036c34bf9096d978df2ed502fffd3248a143bfb828570d928089a9192a",
+    "bootloader-dtb-query.json": "e3ae57467e576179bcd594d15e25b38b6242d63dc2254ad53c47278f8e06bdc1"
+  },
+  "scope": "Local unsigned stock-kernel inventory candidate; format/userspace/source checks do not qualify physical entry. Read-only stock identity/DTB queries returned the still-locked device to Android."
+}

@@ -1,5 +1,7 @@
 # Connected Darcy target
 
+The latest locked-bootloader query returns `tegra210-darcy-p2894-0050-a04-00.dtb`, independently identifying the stock bootloader's A04 selection. The device returned to Android without unlocking or flashing. The [stock inventory candidate and receipt](STOCK_BOOTSTRAP.md) record that observation. Existing modern A08 components are evaluation builds; an A04 definition and reviewed memory handoff are required before a mainline hardware test.
+
 The [latest integration build](INTEGRATION.md) supersedes the package versions in the historical build section below. It adds the Shield controller module and fan/PWM correction, verifies inactive firmware staging and passes the complete filesystem VM checks. [validation-darcy-integration.json](validation-darcy-integration.json) pins that candidate; physical acceptance remains zero.
 
 The owner confirmed that the connected Shield is the device to convert. Read-only USB ADB inspection reports `darcy`, NVIDIA Shield Android TV, original Tegra210 A02, chip ID `0x21`, silicon major revision `1`, and revision enum `3`. Android is version 11, build `13961458_4387.0822`, on kernel `4.9.141-tegra`. This supersedes the initial assumption that the owner's box was a 2019 Pro. NVIDIA's [revision table](https://github.com/LineageOS/android_kernel_nvidia_linux-4.9_kernel_kernel-4.9/blob/929f123da07cc9f73af2861eccf5a01591794e52/drivers/soc/tegra/fuse/tegra-apbmisc.c#L170) distinguishes original Tegra210 from B01 using the hardware major revision.
