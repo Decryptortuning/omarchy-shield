@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-15",
+  "timezone": "America/Phoenix",
+  "source_commit": "3ea5ea01d60c3d6344c2ff188e0ce7eedac32967",
+  "scope": "Owner-approved unlock followed by two temporary-boot comparisons; no partition image flash",
+  "device": {
+    "android_device": "darcy",
+    "soc": "original Tegra210 A02",
+    "fastboot_product": "t210ref",
+    "bootloader_selected_dtb": "tegra210-darcy-p2894-0050-a04-00.dtb",
+    "personal_identifiers_omitted": true
+  },
+  "unlock": {
+    "owner_approved_android_data_erasure": true,
+    "first_attempt_not_verified_after_owner_reboot": true,
+    "completed_attempt": 2,
+    "command_exit_code": 0,
+    "command_seconds": 394.918,
+    "command_reported_unlocked": true,
+    "subsequent_getvar_unlocked": "Yes"
+  },
+  "temporary_boots": [
+    {
+      "image": "stock-inventory.img",
+      "kind": "modified ramdisk with byte-identical matching stock recovery kernel",
+      "bytes": 12384256,
+      "sha256": "2f37d27e9b7c1a17cd777adf35c622314bce5dc98927f8a7593b4788f9d29a1e",
+      "image_build_source_commit": "bd6218f9fc687685ff6789467ee07c1504fa51a1",
+      "command": "fastboot boot stock-inventory.img",
+      "fastboot_exit_code": 0,
+      "fastboot_seconds": 0.323,
+      "owner_observed_display": "Android welcome/setup",
+      "diagnostic_gadget_observed": false,
+      "collector_started": true,
+      "collector_result": "No matching stock inventory USB serial gadget appeared",
+      "capture_saved": false,
+      "diagnostic_execution_verified": false
+    },
+    {
+      "image": "matching-stock-recovery.img",
+      "kind": "untouched reconstructed exact-release NVIDIA recovery input",
+      "bytes": 20575528,
+      "sha256": "ebe2fc16c2b82114712f18bd78781b63c8d4b9a52de2294239b08a817098341d",
+      "command": "fastboot boot matching-stock-recovery.img",
+      "fastboot_exit_code": 0,
+      "fastboot_seconds": 0.519,
+      "owner_observed_display": "Android welcome/setup",
+      "recovery_entry_verified": false
+    }
+  ],
+  "windows_collector": {
+    "source_sha256": "5245fa375b60fffddc1427ec6a82b644b4270919c7a3b7d62653aac318fe215b",
+    "native_windows_input_hashes_verified": true,
+    "effective_policy_observed": "RemoteSigned",
+    "policy_changed_by_this_work": false,
+    "readiness_check": "Native Windows output-directory existence; WSL directory visibility was insufficient",
+    "usb_observed_after_attempt": {
+      "vid": "0955",
+      "pid": "B43C",
+      "class": "WPD",
+      "description": "MTP USB Device"
+    }
+  },
+  "conclusion": {
+    "temporary_recovery_entry_qualified": false,
+    "root_cause": "Unresolved; both the modified image and unmodified stock control returned to Android",
+    "automatic_partition_flash_fallback_used": false,
+    "partition_image_flash_performed": false,
+    "physical_partition_backup_obtained": false,
+    "physical_restoration_qualified": false,
+    "modern_kernel_or_kexec_started": false,
+    "physical_acceptance_passes_added": 0
+  },
+  "offline_a04_review": {
+    "input_a04_dtb_sha256": "2a1762ce27b855b4a6b8f01060a05241af5c98fa656cc3e57263cb97b3ce55ec",
+    "input_a08_dtb_sha256": "57ba4e45998a694f6e7e0f0b2f48a6f59855e293fbb04544f31ae884513ef6f2",
+    "external_sensor": "Stock A04 enables ti,tmp451 at I2C address 0x4c; A08 disables it",
+    "selected_kernel_driver": "CONFIG_SENSORS_LM90=m; current driver matches ti,tmp451",
+    "physical_sensor_detection_verified": false,
+    "modern_a04_profile_implemented": false
+  },
+  "next_step": "Test installed stock recovery with the fastboot Boot recovery kernel menu; a persistent diagnostic entry needs a separately reviewed and owner-approved recovery-only plan"
+}
