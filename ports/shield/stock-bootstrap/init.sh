@@ -12,8 +12,12 @@ mount -t sysfs sysfs /sys
 mount -t tmpfs tmpfs /run
 mount -t tmpfs tmpfs /tmp
 mount -t devpts devpts /dev/pts
+# shellcheck source=/dev/null
 . /identity.sh
+# shellcheck source=/dev/null
 . /inventory.conf
+: "${inventory_window_seconds:?packed inventory limit missing}"
+: "${inventory_temperature_limit:?packed thermal limit missing}"
 
 stock_halt() {
   echo "STOCK_INVENTORY_STOP: $*"
@@ -49,7 +53,7 @@ insmod /lib/modules/therm_fan_est.ko || stock_halt 'stock thermal estimator fail
   while [ "$elapsed" -lt "$inventory_window_seconds" ]; do
     plausible=0
     for zone in /sys/class/thermal/thermal_zone*; do
-      [ -r "$zone/type" ] && [ -r "$zone/temp" ] || continue
+      if [ ! -r "$zone/type" ] || [ ! -r "$zone/temp" ]; then continue; fi
       case "$(cat "$zone/type")" in
         CPU-therm|GPU-therm|cpu-thermal|gpu-thermal)
           value=$(cat "$zone/temp")
@@ -84,7 +88,7 @@ for entry in /sys/class/block/mmcblk0p*/uevent; do
   case "$block" in mmcblk0p[0-9]*) ;; *) continue ;; esac
   size=$(blockdev --getsize64 "/dev/$block") || continue
   case "$size" in ''|*[!0-9]*) continue ;; esac
-  [ "$size" -gt 0 ] && [ "$size" -le "$maximum" ] || continue
+  if [ "$size" -le 0 ] || [ "$size" -gt "$maximum" ]; then continue; fi
   dd if="/dev/$block" of="/run/shield-stock/partitions/$label.img" bs=1048576 || stock_halt 'RAM backup read failed'
 done
 sha256sum /run/shield-stock/partitions/*.img >/run/shield-stock/partition-sha256.txt 2>/dev/null || true
@@ -107,7 +111,7 @@ mkdir "$g/configs/c.1" "$g/functions/acm.usb0"
 ln -s "$g/functions/acm.usb0" "$g/configs/c.1/acm.usb0"
 printf '700d0000.xudc\n' >"$g/UDC" || stock_halt 'UDC bind failed'
 while [ ! -c /dev/ttyGS0 ]; do sleep 1; done
-stty -F /dev/ttyGS0 115200 sane -echo
+stty -F /dev/ttyGS0 115200 raw -echo
 while true; do
   echo 'Stock-kernel RAM-only inventory. Automatic power-off within 60 seconds.' >/dev/ttyGS0
   echo 'Evidence/backups: /run/shield-stock ; transfer before power-off. No kexec is run automatically.' >/dev/ttyGS0
