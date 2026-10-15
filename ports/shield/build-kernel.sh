@@ -54,6 +54,7 @@ busybox_out="$build_root/busybox-out"
 ramdisk_root="$build_root/ramdisk"
 if [[ ${SHIELD_USB_CONSOLE:-0} == 1 ]]; then
   [[ $SHIELD_BUILD_MODULES == 1 ]] || { echo 'USB diagnostics require matching modules' >&2; exit 1; }
+  mkdir -p "$build_root"
   ramdisk_root=$(mktemp -d "$build_root/ramdisk-usb-console.XXXXXX")
 fi
 mkdir -p "$build_root/sources" "$build_root/downloads" "$kernel_out" "$busybox_out" "$dist"
@@ -120,7 +121,8 @@ fi
 make -C "$busybox_src" O="$busybox_out" allnoconfig
 "$kernel_src/scripts/config" --file "$busybox_out/.config" --disable SH_IS_NONE
 for symbol in STATIC ASH SH_IS_ASH ASH_JOB_CONTROL ASH_ECHO ASH_PRINTF ASH_TEST \
-  FEATURE_PREFER_APPLETS FEATURE_SH_STANDALONE CAT CHMOD CLEAR CP CUT DF DMESG \
+  FEATURE_PREFER_APPLETS FEATURE_SH_STANDALONE FEATURE_SH_MATH FEATURE_SH_MATH_64 \
+  CAT CHMOD CLEAR CP CUT DF DMESG \
   ECHO ENV FALSE FIND FREE GREP HEAD ID KILL LN LS MKDIR MKNOD MOUNT MV \
   POWEROFF PRINTF PS PWD READLINK REBOOT RM RMDIR SED SETSID CTTYHACK SLEEP \
   STAT SYNC TAIL TEE TEST TRUE TR TTY UMOUNT UNAME WC XARGS \
