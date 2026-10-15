@@ -24,28 +24,34 @@ class BoardIdentityTests(unittest.TestCase):
     self.assertEqual(result.returncode == 0, expected is not None)
 
   def test_original_darcy(self):
-    self.check_identity(['nvidia,p2894-0050-a08', 'nvidia,darcy', 'nvidia,tegra210'], 'darcy-t210')
+    self.check_identity(['nvidia,p2894-0050-a04', 'nvidia,darcy', 'nvidia,tegra210'], 'darcy-t210-a04')
+
+  def test_a08_is_a_distinct_profile(self):
+    self.check_identity(['nvidia,p2894-0050-a08', 'nvidia,darcy', 'nvidia,tegra210'], 'darcy-t210-a08')
+
+  def test_a04_and_a08_cannot_be_combined(self):
+    self.check_identity(['nvidia,p2894-0050-a04', 'nvidia,p2894-0050-a08', 'nvidia,tegra210'], None)
 
   def test_mdarcy_b01(self):
     self.check_identity(['nvidia,p2894-2551-b00', 'nvidia,tegra210b01', 'nvidia,tegra210'], 'mdarcy-t210b01')
 
   def test_original_board_cannot_claim_b01(self):
-    self.check_identity(['nvidia,p2894-0050-a08', 'nvidia,tegra210', 'nvidia,tegra210b01'], None)
+    self.check_identity(['nvidia,p2894-0050-a04', 'nvidia,tegra210', 'nvidia,tegra210b01'], None)
 
   def test_b01_board_requires_b01(self):
     self.check_identity(['nvidia,p2894-2551-b00', 'nvidia,tegra210'], None)
 
   def test_two_board_revisions_conflict(self):
-    self.check_identity(['nvidia,p2894-0050-a08', 'nvidia,p2894-2551-b00', 'nvidia,tegra210b01', 'nvidia,tegra210'], None)
+    self.check_identity(['nvidia,p2894-0050-a04', 'nvidia,p2894-2551-b00', 'nvidia,tegra210b01', 'nvidia,tegra210'], None)
 
   def test_generic_tegra_is_not_a_shield(self):
     self.check_identity(['nvidia,p3450-0000', 'nvidia,tegra210'], None)
 
   def test_incomplete_identity(self):
-    self.check_identity(['nvidia,p2894-0050-a08'], None)
+    self.check_identity(['nvidia,p2894-0050-a04'], None)
 
   def test_foreign_family_conflicts(self):
-    self.check_identity(['nvidia,p2894-0050-a08', 'nvidia,tegra210', 'apple,t6021'], None)
+    self.check_identity(['nvidia,p2894-0050-a04', 'nvidia,tegra210', 'apple,t6021'], None)
 
 
 class CompiledBundleTests(unittest.TestCase):
@@ -70,14 +76,21 @@ class CompiledBundleTests(unittest.TestCase):
   def test_renaming_b01_dtb_does_not_make_a_darcy_bundle(self):
     with tempfile.TemporaryDirectory() as temporary:
       directory = Path(temporary)
-      self.fixture(directory, 'darcy-t210', ['nvidia,p2894-2551-b00', 'nvidia,tegra210b01'])
+      self.fixture(directory, 'darcy-t210-a04', ['nvidia,p2894-2551-b00', 'nvidia,tegra210b01'])
+      with self.assertRaisesRegex(ValueError, 'compiled DTB'):
+        PROFILE.verify_kernel_profile(directory)
+
+  def test_a08_dtb_cannot_be_renamed_into_a04(self):
+    with tempfile.TemporaryDirectory() as temporary:
+      directory = Path(temporary)
+      self.fixture(directory, 'darcy-t210-a04', ['nvidia,p2894-0050-a08', 'nvidia,tegra210'])
       with self.assertRaisesRegex(ValueError, 'compiled DTB'):
         PROFILE.verify_kernel_profile(directory)
 
   def test_a_matrix_from_another_bundle_is_refused(self):
     with tempfile.TemporaryDirectory() as temporary:
       directory = Path(temporary)
-      self.fixture(directory, 'darcy-t210', ['nvidia,p2894-0050-a08', 'nvidia,tegra210'])
+      self.fixture(directory, 'darcy-t210-a04', ['nvidia,p2894-0050-a04', 'nvidia,tegra210'])
       (directory / 'hardware.json').write_text('{"wrong_board": true}\n')
       with self.assertRaisesRegex(ValueError, 'acceptance matrix'):
         PROFILE.verify_kernel_profile(directory)

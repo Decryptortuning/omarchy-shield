@@ -68,17 +68,19 @@ if ($state.exit_code -eq 0 -and $state.stdout -eq 'device') {
   $chip = Read-Native $adb ($adbSelector + @('shell', 'cat', '/sys/module/tegra_fuse/parameters/tegra_chip_id'))
   $major = Read-Native $adb ($adbSelector + @('shell', 'cat', '/sys/module/tegra_fuse/parameters/tegra_chip_major_rev'))
   $report.soc_identity = [ordered]@{ manufacturer = $manufacturer; model = $model; chip_id = $chip; major_revision = $major }
-  $variant = ''
+  $family = ''
   if ($manufacturer.stdout -eq 'NVIDIA' -and $model.stdout -match '^SHIELD' -and
       $identity.stdout -in @('darcy', 'mdarcy') -and
       $chip.exit_code -eq 0 -and $chip.stdout -eq '33' -and $major.exit_code -eq 0) {
-    if ($major.stdout -eq '1' -and $identity.stdout -eq 'darcy') { $variant = 'darcy-t210' }
-    if ($major.stdout -eq '2') { $variant = 'mdarcy-t210b01' }
+    if ($major.stdout -eq '1' -and $identity.stdout -eq 'darcy') { $family = 'darcy-t210' }
+    if ($major.stdout -eq '2') { $family = 'mdarcy-t210b01' }
   }
-  if ($variant) {
+  if ($family) {
     $report.state = 'stock-adb'
     $report.identity_confirmed = $true
-    $report.board_variant = $variant
+    $report.board_family = $family
+    # Android identity/fuses do not identify an A04/A08/B00 revision.
+    $report.board_variant = $null
     $report.board_sku_confirmed = $false
     $report.boot_image_compatibility_confirmed = $false
     $report.properties = [ordered]@{}

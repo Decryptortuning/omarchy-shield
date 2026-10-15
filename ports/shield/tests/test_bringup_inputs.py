@@ -38,7 +38,7 @@ class FirmwareTests(unittest.TestCase):
     self.entry = {'id': 'radio', 'input_path': 'radio.bin', 'bytes': len(self.data),
                   'sha256': hashlib.sha256(self.data).hexdigest(), 'activation_allowed': False,
                   'usage': 'driver-candidate', 'runtime_request': 'brcm/BCM4354.hcd'}
-    self.lock = {'board_variant': 'darcy-t210', 'installed_into_runtime': False, 'entries': [self.entry]}
+    self.lock = {'board_variant': 'darcy-t210-a04', 'installed_into_runtime': False, 'entries': [self.entry]}
     self.lock_path = self.root / 'lock.json'
     self.output = self.root / 'staged'
     self.save()
@@ -53,7 +53,7 @@ class FirmwareTests(unittest.TestCase):
     report = self.stage()
     self.assertFalse(report['installed_into_runtime'])
     self.assertFalse(report['hardware_qualified'])
-    verify_stage(self.output, self.lock_path, 'darcy-t210')
+    verify_stage(self.output, self.lock_path, 'darcy-t210-a04')
     self.assertEqual(installed_identity(self.inputs, self.entry)['status'], 'missing')
 
   def test_corrupt_input_never_publishes_a_partial_stage(self):
@@ -67,7 +67,7 @@ class FirmwareTests(unittest.TestCase):
     self.stage()
     (self.output / 'inputs/radio.bin').write_bytes(b'changed')
     with self.assertRaisesRegex(ValueError, 'differ'):
-      verify_stage(self.output, self.lock_path, 'darcy-t210')
+      verify_stage(self.output, self.lock_path, 'darcy-t210-a04')
 
   def test_wrong_silicon_stage_is_refused(self):
     self.stage()

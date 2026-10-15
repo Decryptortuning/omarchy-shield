@@ -1,6 +1,6 @@
 # Shield Omarchy integration plan
 
-Integrate the available Shield and Tegra work into a portable Arch Linux ARM desktop with the full Omarchy environment, using an external USB SSD. The primary target is the connected original-Tegra210 Darcy. Its exact board revision remains to be confirmed. The retained B01 profile has its own board and firmware inputs.
+Integrate the available Shield and Tegra work into a portable Arch Linux ARM desktop with the full Omarchy environment, using an external USB SSD. The primary target is the connected original-Tegra210 Darcy. The bootloader-selected and independently backed-up stock DTB identify its A04 configuration. The retained B01 profile has its own board and firmware inputs.
 
 Use the existing modern kernel, Nouveau/Mesa and Omarchy packages as the main implementation. Adapt board definitions, firmware mappings and relevant fixes from the other projects after checking their hardware and software interfaces. Every capability actually present on this Shield stays in the acceptance scope. Full hardware support can be claimed only after its applicable physical tests pass.
 
@@ -8,7 +8,7 @@ Plan date: October 14, 2026. The [current validation receipt](validation-darcy.j
 
 The [completed harvest](HARVEST.md) now supplies verified local board/source snapshots, exact-build boot/recovery inputs and radio firmware. It also identifies concrete fan/controller changes, NVK's default Tegra rejection and incompatible vendor/modern media interfaces. This closes acquisition work within the selected scope; the implementation, boot qualification and hardware acceptance phases below remain open.
 
-On October 15, later owner-authorized unlock and recovery-only work verified matching stock recovery restoration, official Lineage recovery entry and a root ADB shell on the A04-selected device. A read-only session captured live FDT/memory/EMC data, thermal/module state and physical LNX/SOS/DTB backups with independent device/host hash agreement. SOS contains the current Lineage control. [validation-native-entry.json](validation-native-entry.json) records this progress through the recovery and inventory work below. The custom stock-inventory image failed, modern A04 entry is untested, and full hardware acceptance remains open; the next implementation is the correct A04 profile and reviewed boot handoff.
+On October 15, later owner-authorized unlock and recovery-only work verified matching stock recovery restoration, official Lineage recovery entry and a root ADB shell on the A04-selected device. A read-only session captured live FDT/memory/EMC data, thermal/module state and physical LNX/SOS/DTB backups with independent device/host hash agreement. SOS contains the current Lineage control. [validation-native-entry.json](validation-native-entry.json) records this progress through the recovery and inventory work below. The custom stock-inventory image failed, modern A04 entry is untested, and full hardware acceptance remains open; the distinct modern A04 profile is now implemented and component-tested in [validation-a04.json](validation-a04.json). The next native work is the reviewed memory/EMC, CPU and USB/DMA handoff.
 
 The [first integration build](INTEGRATION.md) now adds the controller/fan candidate, reproducible inactive staging and diagnostic component checks, with four rebuilt packages and a passing whole-filesystem VM test. Native entry, radio activation, graphics/media work and all physical qualification remain open.
 
@@ -42,7 +42,7 @@ Extend [firmware.lock.json](firmware.lock.json) and [fetch-firmware-candidates.p
 
 Start with these known Darcy mappings:
 
-- Wi-Fi: obtain the vendor `nvram_darcy_a00.txt` mapped by LineageOS to `brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a08.txt`; verify its board/chip assumptions and the matching SDIO binary and regulatory data.
+- Wi-Fi: obtain the vendor `nvram_darcy_a00.txt` mapped by the A04 lock to `brcm/brcmfmac4354-sdio.nvidia,p2894-0050-a04.txt` (A08 retains its separate compatible-specific filename); the live A04 DT independently names the same vendor input. Verify its board/chip assumptions and the matching SDIO binary and regulatory data.
 - Bluetooth: investigate LineageOS's specific mapping from vendor `bcm4354/BCM4350C0.hcd` to `brcm/BCM4354.hcd`. Validate the source payload and radio revision before activation.
 - USB and graphics: verify the installed original-T210 XUSB and GM20B ACR files against driver requests. Keep the B01 XUSB candidate with the B01 profile.
 - Video: compare the existing inactive NVIDIA NVDEC/NVENC/VIC candidates with the exact kernel firmware parsers and runtime command interfaces. Container validity alone does not qualify them.

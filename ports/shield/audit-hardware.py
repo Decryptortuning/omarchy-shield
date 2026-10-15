@@ -44,7 +44,8 @@ def main():
   staging_report = None
   if args.firmware_stage:
     try:
-      firmware_lock, staging_report = verify_stage(args.firmware_stage, port / 'firmware-darcy.lock.json', lock['board_variant'])
+      firmware_name = 'firmware-darcy-a08.lock.json' if lock['board_variant'] == 'darcy-t210-a08' else 'firmware-darcy.lock.json'
+      firmware_lock, staging_report = verify_stage(args.firmware_stage, port / firmware_name, lock['board_variant'])
     except (ValueError, OSError, KeyError) as error:
       raise SystemExit(str(error)) from error
     for entry in firmware_lock['entries']:
@@ -86,7 +87,7 @@ def main():
            'build_config_complete': (not absent and all(module_checks.values())) if symbols else None})
   report = {'target': requirements['target'], 'board_variant': lock.get('board_variant', 'mdarcy-t210b01'),
        'device_tree': dtb.name, 'subsystems': items,
-       'darcy_fan_contract': inspect_fan_contract(dtb) if lock.get('board_variant') == 'darcy-t210' else None,
+       'darcy_fan_contract': inspect_fan_contract(dtb) if lock.get('board_variant', '').startswith('darcy-t210-') else None,
        'inactive_firmware_stage': {'lock_sha256': staging_report['lock_sha256'], 'verified_files': len(staging_report['files'])}
        if staging_report else None,
        'all_physical_tests_passed': False, 'physical_shield_boot_tested': False,

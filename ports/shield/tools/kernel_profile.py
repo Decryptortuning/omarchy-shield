@@ -5,7 +5,8 @@ from pathlib import Path
 import subprocess
 
 PROFILES = {
-  'darcy-t210': ('tegra210-p2894-0050-a08.dtb', 'nvidia,p2894-0050-a08', 'nvidia,tegra210'),
+  'darcy-t210-a04': ('tegra210-p2894-0050-a04.dtb', 'nvidia,p2894-0050-a04', 'nvidia,tegra210'),
+  'darcy-t210-a08': ('tegra210-p2894-0050-a08.dtb', 'nvidia,p2894-0050-a08', 'nvidia,tegra210'),
   'mdarcy-t210b01': ('tegra210b01-p2894-2551-b00.dtb', 'nvidia,p2894-2551-b00', 'nvidia,tegra210b01'),
 }
 
@@ -25,7 +26,7 @@ def verify_kernel_profile(directory, allow_legacy=False):
   boards = {profile[1] for profile in PROFILES.values()}
   if result.returncode or tokens & boards != {board} or soc not in tokens:
     raise ValueError('The compiled DTB does not match the selected Shield board/SoC pair')
-  if (variant == 'darcy-t210' and 'nvidia,tegra210b01' in tokens) or any(token.startswith(('apple,', 'qcom,')) for token in tokens):
+  if (variant.startswith('darcy-t210-') and 'nvidia,tegra210b01' in tokens) or any(token.startswith(('apple,', 'qcom,')) for token in tokens):
     raise ValueError('The compiled DTB has conflicting silicon or hardware-family identities')
   matrix = directory / 'hardware.json'
   if 'hardware_matrix' in lock:

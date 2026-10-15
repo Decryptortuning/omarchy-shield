@@ -68,14 +68,14 @@ def main():
       destination = build / package
       shutil.copytree(staged / 'pkgbuilds' / package, destination)
       recipe = destination / 'PKGBUILD'
-      replacements = {'pkgver': version, 'pkgrel': '99.4', '_commit': repr(commit), '_tag': "''"}
+      replacements = {'pkgver': version, 'pkgrel': '99.5', '_commit': repr(commit), '_tag': "''"}
       lines = []
       for line in recipe.read_text().splitlines():
         key = line.split('=', 1)[0]
         lines.append(f'{key}={replacements[key]}' if key in replacements else line)
       recipe.write_text('\n'.join(lines) + '\n')
   shutil.copytree(exported / 'ports/shield/omarchy-shield', build / 'omarchy-shield')
-  for asset in ('hardware.json', 'hardware-darcy.json', 'collect-shield-linux.py'):
+  for asset in ('hardware.json', 'hardware-darcy.json', 'hardware-darcy-a08.json', 'collect-shield-linux.py'):
     shutil.copy2(exported / 'ports/shield' / asset, build / 'omarchy-shield' / asset)
   shutil.copytree(exported / 'ports/shield/linux-shield', build / 'linux-shield')
   shutil.copytree(kernel, build / 'kernel-inputs')
@@ -84,7 +84,7 @@ def main():
     shutil.copy2(exported / 'ports/shield' / script, rootfs / 'var/lib/shield-linux' / destination)
   provenance = {
     'omarchy_commit': commit, 'packaging_commit': recipe_commit,
-    'pkgver': version, 'pkgrel': '99.4', 'architecture': 'aarch64',
+    'pkgver': version, 'pkgrel': '99.5', 'architecture': 'aarch64',
     'package_names': ['omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'],
     'kernel_source_commit': json.loads((kernel / 'sources.lock.json').read_text())['kernel']['commit'],
     'board_variant': json.loads((kernel / 'sources.lock.json').read_text())['board_variant'],

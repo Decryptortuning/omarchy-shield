@@ -21,9 +21,9 @@ SHIELD_DIST_DIR="$build_root/kernel" bash ports/shield/tools/smoke-kernel.sh
 (cd "$build_root/kernel" && sha256sum --check SHA256SUMS)
 ```
 
-The default lock now selects original Tegra210 Darcy with the A08 evaluation DTB and its CEC overlay. To build the separate B01 B00 candidate, pass `ports/shield/kernel-mdarcy.lock.json` to `build-kernel.sh` and select a different output directory. Never mix their DTBs, matrices or firmware. The actual connected device's board SKU is not yet verified.
+The default lock selects original Tegra210 Darcy A04, matching the connected device's bootloader-selected and independently captured stock DTB. `ports/shield/kernel-darcy-a08.lock.json` retains the distinct A08 evaluation profile; `ports/shield/kernel-mdarcy.lock.json` selects B01 B00. Pass the chosen lock to `build-kernel.sh` and use a separate output directory. Never mix their DTBs, matrices or firmware.
 
-Both profiles include the full module set, LLVM and an extra kallsyms link pass. QEMU uses its own virtual DTB; its pass does not exercise a Shield overlay or peripheral. Output contains raw `Image`, diagnostic initramfs, DTB, matching modules, checksum-locked hardware matrix and provenance. No Android boot header or flashing command is supplied. The kernel package validates the lock's board/DTB pair and ships only that selected DTB.
+All three profiles include the full module set, LLVM and an extra kallsyms link pass. QEMU uses its own virtual DTB; its pass does not exercise a Shield overlay or peripheral. Output contains raw `Image`, diagnostic initramfs, DTB, matching modules, checksum-locked hardware matrix and provenance. No Android boot header or flashing command is supplied. The kernel package validates the lock's board/DTB pair and ships only that selected DTB.
 
 ## Signed ARM filesystem and packages
 
@@ -45,7 +45,7 @@ sudo bash ports/shield/chroot.sh "$build_root/rootfs" \
   /bin/bash /var/lib/shield-linux/build-target-packages.sh
 ```
 
-The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Current paired runtime/settings recipes use release `99.4`; the prior Darcy build used `99.3`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes both acceptance matrices and the guarded collector.
+The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Current paired runtime/settings recipes use release `99.5`; the previous integration build used `99.4`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes all three acceptance matrices and the guarded collector.
 
 The chroot uses private mount/PID namespaces, temporary device nodes and Cortex-A57 user emulation. It serializes its temporary binfmt registration, exposes no host block devices or sysfs tree, and starts no host daemons. Pacman signature validation stays enabled. Its sandbox exception applies to this emulated build command because Landlock is unavailable through QEMU user emulation; the installed configuration keeps normal sandbox settings. Fork packages are ignored by repository upgrades until a tested Shield release/update path exists.
 
@@ -126,4 +126,4 @@ bash ports/shield/tools/build-kexec.sh ../kexec-tools \
   "$build_root/integration-2026-10-14/kexec-tools"
 ```
 
-The diagnostic tool checks kernel compression identity, stock input hashes/header format, the compiled fan/GPU specifiers, the USB ramdisk and aligned size budget. It creates raw components plus a review manifest, with unresolved native gates recorded. It creates no Android boot image or device command. The helper build executes no kexec operation; a static ELF or a passing `--help` invocation is not proof of stock-kernel entry or mainline handoff. Actual SKU, RAM/EMC reservations, CBoot addresses, privileged entry, CPU/device shutdown, physical recovery and unlocking remain open.
+The diagnostic tool checks kernel compression identity, stock input hashes/header format, the compiled fan/GPU specifiers, the USB ramdisk and aligned size budget. It creates raw components plus a review manifest, with unresolved native gates recorded. It creates no Android boot image or device command. The helper build executes no kexec operation; a static ELF or a passing `--help` invocation is not proof of stock-kernel entry or mainline handoff. A04 identity, unlocking, recovery entry and privileged collection are established in [validation-native-entry.json](validation-native-entry.json). Modern RAM/EMC reservations, CBoot address interpretation, CPU/device shutdown and native modern boot remain open.

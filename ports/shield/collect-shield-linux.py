@@ -30,15 +30,20 @@ def command(arguments):
 
 def board_variant(compatible):
   tokens = set(compatible)
-  darcy = 'nvidia,p2894-0050-a08' in tokens
-  mdarcy = 'nvidia,p2894-2551-b00' in tokens
+  boards = {
+    'nvidia,p2894-0050-a04': ('darcy-t210-a04', 'nvidia,tegra210'),
+    'nvidia,p2894-0050-a08': ('darcy-t210-a08', 'nvidia,tegra210'),
+    'nvidia,p2894-2551-b00': ('mdarcy-t210b01', 'nvidia,tegra210b01'),
+  }
   if any(token.startswith(('apple,', 'qcom,')) for token in tokens):
     return None
-  if darcy and not mdarcy and 'nvidia,tegra210' in tokens and 'nvidia,tegra210b01' not in tokens:
-    return 'darcy-t210'
-  if mdarcy and not darcy and 'nvidia,tegra210b01' in tokens:
-    return 'mdarcy-t210b01'
-  return None
+  matched = tokens & boards.keys()
+  if len(matched) != 1:
+    return None
+  variant, soc = boards[matched.pop()]
+  if soc not in tokens or (variant.startswith('darcy-t210-') and 'nvidia,tegra210b01' in tokens):
+    return None
+  return variant
 
 
 def main():
@@ -76,7 +81,9 @@ def main():
     commands.extend([['eglinfo', '-B'], ['vulkaninfo', '--summary']])
   report = {
     'target': 'NVIDIA Shield TV candidate', 'board_variant': variant,
-    'acceptance_matrix': 'hardware-darcy.json' if variant == 'darcy-t210' else 'hardware.json',
+    'acceptance_matrix': {'darcy-t210-a04': 'hardware-darcy.json',
+                          'darcy-t210-a08': 'hardware-darcy-a08.json',
+                          'mdarcy-t210b01': 'hardware.json'}[variant],
     'collected_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
     'uname': list(platform.uname()), 'compatible': compatible.splitlines(),
     'files': {path: read(path) for path in dict.fromkeys(paths)},

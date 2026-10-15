@@ -43,3 +43,6 @@ CONFIG_USB_CONFIGFS_ACM=y
 CONFIG_USB_CONFIGFS_NCM=y
 CONFIG_USB_ACM=m
 CONFIG_USB_DUMMY_HCD=m
+
+# Darcy A04 external sensor must be available before the diagnostic userspace.
+CONFIG_SENSORS_LM90=y

@@ -2,7 +2,7 @@
 # of ports/shield/build-kernel.sh. This package never writes a boot partition.
 pkgname=linux-shield
 pkgver=7.1.0
-pkgrel=4
+pkgrel=5
 pkgdesc='Experimental Shield Tegra kernel components; boot image installation is separate'
 arch=('aarch64')
 license=('GPL-2.0-only')
@@ -25,7 +25,8 @@ prepare() {
   dtb=$(python - "$SHIELD_KERNEL_DIR/sources.lock.json" <<'PY'
 import json, pathlib, sys
 lock = json.load(open(sys.argv[1]))
-expected = {'darcy-t210': 'nvidia/tegra210-p2894-0050-a08.dtb',
+expected = {'darcy-t210-a04': 'nvidia/tegra210-p2894-0050-a04.dtb',
+            'darcy-t210-a08': 'nvidia/tegra210-p2894-0050-a08.dtb',
             'mdarcy-t210b01': 'nvidia/tegra210b01-p2894-2551-b00.dtb'}
 assert expected[lock['board_variant']] == lock['kernel']['device_tree']
 print(pathlib.Path(lock['kernel']['device_tree']).name)
