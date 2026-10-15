@@ -82,6 +82,10 @@ if [[ ! -f "$kernel_src/.shield-source-commit" ]]; then
 fi
 [[ $(cat "$kernel_src/.shield-source-commit") == "$kernel_commit" ]]
 python3 "$port_dir/tools/apply-kernel-patches.py" "$project_root" "$lock_file" "$kernel_src"
+if [[ $variant == "omarchy-a04" ]]; then
+  python3 "$port_dir/tools/check-xusb-supplies.py" \
+    --kernel-source "$kernel_src" --output "$dist/xusb-supplies-regression.json"
+fi
 
 archive="$build_root/downloads/busybox-$busybox_version.tar.bz2"
 if [[ ! -f "$archive" ]]; then

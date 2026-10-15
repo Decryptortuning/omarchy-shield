@@ -1,0 +1,82 @@
+From: Omarchy Shield contributors
+Subject: [PATCH] phy: tegra: xusb: resolve child VBUS supplies before touching padctl
+
+A missing child USB2 VBUS provider can defer setup after padctl state has
+already been initialized. Error cleanup then asserts padctl reset, losing
+inherited UPHY PLL configuration while the CAR hardware sequencer remains
+active. A later probe can skip PLL initialization and leave USB without a link.
+
+Resolve available USB2 child VBUS suppliers before entering the hardware
+probe. Drop these temporary handles; actual port devices retain their normal
+regulator ownership. Missing/disabled nodes and absent optional supply
+properties retain their original behavior. Propagate supplier failures before
+any padctl reset or MMIO operation. No electrical settings or regulator
+voltage/enable calls change.
+
+The connected Darcy A04 exhibited this deferred-probe/reset sequence. A
+bounded DT dependency-order experiment preserved the PLL and restored
+SuperSpeed enumeration; the driver change removes the need for those
+temporary DT properties. This does not qualify other boards or USB host roles.
+
+--- a/drivers/phy/tegra/xusb.c
++++ b/drivers/phy/tegra/xusb.c
+@@ -1176,6 +1176,48 @@
+ 	mutex_unlock(&padctl->lock);
+ }
+ 
++/* Resolve child VBUS providers before any padctl state can be changed.
++ * A deferred port probe otherwise unwinds through padctl reset, which loses
++ * inherited UPHY configuration while the CAR hardware sequencer stays active.
++ * The real port device still owns its normal regulator handle after setup.
++ */
++static int tegra_xusb_check_vbus_supplies(struct device *dev,
++				       const struct tegra_xusb_padctl_soc *soc)
++{
++	struct device_node *ports, *np;
++	struct regulator *supply;
++	unsigned int i;
++	char name[16];
++	int err = 0;
++
++	ports = of_get_child_by_name(dev->of_node, "ports");
++	if (!ports)
++		return 0;
++
++	for (i = 0; i < soc->ports.usb2.count; i++) {
++		snprintf(name, sizeof(name), "usb2-%u", i);
++		np = of_get_child_by_name(ports, name);
++		if (!of_device_is_available(np) ||
++		    !of_property_present(np, "vbus-supply")) {
++			of_node_put(np);
++			continue;
++		}
++
++		supply = of_regulator_get(dev, np, "vbus");
++		if (IS_ERR(supply)) {
++			err = dev_err_probe(dev, PTR_ERR(supply),
++					    "USB2 port %u VBUS supplier unavailable\n", i);
++			of_node_put(np);
++			break;
++		}
++		regulator_put(supply);
++		of_node_put(np);
++	}
++
++	of_node_put(ports);
++	return err;
++}
++
+ static int tegra_xusb_padctl_probe(struct platform_device *pdev)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+@@ -1195,6 +1237,10 @@
+ 
+ 	match = of_match_node(tegra_xusb_padctl_of_match, pdev->dev.of_node);
+ 	soc = match->data;
++
++	err = tegra_xusb_check_vbus_supplies(&pdev->dev, soc);
++	if (err)
++		return err;
+ 
+ 	padctl = soc->ops->probe(&pdev->dev, soc);
+ 	if (IS_ERR(padctl))
