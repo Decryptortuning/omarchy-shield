@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "scope": "Built and offline-tested diagnostic-only GPUB retention; physical attempt awaiting recovery log",
+  "scope": "Measured physical Linux 7.1 userspace, bounded maximum-fan and temperature monitoring, automatic recovery restart; host USB connection unresolved",
   "base_source_commit": "c1252d0c1374934cfab891d5f25a59c55278dd6b",
   "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
   "board_variant": "darcy-t210-a04",
@@ -54,10 +54,52 @@
     ],
     "post_idle_EMC_hz": 1600000000,
     "diagnostic_USB_capture_bytes": 0,
-    "modern_persistent_log": "awaiting recovery ADB",
-    "modern_userspace": "not verified",
+    "modern_persistent_log": "retrieved and validated; compressed prior panic record excluded as stale",
+    "modern_userspace": "confirmed: initramfs PID1 started at uptime 0.992810s",
     "physical_full_hardware_passes": 0,
-    "physical_full_hardware_entries": 19
+    "physical_full_hardware_entries": 19,
+    "SMMU_result": "inactive GPUB retained; 21 enabled groups cleared; all other38 groups checked; all128 paging ASIDs unavailable",
+    "temperature_C": {
+      "CPU": {
+        "samples": 30,
+        "first": 52.5,
+        "last": 43.5,
+        "min": 40.5,
+        "max": 52.5
+      },
+      "TMP451-local-board": {
+        "samples": 30,
+        "first": 50.25,
+        "last": 44.937,
+        "min": 44.937,
+        "max": 50.312
+      },
+      "TMP451-remote-diode": {
+        "samples": 30,
+        "first": 53.5,
+        "last": 44.812,
+        "min": 44.812,
+        "max": 53.5
+      }
+    },
+    "fan": {
+      "logical_pwm": 255,
+      "enable_mode": 2,
+      "samples": 30,
+      "maximum_RPM": 5835,
+      "last_RPM": 5830,
+      "first_nonzero_uptime_seconds": 2.02,
+      "readback_lost": false,
+      "scope": "Bounded maximum-fan idle diagnostic; automatic curves/sustained load unqualified"
+    },
+    "reset": {
+      "kernel_recovery_restart_uptime_seconds": 29.023858,
+      "30_second_uptime_deadline_met": true,
+      "warm_software_reset_to_Lineage_recovery": true,
+      "root_ADB_restored": true
+    },
+    "USB_gadget": "ACM bound on Linux; Windows has no matching diagnostic device entry; no host traffic qualified",
+    "console_sha256": "529f9cb1fc18fe22c29cf2ee9a10f24a5d4d7628942494b7c1dce44e7ddbffe7"
   },
   "policy": [
     "Separate default-off preserve_disabled_gpu requires reset_inherited and exact A04/T210 MC",
@@ -68,11 +110,31 @@
     "Failed original GPUB write does not establish read-only or secure ownership"
   ],
   "not_qualified": [
-    "Native modern userspace/cooling/USB",
+    "USB host/device traffic and role switching",
+    "Sustained load, automatic fan curves, DVFS, SMP and RAM stress",
     "Enabled GPU or desktop handoff",
     "Full hardware support or independent Linux boot",
     "Replacement paired desktop packages or installer"
   ],
   "raw_device_identifiers_published": false,
-  "partition_writes": false
+  "partition_writes": false,
+  "native_component_artifacts": {
+    "initramfs.cpio.gz": {
+      "bytes": 1015018,
+      "sha256": "9b26d4dff2b867bd581525a2f12a677178289ded0ad8ee342db6085bb38d7cbe"
+    },
+    "Image": {
+      "bytes": 45812224,
+      "sha256": "cad3aae6189b26f5dfab10f66088f9e830b0de8569cd9a9d9a64bfe6419853e6"
+    },
+    "cmdline.txt": {
+      "bytes": 458,
+      "sha256": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065"
+    },
+    "probe.dtb": {
+      "bytes": 73067,
+      "sha256": "7879a9207e5096e8e405a992ab46d36cced551887fea41030002f510e73e5f0a"
+    }
+  },
+  "native_test_scope": "One CPU; inherited clocks and trained RAM; no disk mount, network or interactive shell; 30s uptime ceiling"
 }
