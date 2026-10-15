@@ -8,6 +8,8 @@ Plan date: October 14, 2026. The [current validation receipt](validation-darcy.j
 
 The [completed harvest](HARVEST.md) now supplies verified local board/source snapshots, exact-build boot/recovery inputs and radio firmware. It also identifies concrete fan/controller changes, NVK's default Tegra rejection and incompatible vendor/modern media interfaces. This closes acquisition work within the selected scope; the implementation, boot qualification and hardware acceptance phases below remain open.
 
+On October 15, later owner-authorized unlock and recovery-only work verified matching stock recovery restoration, official Lineage recovery entry and a root ADB shell on the A04-selected device. A read-only session captured live FDT/memory/EMC data, thermal/module state and physical LNX/SOS/DTB backups with independent device/host hash agreement. SOS contains the current Lineage control. [validation-native-entry.json](validation-native-entry.json) records this progress through the recovery and inventory work below. The custom stock-inventory image failed, modern A04 entry is untested, and full hardware acceptance remains open; the next implementation is the correct A04 profile and reviewed boot handoff.
+
 The [first integration build](INTEGRATION.md) now adds the controller/fan candidate, reproducible inactive staging and diagnostic component checks, with four rebuilt packages and a passing whole-filesystem VM test. Native entry, radio activation, graphics/media work and all physical qualification remain open.
 
 ## What each project contributes
