@@ -41,9 +41,9 @@ shield_usb_gadget_create() {
   shield_usb_gadget=/sys/kernel/config/usb_gadget/omarchy-shield-diagnostic
   [ ! -e "$shield_usb_gadget" ] || return 1
   mkdir "$shield_usb_gadget" || return 1
-  # Linux gadget development IDs, not NVIDIA's device identity.
-  printf '0x1d6b\n' > "$shield_usb_gadget/idVendor"
-  printf '0x0104\n' > "$shield_usb_gadget/idProduct"
+  # Upstream serial.c's donated CDC-ACM gadget IDs, for this serial-only probe.
+  printf '0x0525\n' > "$shield_usb_gadget/idVendor"
+  printf '0xa4a7\n' > "$shield_usb_gadget/idProduct"
   printf '0x0200\n' > "$shield_usb_gadget/bcdUSB"
   printf '0xef\n' > "$shield_usb_gadget/bDeviceClass"
   printf '0x02\n' > "$shield_usb_gadget/bDeviceSubClass"

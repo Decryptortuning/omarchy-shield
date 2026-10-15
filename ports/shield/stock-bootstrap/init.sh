@@ -98,8 +98,8 @@ sha256sum /run/shield-stock/partitions/*.img >/run/shield-stock/partition-sha256
 mount -t configfs configfs /sys/kernel/config || stock_halt 'configfs mount failed'
 g=/sys/kernel/config/usb_gadget/shield-stock-inventory
 mkdir "$g" || stock_halt 'gadget creation failed'
-printf '0x1d6b\n' >"$g/idVendor"
-printf '0x0104\n' >"$g/idProduct"
+printf '0x0525\n' >"$g/idVendor"
+printf '0xa4a7\n' >"$g/idProduct"
 printf '0xef\n' >"$g/bDeviceClass"
 printf '0x02\n' >"$g/bDeviceSubClass"
 printf '0x01\n' >"$g/bDeviceProtocol"

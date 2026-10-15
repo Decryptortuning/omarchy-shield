@@ -54,12 +54,12 @@ function Receive-InventoryArchive {
 }
 
 function Get-StockInventoryPort {
-  $ports = @(Get-PnpDevice -Class Ports -PresentOnly -ErrorAction SilentlyContinue | Where-Object { $_.InstanceId -match 'VID_1D6B&PID_0104' })
+  $ports = @(Get-PnpDevice -Class Ports -PresentOnly -ErrorAction SilentlyContinue | Where-Object { $_.InstanceId -match 'VID_0525&PID_A4A7' })
   foreach ($device in $ports) {
     $instance = [string]$device.InstanceId
     $owned = $false
     for ($depth = 0; $depth -lt 4; $depth++) {
-      if ($instance -match '^USB\\VID_1D6B&PID_0104\\shield-stock-inventory$') { $owned = $true; break }
+      if ($instance -match '^USB\\VID_0525&PID_A4A7\\shield-stock-inventory$') { $owned = $true; break }
       $property = Get-PnpDeviceProperty -InstanceId $instance -KeyName 'DEVPKEY_Device_Parent' -ErrorAction SilentlyContinue
       if (-not $property) { break }
       $instance = [string]$property.Data
