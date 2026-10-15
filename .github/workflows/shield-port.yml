@@ -36,3 +36,14 @@ jobs:
           for suite in shield-platform hw-platform platform-packages pacman-templates lifecycle-dispatch image-target-platform image-deferred-hardware hyprland-startup-cursor; do
             bash "test/shell.d/$suite-test.sh"
           done
+  windows-inventory-parser:
+    runs-on: windows-2025
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Check binary inventory framing without a device
+        shell: powershell
+        run: |
+          & .\ports\shield\tests\check-stock-collector.ps1 `
+            -Collector "$env:GITHUB_WORKSPACE\ports\shield\tools\collect-stock-inventory.ps1" `
+            -WorkDirectory "$env:RUNNER_TEMP\shield-inventory-parser"
