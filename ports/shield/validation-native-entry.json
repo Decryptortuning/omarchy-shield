@@ -1,8 +1,8 @@
 {
   "date": "2026-10-15",
   "timezone": "America/Phoenix",
-  "source_commit": "3ea5ea01d60c3d6344c2ff188e0ce7eedac32967",
-  "scope": "Owner-approved unlock followed by two temporary-boot comparisons; no partition image flash",
+  "source_commit": "5801cbdfa679f416eb31dc4c648467442e14d00b",
+  "scope": "Owner-approved unlock, two temporary boots, installed stock recovery control and approved recovery-only diagnostic flash",
   "device": {
     "android_device": "darcy",
     "soc": "original Tegra210 A02",
@@ -63,13 +63,16 @@
   },
   "conclusion": {
     "temporary_recovery_entry_qualified": false,
-    "root_cause": "Unresolved; both the modified image and unmodified stock control returned to Android",
+    "root_cause": "Unresolved; both RAM controls and the flashed diagnostic returned to Android, while installed stock recovery worked before the diagnostic write",
     "automatic_partition_flash_fallback_used": false,
-    "partition_image_flash_performed": false,
+    "partition_image_flash_performed": true,
     "physical_partition_backup_obtained": false,
     "physical_restoration_qualified": false,
     "modern_kernel_or_kexec_started": false,
-    "physical_acceptance_passes_added": 0
+    "physical_acceptance_passes_added": 0,
+    "partitions_flashed": [
+      "recovery"
+    ]
   },
   "offline_a04_review": {
     "input_a04_dtb_sha256": "2a1762ce27b855b4a6b8f01060a05241af5c98fa656cc3e57263cb97b3ce55ec",
@@ -79,5 +82,52 @@
     "physical_sensor_detection_verified": false,
     "modern_a04_profile_implemented": false
   },
-  "next_step": "Test installed stock recovery with the fastboot Boot recovery kernel menu; a persistent diagnostic entry needs a separately reviewed and owner-approved recovery-only plan"
+  "next_step": "Restore the exact matching stock recovery and immediately select Boot recovery kernel without booting Android between; investigate executed cmdline and early-init observability before another custom revision",
+  "installed_stock_recovery": {
+    "boot_route": "Fastboot menu Boot recovery kernel",
+    "owner_observed_display": "Android Recovery NVIDIA/darcy/darcy Android 11 build 13961458_4387.0822",
+    "stock_recovery_entry_verified": true,
+    "adb_update_mode": "sideload",
+    "adb_shell_result": "error: closed",
+    "update_package_sent": false,
+    "adb_reboot_bootloader_from_sideload_exit_code": 0
+  },
+  "recovery_partition_test": {
+    "owner_authorized_diagnostic_install_and_matching_restore": true,
+    "target_partition": "recovery",
+    "nvidia_label": "SOS",
+    "image_sha256": "2f37d27e9b7c1a17cd777adf35c622314bce5dc98927f8a7593b4788f9d29a1e",
+    "image_bytes": 12384256,
+    "preflight_unlocked": "Yes",
+    "recovery_partition_bytes": 26738688,
+    "maximum_download_bytes": 33554432,
+    "command": "fastboot flash recovery stock-inventory.img",
+    "flash_exit_code": 0,
+    "flash_seconds": 0.904,
+    "boot_route": "Fastboot menu Boot recovery kernel",
+    "owner_observed_display": "Returned to Android welcome/setup",
+    "collector_timeout_seconds": 90,
+    "diagnostic_gadget_observed": false,
+    "capture_saved": false,
+    "diagnostic_execution_verified": false,
+    "other_partition_image_flashed": false,
+    "matching_stock_recovery_restored_by_us": false,
+    "current_recovery_contents_verified": false
+  },
+  "offline_recovery_comparison": {
+    "download": "https://mirrorbits.lineageos.org/full/foster/20261005/recovery.img",
+    "published_metadata": "https://download.lineageos.org/api/v2/devices/foster/builds",
+    "published_sha256_independently_verified": true,
+    "sha256": "99a0b27ed43d16fc1a9a7995f4b4428f1761c0216932dd9599400bbaa6b6cf9b",
+    "bytes": 21917696,
+    "android_header_version": 1,
+    "page_size": 2048,
+    "bytes_after_aligned_declared_payloads": 0,
+    "appended_legacy_boot_signature_present": false,
+    "kernel_release": "4.9.141-g9d1bd583388e",
+    "foster_source_commit": "666d034739cd89e5a2628129e2141927e9d65592",
+    "source_includes_darcy_a04": true,
+    "flashed": false,
+    "physical_boot_or_adb_shell_qualified": false
+  }
 }
