@@ -1,0 +1,140 @@
+{
+  "date": "2026-10-15",
+  "scope": "Physical Linux7.1 SuperSpeed CDC-ACM one-way logs and authenticated automatic recovery ADB; bounded RAM diagnostics only",
+  "base_source_commit": "cbdfd9f82a41146603b7e130aca7ff3863c6a979",
+  "board_variant": "darcy-t210-a04",
+  "source_files": {
+    "diagnostic/usb-gadget.sh": "3d53359f9ad48403712115e638829c5c5df84bae14ae59f827f64cb9fcababb1",
+    "stock-bootstrap/init.sh": "0fa5a5705ec2c8deeacb3ef1a12d8c62df91ca33bcc2db56074a5b473f1256f4",
+    "tools/collect-stock-inventory.ps1": "a832aa8bd2df0dc32f019fabe7378dcc00761c1196ccd8fe9503ab44fe9439fc"
+  },
+  "recovery_control": {
+    "base": "Official Lineage22.2 foster recovery,20261005",
+    "base_image_sha256": "99a0b27ed43d16fc1a9a7995f4b4428f1761c0216932dd9599400bbaa6b6cf9b",
+    "change": "Only dangling adb_keys symlink replaced by this workstation public key; existing auth remains required",
+    "kernel_DTBO_init_rules_properties_executables_unchanged": true,
+    "independent_pinned_AOSP_rebuild_byte_identical": true,
+    "recovery_only_install_full_readback": "Candidate prefix exact; partition tail unchanged; full preimage retained privately",
+    "plain_recovery_reboot_proofs": [
+      {
+        "cycle": 1,
+        "seconds_until_authenticated_root_ADB": 34.41,
+        "no_menu_input": true,
+        "auth_required": true
+      },
+      {
+        "cycle": 2,
+        "seconds_until_authenticated_root_ADB": 34.43,
+        "no_menu_input": true,
+        "auth_required": true
+      }
+    ],
+    "subsequent_RAM_probes_without_controller_input": 7,
+    "one_fastboot_return": "One case reached fastboot; checked USB reboot recovery restored authenticated root without a flash or probe replay",
+    "owner_key_image_key_data_fingerprint_and_raw_backups_published": false,
+    "recovery_partition_written": true
+  },
+  "USB_failure_isolation": {
+    "USB2_only_OTG": "PID1 reached; no host link; recovery returned",
+    "SuperSpeed_fixed_peripheral": "PID1 reached; no host link; recovery returned",
+    "USB2_only_fixed_peripheral": "PID1 reached; no host link; recovery obtained through USB fastboot control",
+    "USB2_cable_conductors_qualified": false,
+    "controller_observations": "Reported clock rates match working recovery; one IRQ/event and PORTSC0xe0, PLS7 Polling, no successful link",
+    "PHY_baseline": "Three samples show UPHY P0 PLL disabled/unlocked/IDDQ; first padctl probe defers with-EPROBE_DEFER and resets padctl on cleanup",
+    "source_path": "xusb.c cleanup asserts padctl reset; xusb-tegra210.c skips PLL initialization when inherited PLLE hardware sequencer is enabled",
+    "diagnostic_dependency_experiment": "Only two temporary parent -supply phandles added, referring to real existing child VBUS suppliers; all existing electrical/GPIO/voltage/port/clock/memory properties unchanged",
+    "dependency_result": "Single successful padctl probe, three enabled/locked PLL samples, SuperSpeed configured/suspended on host",
+    "production_driver_dependency_fix": "Still required; temporary probe DT properties are not a production binding",
+    "Windows_driver_collision": "Old1d6b:0104 MI00 bound an existing RNDIS network driver, not a serial port",
+    "serial_identity_correction": "Upstream serial.c CDC-ACM0525:a4a7, matching function protocol and strict host ancestry/serial checks; no installed driver binding changed"
+  },
+  "native": {
+    "native_component_version": 12,
+    "host_bytes": 67611,
+    "host_capture_sha256": "14930ea161d9bd0085dd758820d94b1815aac43e989c0b8c88ec84f3dc91971a",
+    "host_live_temperature_and_fan_lines_seen": true,
+    "capture_status": "disconnected_after_capture",
+    "USB_speed": "super-speed",
+    "USB_state": "configured",
+    "PHY_PLL_enabled_locked_three_samples": true,
+    "padctl_probe_deferral_absent": true,
+    "temperature_C": {
+      "CPU": {
+        "samples": 30,
+        "first": 50.0,
+        "last": 40.0,
+        "min": 40.0,
+        "max": 50.0
+      },
+      "TMP451-local-board": {
+        "samples": 30,
+        "first": 48.25,
+        "last": 43.812,
+        "min": 43.812,
+        "max": 48.312
+      },
+      "TMP451-remote-diode": {
+        "samples": 30,
+        "first": 51.812,
+        "last": 43.625,
+        "min": 43.625,
+        "max": 51.812
+      }
+    },
+    "fan": {
+      "samples": 30,
+      "logical_pwm": 255,
+      "enable_mode": 2,
+      "max_RPM": 5835,
+      "last_RPM": 5835,
+      "tach_nonzero_after_grace": true
+    },
+    "reset_uptime_seconds": 29.029345,
+    "authenticated_root_recovery_returned": true,
+    "partition_writes": false
+  },
+  "native_components": {
+    "initramfs.cpio.gz": {
+      "bytes": 1310180,
+      "sha256": "d25410125914d73bbfb606d3eac1145ac177b6e67e3261ebe207240e7c75d71f"
+    },
+    "Image": {
+      "bytes": 45812224,
+      "sha256": "cad3aae6189b26f5dfab10f66088f9e830b0de8569cd9a9d9a64bfe6419853e6"
+    },
+    "cmdline.txt": {
+      "bytes": 458,
+      "sha256": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065"
+    },
+    "probe.dtb": {
+      "bytes": 73161,
+      "sha256": "b59aab93c5d67f0cb25718211d140be0d4bf101dfe9bdbace7c494aa07763fea"
+    }
+  },
+  "checks": {
+    "port_unit_tests": 33,
+    "input_provenance": "passed",
+    "changed_POSIX_shells": "shellcheck passed",
+    "native_Windows_collector_AST_and_binary_framing": "passed; no device opened by parser checks",
+    "version12_archive_delta": "Only gadget VID/PID/comment and matching PID1 ready message; every other entry/metadata identical",
+    "readonly_PHY_helper": "Actual ARM root/argument/wrong-board refusals pass without opening devmem; static AArch64; twenty fixed non-destructive read-only register observations",
+    "native_guards": "Current board/memory/reservations, actual four RAM segments, independent runner READY and Windows ARMED checked before each explicit release"
+  },
+  "physical_full_hardware_passes": 0,
+  "physical_full_hardware_entries": 19,
+  "not_qualified": [
+    "USB host ports/storage, mixed traffic and role switching",
+    "Bidirectional USB serial command execution or interactive shell",
+    "Independent or installed Linux boot, GPU rendering or native Omarchy desktop",
+    "Sustained load, automatic fan curves, DVFS, SMP, RAM stress",
+    "Current paired desktop packages or a flashable installer",
+    "New stock-inventory image hardware boot with corrected USB IDs"
+  ],
+  "raw_device_identifiers_published": false,
+  "RAM_probe_partition_writes": false,
+  "primary_references": {
+    "CDC_ACM_identity": "https://github.com/torvalds/linux/blob/master/drivers/usb/gadget/legacy/serial.c",
+    "link_state": "https://github.com/torvalds/linux/blob/master/drivers/usb/host/xhci-port.h",
+    "UPHY_sequencer_reset_rule": "https://lkml.iu.edu/2101.2/03750.html"
+  }
+}

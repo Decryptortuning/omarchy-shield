@@ -136,5 +136,6 @@
       "sha256": "7879a9207e5096e8e405a992ab46d36cced551887fea41030002f510e73e5f0a"
     }
   },
-  "native_test_scope": "One CPU; inherited clocks and trained RAM; no disk mount, network or interactive shell; 30s uptime ceiling"
+  "native_test_scope": "One CPU; inherited clocks and trained RAM; no disk mount, network or interactive shell; 30s uptime ceiling",
+  "USB_and_headless_recovery_followup": "validation-headless-usb.json"
 }
