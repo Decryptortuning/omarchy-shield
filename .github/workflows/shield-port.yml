@@ -27,7 +27,7 @@ jobs:
           from pathlib import Path
           for path in Path('ports/shield').rglob('*.py'):
               ast.parse(path.read_text(), filename=str(path))
-          for path in Path('ports/shield').glob('*.json'):
+          for path in Path('ports/shield').rglob('*.json'):
               json.loads(path.read_text())
           PY
       - name: Exercise platform integration
