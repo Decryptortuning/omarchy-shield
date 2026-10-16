@@ -57,9 +57,17 @@
   "hardware_video_decoding_tested": false,
   "flashable_image": false,
   "limits": [
-    "The native compositor receipt uses the smaller previously qualified Mesa bundle; the full packaged library set still needs its native trial.",
+    "The complete paired library set passed a native visual Omarchy bar/terminal trial from read-only RAM. Native installation of the package and full shell IPC remain open.",
     "The disposable OverlayFS lower was the read-only prepared ARM SDK; installation writes stayed in a private upper layer.",
     "The board-specific Mesa package omits other GPUs and software Gallium drivers. VA frontend availability is not evidence of Tegra video-engine support.",
     "Full Omarchy shell, persistent owner setup, input/network/audio/Vulkan, sustained operation and independent boot remain open."
-  ]
+  ],
+  "native_paired_library_tested": {
+    "native": 52,
+    "Qt_RHI": "OpenGL4.3 NVIDIA/tegra",
+    "Omarchy_bar_terminal_visible": true,
+    "screenshot": "validation/omarchy-720p.jpg",
+    "normal_package_install_on_owner_USB": false,
+    "full_shell_control": false
+  }
 }

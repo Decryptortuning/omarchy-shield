@@ -1,6 +1,6 @@
 {
   "target": "darcy-t210-a04",
-  "status": "native-HDMI-and-minimal-Hyprland-pass; full-Omarchy-and-sustained-boot-incomplete",
+  "status": "native-Omarchy-bar-and-terminal-visual-pass; shell-control-and-persistent-boot-incomplete",
   "board_acceptance_changed": false,
   "public_sources": {
     "kernel_lock": "kernel.lock.json",
@@ -45,7 +45,9 @@
   "later_desktop_trials": {
     "native47": "60-second thermal/reset trial returned automatically. Theme generation succeeded; full configuration loaded, but the diagnostic startup wait expired before Quickshell/terminal validation.",
     "native48": "The prepared profile produced excessive future-timestamp messages with the unset device clock, and a repeated bootstrap re-enabled normal session startup in the diagnostic. The visual-session result was unsuccessful. USB observations stopped near uptime32; neither recovery ADB nor fastboot returned within the recovery window. The owner power-cycled it and reached Android. Automatic cold-boot recovery and persistent-log diagnosis remain pending. No new GPU crash is established by that observation alone.",
-    "native49": "Draft harness correction only; not built, released or run at publication preparation."
+    "native49": "Complete paired Mesa library set runs Hyprland and a visible themed terminal at720p. Quickshell12s readiness fails. An unplanned watchdog reset occurs; authenticated primary recovery returns automatically.",
+    "native50_51": "Explicit legacy watchdog programming and inherited descriptor allow planned90s/120s recovery restarts. Shipped Quickshell loads its configuration and surfaces, but the startup cover and control socket fail readiness checks. Longer waiting alone did not resolve it.",
+    "native53_54": "Both return through the planned120s recovery restart. Canonical, direct Quickshell and three raw socket ping modes time out in the graphical session; instrumented shipped handlers receive valid requests and compute ok replies. The same transport passes in a separate headless ARM test. Disabling Qt vsync is observed as swapInterval0 and does not repair the timeouts. Cause remains open; no transport patch or normal-platform workaround was released."
   },
   "kernel_package": {
     "version": "7.1.0-7",
@@ -60,7 +62,32 @@
     "Native46 proves a minimal rendered compositor, cursor/debug banner, monitor IPC and screencopy; it does not prove the Omarchy shell or every application.",
     "One CPU, maximum fan, no CPU/EMC DVFS; temperature cutoff70C. The reset worker is not a hardware watchdog.",
     "The maintained enabled full-board DT, networking/input/audio/video/Vulkan and sustained behavior remain separate acceptance work.",
-    "The diagnostic Mesa set has paired Wayland/EGL/GBM/Gallium libraries; the full X11/GLX/VA package build and isolated install pass are recorded in validation-desktop-package.json; its native qualification remains open.",
-    "Independent boot, a normal systemd/uwsm session and persistent owner setup remain incomplete. No flashable installer or full hardware support claim."
-  ]
+    "Independent boot, a normal systemd/uwsm session and persistent owner setup remain incomplete. No flashable installer or full hardware support claim.",
+    "The complete paired Mesa X11/GLX/EGL/GBM/DRI/Gallium/VA library set now has native compositor/Qt OpenGL coverage; its package is not installed on the owner USB and hardware video decoding remains unqualified.",
+    "The visible Omarchy result uses Qt basic rendering in a bounded RAM session. Shell IPC still fails; input interaction, default threaded rendering and the cause of graphical-session stalls remain open. No full desktop usability claim."
+  ],
+  "native52": {
+    "Qt": "6.12.0",
+    "Quickshell": "0.3.2-4",
+    "Omarchy": "4.0.0.alpha-99.6",
+    "render_loop": "basic, selected only in RAM diagnostic",
+    "RHI": "OpenGL",
+    "GL_vendor": "NVIDIA",
+    "GL_renderer": "tegra",
+    "GL_version": "4.3 Compatibility Profile Mesa26.2.4",
+    "prefer_software_device": false,
+    "visual": "Omarchy top bar, workspaces, clock/status glyphs and TokyoNight themed terminal visible; actual1280x720 JPEG inspected",
+    "startup_cover_cleared": true,
+    "terminal_client_mapped": true,
+    "canonical_shell_IPC": "not responding within5s, outer8s; desktop child exit1",
+    "screenshot": "validation/omarchy-720p.jpg",
+    "screenshot_bytes": 53214,
+    "screenshot_sha256": "80bfab975e85902587b5907649ba5b727ee208cda2aa07e4748af861576e2832",
+    "console_bytes": 366499,
+    "console_sha256": "17836a84a71a9b3d5667c1bf8743ef0610ffdc189d293c21a771f18081d35aa2",
+    "automatic_planned_authenticated_recovery_return": true,
+    "software_reset_seconds": 120,
+    "USB_root_read_only": true,
+    "normal_systemd_session": false
+  }
 }

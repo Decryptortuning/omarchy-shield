@@ -1,0 +1,64 @@
+{
+  "target": "darcy-t210-a04",
+  "date": "2026-10-16",
+  "status": "ordinary-authenticated-recovery-control-and-planned-RAM-return-pass; standalone-Linux-incomplete",
+  "owner_authorized_boot_replacement": true,
+  "primary_boot": "Verified owner-key Lineage recovery image now occupies both LNX/boot and SOS/recovery; ordinary startup enters recovery control instead of Android setup. Original physical Android boot backup is retained privately. Android system/data were not erased by this change.",
+  "authentication": {
+    "secure_ADB": 1,
+    "recovery_authentication_bypass": false,
+    "workstation_public_key_enrolled": true,
+    "manual_menu_or_auth_prompt_per_test": false,
+    "private_key_and_key_bearing_images_published": false
+  },
+  "qualification": {
+    "full_LNX_SOS_readbacks_match_prepared_image": true,
+    "DTB_partition_unchanged": true,
+    "primary_and_reference_A04_RAM_carveouts_match": true,
+    "ordinary_ADB_reboots": [
+      {
+        "seconds": 33.83,
+        "new_authenticated_root": true,
+        "manual_input": false
+      },
+      {
+        "seconds": 33.7,
+        "new_authenticated_root": true,
+        "manual_input": false
+      }
+    ],
+    "standard_ADB_reboot_recovery": {
+      "seconds": 33.87,
+      "authenticated_root": true,
+      "all_seven_host1x_clients_suspended": true
+    },
+    "physical_cold_power_cycle_tested": false
+  },
+  "handoff_constraint": "Normal LNX boot supplies android.kerneltype=normal and the TSEC client reports a firmware/power error. A standard authenticated adb reboot recovery supplies android.kerneltype=recovery and all seven guarded clients suspend. Enter that measured state before the modern handoff; never weaken its client guards.",
+  "watchdog": {
+    "observed_failure": "Native49 ended before its planned reset and the following primary boot reported watchdog.",
+    "exact_vendor_driver_commit": "569273f19961bd59cd497fe320c48d0e46260b07",
+    "source": "https://github.com/LineageOS/android_kernel_nvidia_nvidia/blob/569273f19961bd59cd497fe320c48d0e46260b07/drivers/watchdog/tegra_wdt_t21x.c",
+    "source_behavior": "Starting an already running timer does not reprogram its hardware period; this driver has no shutdown callback. An inherited timer configuration discrepancy is an inference, not a measured timer-register comparison.",
+    "qualified_diagnostic_preparation": "Exact root/kernel/driver/device/support checks; standard WDIOC_SETTIMEOUT reprograms the timer, timeout/status/time-left readback precedes READY, descriptor9 remains open across exec, no magic stop byte.",
+    "native50": {
+      "timeout_readback_seconds": 180,
+      "timeleft_readback_seconds": 135,
+      "planned_recovery_restart_kernel_seconds": 89.714583
+    },
+    "native51_54": {
+      "timeout_readback_seconds": 240,
+      "timeleft_readback_seconds": 180,
+      "planned_software_restart_seconds": 120,
+      "authenticated_recovery_return": true
+    },
+    "intentional_hang_or_expiry_qualification": false,
+    "modern_kernel_watchdog_driver_qualified": false
+  },
+  "limits": [
+    "This is secure recovery control for continued development; default standalone Omarchy boot is not implemented.",
+    "No general flashing tool or flashable Linux installer is published. Key-bearing images, partition backups, live FDTs, unique USB identities and raw logs stay private.",
+    "The modern diagnostics use one CPU, maximum fan,70C cutoff and read-only USB Btrfs without log replay. Networking/input/audio/video/Vulkan and the full enabled board DT remain separate hardware acceptance work.",
+    "A software reboot qualification is not a measured physical power-cycle or proof that every stalled-kernel case recovers."
+  ]
+}
