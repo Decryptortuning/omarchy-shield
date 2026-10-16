@@ -1,0 +1,88 @@
+{
+  "status": "Native RAM boot and automatic recovery completed; physical hotplug result inconclusive",
+  "completed_UTC": "2026-10-16T04:13:39.975802+00:00",
+  "board_variant": "darcy-t210-a04",
+  "component_version": 21,
+  "runtime_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
+  "artifact_sha256": {
+    "initramfs.cpio.gz": "aa40fc7a881fca1b2d981b6d2e0cf914c59683a0193b28b045f5c052d9cfe161",
+    "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+    "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+    "probe.dtb": "376b5cfb8d43ab55ac9c1538be42adac6aee92b65307bba256e64f2ccc023106"
+  },
+  "native_changes_from_version20": [
+    "Only storage discovery limit10to20seconds, still clipped at kernel uptime22; fixed30second reset policy unchanged"
+  ],
+  "new_OTG_VBUS_ownership_kernel_used": false,
+  "native_results": {
+    "authenticated_root_recovery_returned": true,
+    "Windows_capture_bytes": 89557,
+    "console_bytes": 145425,
+    "console_sha256": "0d6e01f3b1123b6417d998db34dc7fc96db5e2ce44011c264e9a82b1b8f33918",
+    "configured_SuperSpeed_gadget_observed": true,
+    "reset_recovery_kernel_uptime_seconds": 29.059185,
+    "external_USB_device_enumeration_seen": false,
+    "expected_partition_seen": false,
+    "filesystem_mount_attempted": false,
+    "filesystem_or_partition_writes": false,
+    "Windows_capture_sha256": "75128189582d87c30141b235cfa405be980f1257b44e6c67313a24f2a03817f4"
+  },
+  "thermal": {
+    "CPU": {
+      "samples": 30,
+      "minimum_millidegrees_C": 41500,
+      "maximum_millidegrees_C": 54000
+    },
+    "TMP451-local-board": {
+      "samples": 30,
+      "minimum_millidegrees_C": 46250,
+      "maximum_millidegrees_C": 52062
+    },
+    "TMP451-remote-diode": {
+      "samples": 30,
+      "minimum_millidegrees_C": 45875,
+      "maximum_millidegrees_C": 55812
+    }
+  },
+  "fan": {
+    "samples": 30,
+    "all_logical_pwm255_enable2": true,
+    "maximum_RPM": 5806
+  },
+  "hotplug_method_limit": {
+    "cue_monitor_error": "The optional cue monitor expected the console SHIELD_PROBE wrapper; the actual serial stream uses plain uptime records. It timed out without issuing a cue.",
+    "cue_delivery": "One manual reconnect cue followed direct inspection of the live serial stream, later than planned.",
+    "preceding_serial_observation_kernel_uptime_seconds": 13.09,
+    "actual_user_reconnect_kernel_uptime": "unconfirmed",
+    "owner_acknowledgement": "Owner replied ok after the cue; a timing clarification is pending.",
+    "interpretation": "No drive event was recorded during Linux, but this is not a qualified negative controlled-hotplug result."
+  },
+  "offline_cue_monitor_correction": {
+    "scope": "Host capture files only; no device or serial writes",
+    "actual_capture_regression_cases": 7,
+    "result": "passed",
+    "monitor_sha256": "152582e4dd7ed46a9ded4caec2dc7d9b018dd016c5301914cbfa2d8b02ee9666",
+    "test_sha256": "dd5718a7d28a72b61429e54da9128cdd817e9c60377e29c753fc61066439a210",
+    "behavior": "Bind current execution to collector stamp; recognise actual plain serial uptime records, require configured SuperSpeed device role, accept only kernel uptime5..10 with fresh capture and refuse duplicate/late cues. Staging or legacy-quiescence time is not kernel uptime.",
+    "initial_replay_failure_corrected": "Actual capture can omit the startup banner and first configured-state record occurs after7seconds. The correction uses the owned execution/capture binding and actual stream instead of those assumptions.",
+    "another_native_run_performed": false
+  },
+  "recovery_postcheck": {
+    "same_SanDisk_visible_at_USB3_speed5000": true,
+    "authenticated_root": true,
+    "kexec_loaded": 0,
+    "RAM_stage_absent": true,
+    "temporary_readonly_debugfs_unmounted": true
+  },
+  "partition_writes": false,
+  "full_hardware_acceptance": {
+    "passed": 0,
+    "total": 19
+  },
+  "remaining": [
+    "External-drive enumeration and modern root mount",
+    "Physical USB role switching",
+    "Sustained hardware and cooling qualification",
+    "Independent boot and native Omarchy desktop"
+  ]
+}
