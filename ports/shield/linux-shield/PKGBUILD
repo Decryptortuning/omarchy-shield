@@ -48,7 +48,8 @@ package() {
   read -r dtb < "$srcdir/compiled/dtb-name.txt"
   [[ $release == "$pkgver-shield-bringup" ]] || return 1
   install -d "$pkgdir/usr"
-  bsdtar -xpf "$srcdir/compiled/kernel-modules.tar.zst" -C "$pkgdir/usr"
+  # Build-tree owners are not installed-system owners; fakeroot owns the package.
+  bsdtar --no-same-owner -xpf "$srcdir/compiled/kernel-modules.tar.zst" -C "$pkgdir/usr"
   [[ -d $pkgdir/usr/lib/modules/$release ]] || return 1
   printf '%s\n' "$pkgname" > "$pkgdir/usr/lib/modules/$release/pkgbase"
   install -d "$pkgdir/usr/lib/omarchy/shield/kernel"
