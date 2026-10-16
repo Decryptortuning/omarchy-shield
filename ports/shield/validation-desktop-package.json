@@ -1,0 +1,65 @@
+{
+  "target": "darcy-t210-a04",
+  "status": "ARM-desktop-Mesa-build-and-isolated-install-pass; owner-USB-unchanged",
+  "Mesa": {
+    "version": "1:26.2.4-99.1",
+    "commit": "96cb43121031992b85767f9c1be8f3f48e22b1d2",
+    "patch_sha256": "1d6219c6f80179227e57ab27d6fcbac7978dbad1d58e06601901411758dbed38",
+    "package_sha256": "996cd5e30ecb8b6b2942b8093c902eb08a25a04d1a8c635be74cef6f89d2e1b3",
+    "cpu": "cortex-a57",
+    "gallium_drivers": [
+      "nouveau",
+      "tegra"
+    ],
+    "frontends": [
+      "Wayland",
+      "EGL",
+      "GBM",
+      "DRI",
+      "X11",
+      "GLX",
+      "Nouveau VA-API"
+    ],
+    "video_codec_parsers": "all; not hardware-decoding qualification",
+    "LLVM": false,
+    "Vulkan": "separate distribution package, not built or qualified here",
+    "libraries": {
+      "usr/lib/dri/libdril_dri.so": "0a5dc74c2d3e983a6064b03776ad34fbce6c4683b95a8ccefe972bba2aa4fe9e",
+      "usr/lib/gbm/dri_gbm.so": "7a242552a5b9bed9efce5b8ec789bf7b5b82909d7e2d984a23dc10118da62789",
+      "usr/lib/libEGL_mesa.so.0.0.0": "1ead08fb6d6b26c9e82108af7cd0f2505ab7e70c4ec0197fcfa1330fdc94abd3",
+      "usr/lib/libGLX_mesa.so.0.0.0": "ec8493a85c9e5297153a3f69c770dfd001d45fe5f58db34560e6545bdd1aa79e",
+      "usr/lib/libgallium-26.2.4.so": "9e23fcafc08512851813956ec43514ccb7dd05ffac0d6977b2201c479062142c",
+      "usr/lib/libgbm.so.1.0.0": "2501250bb67e8b4a401b3b4b410dd84560a894985a7c84e49cf092fccf3fc131"
+    },
+    "payload_files_and_links_plus_embedded_manifest": 26
+  },
+  "build_environment": {
+    "host": "Ubuntu24.04 WSL",
+    "compiler": "GCC13.3 AArch64 cross compiler",
+    "Meson": "1.12.1",
+    "Wayland_scanner": "matching ARM1.26 through QEMU"
+  },
+  "software_verification": {
+    "all_ELF_libraries": "AArch64",
+    "ARM_loader_dependencies": "EGL/GLX/GBM/DRI/VA resolved",
+    "archive_bytes_links_modes_and_root_ownership": "pass",
+    "isolated_ALPM_install": "Mesa and linux-shield7.1.0-7 together, real ARM pacman through QEMU",
+    "ALPM_database_check": "no errors",
+    "ALPM_missing_files": 0,
+    "installed_Mesa_payload_verification": "every file and symlink matches builder manifest, all root-owned",
+    "installed_kernel_module_verification": "1561 exact build matches, all root-owned",
+    "old_distribution_Gallium": "removed by whole-package replacement",
+    "patched_Mesa_update_hold": true
+  },
+  "owner_USB_modified": false,
+  "native_full_package_tested": false,
+  "normal_systemd_boot_tested": false,
+  "hardware_video_decoding_tested": false,
+  "flashable_image": false,
+  "limits": [
+    "The native compositor receipt uses the smaller previously qualified Mesa bundle; the full packaged library set still needs its native trial.",
+    "The disposable OverlayFS lower was the read-only prepared ARM SDK; installation writes stayed in a private upper layer.",
+    "The board-specific Mesa package omits other GPUs and software Gallium drivers. VA frontend availability is not evidence of Tegra video-engine support.",
+    "Full Omarchy shell, persistent owner setup, input/network/audio/Vulkan, sustained operation and independent boot remain open."
+  ]
+}
