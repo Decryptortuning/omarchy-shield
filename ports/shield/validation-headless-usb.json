@@ -136,5 +136,6 @@
     "CDC_ACM_identity": "https://github.com/torvalds/linux/blob/master/drivers/usb/gadget/legacy/serial.c",
     "link_state": "https://github.com/torvalds/linux/blob/master/drivers/usb/host/xhci-port.h",
     "UPHY_sequencer_reset_rule": "https://lkml.iu.edu/2101.2/03750.html"
-  }
+  },
+  "maintained_driver_followup": "validation-xusb-supplies.json"
 }
