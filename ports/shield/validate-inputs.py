@@ -18,6 +18,11 @@ def main():
       path = (repository / entry['path']).resolve()
       if not path.is_relative_to(repository) or hashlib.sha256(path.read_bytes()).hexdigest() != entry['sha256']:
         raise SystemExit(f"Kernel input checksum mismatch: {entry['path']}")
+  mesa = json.loads((port / 'mesa.lock.json').read_text())
+  for entry in mesa['mesa']['patches']:
+    path = (repository / entry['path']).resolve()
+    if not path.is_relative_to(repository) or hashlib.sha256(path.read_bytes()).hexdigest() != entry['sha256']:
+      raise SystemExit(f"Mesa input checksum mismatch: {entry['path']}")
   recipe = (port / 'omarchy-shield/PKGBUILD').read_text()
   def array(name):
     match = re.search(r'^' + name + r'=\((.*?)\)', recipe, flags=re.M | re.S)
@@ -45,7 +50,7 @@ def main():
       request = entry.get('runtime_request') or ''
       if 'p2894-0050-' in request and ('p2894-0050-' + board) not in request:
         raise SystemExit('Radio calibration request names a different Darcy revision')
-  print('Kernel, package and inactive firmware inputs match their checksums and provenance.')
+  print('Kernel, Mesa, package and inactive firmware inputs match their checksums and provenance.')
 
 
 if __name__ == '__main__':

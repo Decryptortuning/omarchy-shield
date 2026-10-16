@@ -1,0 +1,167 @@
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c b/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c
+index 2609a9a..9914408 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_surface.c
+@@ -295,14 +295,23 @@ nvc0_clear_render_target(struct pipe_context *pipe,
+ {
+    struct nvc0_context *nvc0 = nvc0_context(pipe);
+    struct nouveau_pushbuf *push = nvc0->base.pushbuf;
+-   struct nv50_surface *sf = nv50_surface(dst);
+-   struct nv04_resource *res = nv04_resource(sf->base.texture);
++   struct pipe_surface *surface =
++      nvc0_miptree_surface_new(pipe, dst->texture, dst);
++   struct nv50_surface *sf;
++   struct nv04_resource *res;
+    unsigned z;
+ 
++   if (!surface)
++      return;
++   sf = nv50_surface(surface);
++   res = nv04_resource(sf->base.texture);
++
+    assert(dst->texture->target != PIPE_BUFFER);
+ 
+-   if (!PUSH_SPACE(push, 32 + sf->depth))
++   if (!PUSH_SPACE(push, 32 + sf->depth)) {
++      nv50_surface_destroy(pipe, surface);
+       return;
++   }
+ 
+    PUSH_REF1 (push, res->bo, res->domain | NOUVEAU_BO_WR);
+ 
+@@ -367,6 +376,7 @@ nvc0_clear_render_target(struct pipe_context *pipe,
+       IMMED_NVC0(push, NVC0_3D(COND_MODE), nvc0->cond_condmode);
+ 
+    nvc0->dirty_3d |= NVC0_NEW_3D_FRAMEBUFFER;
++   nv50_surface_destroy(pipe, surface);
+ }
+ 
+ static void
+@@ -632,15 +642,23 @@ nvc0_clear_depth_stencil(struct pipe_context *pipe,
+    struct nvc0_context *nvc0 = nvc0_context(pipe);
+    struct nouveau_pushbuf *push = nvc0->base.pushbuf;
+    struct nv50_miptree *mt = nv50_miptree(dst->texture);
+-   struct nv50_surface *sf = nv50_surface(dst);
++   struct pipe_surface *surface =
++      nvc0_miptree_surface_new(pipe, dst->texture, dst);
++   struct nv50_surface *sf;
+    uint32_t mode = 0;
+    int unk = mt->base.base.target == PIPE_TEXTURE_2D;
+    unsigned z;
+ 
++   if (!surface)
++      return;
++   sf = nv50_surface(surface);
++
+    assert(dst->texture->target != PIPE_BUFFER);
+ 
+-   if (!PUSH_SPACE(push, 32 + sf->depth))
++   if (!PUSH_SPACE(push, 32 + sf->depth)) {
++      nv50_surface_destroy(pipe, surface);
+       return;
++   }
+ 
+    PUSH_REF1 (push, mt->base.bo, mt->base.domain | NOUVEAU_BO_WR);
+ 
+@@ -689,6 +707,7 @@ nvc0_clear_depth_stencil(struct pipe_context *pipe,
+       IMMED_NVC0(push, NVC0_3D(COND_MODE), nvc0->cond_condmode);
+ 
+    nvc0->dirty_3d |= NVC0_NEW_3D_FRAMEBUFFER;
++   nv50_surface_destroy(pipe, surface);
+ }
+ 
+ void
+diff --git a/src/gallium/drivers/tegra/tegra_context.c b/src/gallium/drivers/tegra/tegra_context.c
+index fb800f3..e136c01 100644
+--- a/src/gallium/drivers/tegra/tegra_context.c
++++ b/src/gallium/drivers/tegra/tegra_context.c
+@@ -496,8 +496,14 @@ tegra_set_framebuffer_state(struct pipe_context *pcontext,
+                             const struct pipe_framebuffer_state *fb)
+ {
+    struct tegra_context *context = to_tegra_context(pcontext);
++   struct pipe_framebuffer_state state = *fb;
+ 
+-   context->gpu->set_framebuffer_state(context->gpu, fb);
++   for (unsigned i = 0; i < state.nr_cbufs; i++)
++      state.cbufs[i].texture = tegra_resource_unwrap(state.cbufs[i].texture);
++   state.zsbuf.texture = tegra_resource_unwrap(state.zsbuf.texture);
++   state.resolve = tegra_resource_unwrap(state.resolve);
++
++   context->gpu->set_framebuffer_state(context->gpu, &state);
+ }
+ 
+ static void
+@@ -721,7 +727,7 @@ tegra_clear(struct pipe_context *pcontext, unsigned buffers,
+ {
+    struct tegra_context *context = to_tegra_context(pcontext);
+ 
+-   context->gpu->clear(context->gpu, buffers, color_clear_mask, stencil_clear_mask, NULL, color, depth, stencil);
++   context->gpu->clear(context->gpu, buffers, color_clear_mask, stencil_clear_mask, scissor_state, color, depth, stencil);
+ }
+ 
+ static void
+@@ -735,9 +741,10 @@ tegra_clear_render_target(struct pipe_context *pcontext,
+                           bool render_condition)
+ {
+    struct tegra_context *context = to_tegra_context(pcontext);
+-   struct tegra_surface *dst = to_tegra_surface(pdst);
++   struct pipe_surface dst = *pdst;
+ 
+-   context->gpu->clear_render_target(context->gpu, dst->gpu, color, dstx,
++   dst.texture = tegra_resource_unwrap(dst.texture);
++   context->gpu->clear_render_target(context->gpu, &dst, color, dstx,
+                                      dsty, width, height, render_condition);
+ }
+ 
+@@ -754,9 +761,10 @@ tegra_clear_depth_stencil(struct pipe_context *pcontext,
+                           bool render_condition)
+ {
+    struct tegra_context *context = to_tegra_context(pcontext);
+-   struct tegra_surface *dst = to_tegra_surface(pdst);
++   struct pipe_surface dst = *pdst;
+ 
+-   context->gpu->clear_depth_stencil(context->gpu, dst->gpu, flags, depth,
++   dst.texture = tegra_resource_unwrap(dst.texture);
++   context->gpu->clear_depth_stencil(context->gpu, &dst, flags, depth,
+                                      stencil, dstx, dsty, width, height,
+                                      render_condition);
+ }
+@@ -1343,7 +1351,8 @@ tegra_screen_context_create(struct pipe_screen *pscreen, void *priv,
+    context->base.invalidate_resource = tegra_invalidate_resource;
+ 
+    context->base.get_device_reset_status = tegra_get_device_reset_status;
+-   context->base.set_device_reset_callback = tegra_set_device_reset_callback;
++   if (context->gpu->set_device_reset_callback)
++      context->base.set_device_reset_callback = tegra_set_device_reset_callback;
+    context->base.dump_debug_state = tegra_dump_debug_state;
+    context->base.emit_string_marker = tegra_emit_string_marker;
+ 
+diff --git a/src/gallium/drivers/tegra/tegra_resource.h b/src/gallium/drivers/tegra/tegra_resource.h
+index 892afaf..2d54150 100644
+--- a/src/gallium/drivers/tegra/tegra_resource.h
++++ b/src/gallium/drivers/tegra/tegra_resource.h
+@@ -54,24 +54,4 @@ tegra_resource_unwrap(struct pipe_resource *resource)
+    return to_tegra_resource(resource)->gpu;
+ }
+ 
+-struct tegra_surface {
+-   struct pipe_surface base;
+-   struct pipe_surface *gpu;
+-};
+-
+-static inline struct tegra_surface *
+-to_tegra_surface(struct pipe_surface *surface)
+-{
+-   return (struct tegra_surface *)surface;
+-}
+-
+-static inline struct pipe_surface *
+-tegra_surface_unwrap(struct pipe_surface *surface)
+-{
+-   if (!surface)
+-      return NULL;
+-
+-   return to_tegra_surface(surface)->gpu;
+-}
+-
+ #endif /* TEGRA_RESOURCE_H */
