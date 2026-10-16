@@ -53,9 +53,10 @@
     "cue_monitor_error": "The optional cue monitor expected the console SHIELD_PROBE wrapper; the actual serial stream uses plain uptime records. It timed out without issuing a cue.",
     "cue_delivery": "One manual reconnect cue followed direct inspection of the live serial stream, later than planned.",
     "preceding_serial_observation_kernel_uptime_seconds": 13.09,
-    "actual_user_reconnect_kernel_uptime": "unconfirmed",
-    "owner_acknowledgement": "Owner replied ok after the cue; a timing clarification is pending.",
-    "interpretation": "No drive event was recorded during Linux, but this is not a qualified negative controlled-hotplug result."
+    "actual_user_reconnect_kernel_uptime": "unknown; owner cannot determine",
+    "owner_acknowledgement": "Owner cannot determine timing and questions repeating the manual action. No further timing clarification is pending.",
+    "interpretation": "No drive event was recorded during Linux, but this is not a qualified negative controlled-hotplug result.",
+    "manual_timed_hotplug_retired": true
   },
   "offline_cue_monitor_correction": {
     "scope": "Host capture files only; no device or serial writes",
