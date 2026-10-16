@@ -204,10 +204,14 @@ The host needs AArch64 GCC/G++, pkg-config, Ninja, Bison, Flex, QEMU user emulat
 python3 ports/shield/tools/build-mesa.py \
   --source "$source_root/mesa" --rootfs "$build_root/rootfs" \
   --output "$build_root/mesa-desktop" --meson "$tools_venv/bin/meson" \
-  --with-x11
+  --with-x11 --with-va
 ```
 
-`--with-x11` adds the paired X11/GLX components needed for installed-desktop preparation. Omitting it reproduces the smaller Wayland/EGL/GBM/Gallium diagnostic configuration. Both configurations currently build only the Nouveau and Tegra Gallium drivers, without Vulkan or video-codec frontends. They do not replace or qualify those separate subsystems. The output manifest records the libraries and explicitly leaves native qualification false; installation and hardware tests are separate steps. Keep EGL, GBM, its backend, Gallium and any GLX/DRI components from the same build because Mesa checks their internal interface identity.
+`--with-x11` adds the paired X11/GLX components needed for installed-desktop preparation. `--with-va` adds the Nouveau VA-API frontend and Mesa's codec parsers. Omitting both reproduces the smaller Wayland/EGL/GBM/Gallium diagnostic configuration. These configurations build only the Nouveau and Tegra Gallium drivers, without Vulkan or LLVM. Building the VA frontend does not establish Tegra video-engine support or hardware decoding. The output manifest records every installed file and explicitly leaves native qualification false; installation and hardware tests are separate steps. Keep EGL, GBM, its backend, Gallium and any GLX/DRI/VA components from the same build because Mesa checks their internal interface identity.
+
+`mesa-shield/PKGBUILD` packages a build made with both switches as `mesa` 1:26.2.4-99.1. Set `SHIELD_MESA_DIR` to the completed builder output and use an AArch64 makepkg configuration. The recipe verifies the source/patch identity, complete file manifest, required ARM libraries and symlink boundaries before packaging. It replaces the distribution Mesa package as one unit and retains the VA/OpenGL package provides; it is specific to this board and does not include other GPUs' drivers. It does not install anything or update the owner's USB drive. The separate `vulkan-nouveau` package remains outside this build and outside native qualification.
+
+The [software package receipt](validation-desktop-package.json) records the completed build, ARM loader checks and isolated installation with kernel release 7. The 26-file/link Mesa payload, embedded build manifest and all 1,561 modules were verified after installation; ALPM reported no database errors or missing files. This is a disposable-filesystem installation test, not a native full-desktop or video-decoding pass. The Shield pacman template includes `mesa` in its local-package hold so a later distribution upgrade cannot silently discard the required Tegra fixes.
 
 The actual-source checks run on Linux without opening a GPU:
 

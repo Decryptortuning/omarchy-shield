@@ -26,6 +26,7 @@ def main():
   parser.add_argument('--meson', default='meson', help='Meson executable; its Python must have Mako, PyYAML and packaging')
   parser.add_argument('--jobs', type=int, default=min(16, os.cpu_count() or 1))
   parser.add_argument('--with-x11', action='store_true', help='Also build the paired X11/GLX libraries for installed-desktop preparation')
+  parser.add_argument('--with-va', action='store_true', help='Build the Nouveau VA-API frontend and codec parsers; hardware decoding is not qualified by this build')
   args = parser.parse_args()
   port = Path(__file__).resolve().parent.parent
   repository = port.parent.parent
@@ -97,7 +98,8 @@ cpp_args = ['-mcpu=cortex-a57']
     '--prefix=/usr', '--libdir=lib', '--buildtype=release',
     '-Dgallium-drivers=nouveau,tegra', '-Dvulkan-drivers=', f'-Dplatforms={platforms}',
     '-Degl=enabled', f'-Dglx={glx}', '-Dgbm=enabled', '-Dllvm=disabled',
-    '-Dgallium-va=disabled', '-Dgallium-rusticl=false', '-Dvideo-codecs=',
+    '-Dgallium-va=' + ('enabled' if args.with_va else 'disabled'),
+    '-Dgallium-rusticl=false', '-Dvideo-codecs=' + ('all' if args.with_va else ''),
     '-Dglvnd=enabled', '-Dvalgrind=disabled', '-Dlibunwind=disabled',
     '-Dbuild-tests=false', '-Dmicrosoft-clc=disabled', '-Dtools=',
   ]
@@ -105,6 +107,9 @@ cpp_args = ['-mcpu=cortex-a57']
   run(['ninja', '-C', str(build), '-j', str(args.jobs)], env=env)
   install = output / 'install'
   run([meson, 'install', '-C', str(build), '--no-rebuild'], env={**env, 'DESTDIR': str(install)})
+  license_path = install / 'usr/share/licenses/mesa/license.rst'
+  license_path.parent.mkdir(parents=True)
+  shutil.copyfile(source / 'docs/license.rst', license_path)
   libraries = {}
   for path in sorted((install / 'usr/lib').rglob('*')):
     if path.is_file() and not path.is_symlink() and '.so' in path.name:
@@ -112,9 +117,23 @@ cpp_args = ['-mcpu=cortex-a57']
       if header[:4] != b'\x7fELF' or int.from_bytes(header[18:20], 'little') != 183:
         raise RuntimeError(f'Expected an AArch64 library: {path}')
       libraries[str(path.relative_to(install))] = hashlib.sha256(path.read_bytes()).hexdigest()
+  files = {}
+  for path in sorted(install.rglob('*')):
+    relative = str(path.relative_to(install))
+    if path.is_symlink():
+      if not path.resolve(strict=True).is_relative_to(install):
+        raise RuntimeError(f'Installed symlink escapes the library bundle: {path}')
+      files[relative] = {'type': 'symlink', 'target': os.readlink(path)}
+    elif path.is_file():
+      files[relative] = {'type': 'file', 'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                         'mode': path.stat().st_mode & 0o777}
+    elif not path.is_dir():
+      raise RuntimeError(f'Unexpected installed file type: {path}')
   manifest = {
+    'format_version': 1,
     'mesa_commit': revision, 'patch_sha256': patches[0]['sha256'], 'cpu': 'cortex-a57',
-    'with_x11_glx': args.with_x11, 'meson_options': options, 'libraries': libraries,
+    'with_x11_glx': args.with_x11, 'with_va_api': args.with_va,
+    'meson_options': options, 'libraries': libraries, 'files': files,
     'installed_on_owner_root': False, 'native_tested': False, 'flashable_image': False,
   }
   (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')

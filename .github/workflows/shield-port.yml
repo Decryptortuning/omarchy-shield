@@ -20,6 +20,8 @@ jobs:
       - name: Check Shield build scripts
         run: |
           python3 ports/shield/validate-inputs.py
+          bash -n ports/shield/mesa-shield/PKGBUILD
+          shellcheck -s bash -e SC2034,SC2154 ports/shield/mesa-shield/PKGBUILD
           shellcheck bin/omarchy-hw-aarch64-shield ports/shield/*.sh ports/shield/tools/*.sh ports/shield/omarchy-shield/lifecycle test/shell.d/shield-platform-test.sh
           shellcheck -s sh ports/shield/diagnostic/*.sh ports/shield/stock-bootstrap/*.sh ports/shield/ramdisk/init
           python3 - <<'PY'

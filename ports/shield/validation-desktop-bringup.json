@@ -44,7 +44,7 @@
   },
   "later_desktop_trials": {
     "native47": "60-second thermal/reset trial returned automatically. Theme generation succeeded; full configuration loaded, but the diagnostic startup wait expired before Quickshell/terminal validation.",
-    "native48": "The prepared profile produced excessive future-timestamp messages with the unset device clock, and a repeated bootstrap re-enabled normal session startup in the diagnostic. The visual-session result was unsuccessful. USB observations stopped near uptime32; neither recovery ADB nor fastboot returned within the recovery window. Power cycle requested; persistent-log diagnosis remains pending. No new GPU crash is established by that observation alone.",
+    "native48": "The prepared profile produced excessive future-timestamp messages with the unset device clock, and a repeated bootstrap re-enabled normal session startup in the diagnostic. The visual-session result was unsuccessful. USB observations stopped near uptime32; neither recovery ADB nor fastboot returned within the recovery window. The owner power-cycled it and reached Android. Automatic cold-boot recovery and persistent-log diagnosis remain pending. No new GPU crash is established by that observation alone.",
     "native49": "Draft harness correction only; not built, released or run at publication preparation."
   },
   "kernel_package": {
@@ -60,7 +60,7 @@
     "Native46 proves a minimal rendered compositor, cursor/debug banner, monitor IPC and screencopy; it does not prove the Omarchy shell or every application.",
     "One CPU, maximum fan, no CPU/EMC DVFS; temperature cutoff70C. The reset worker is not a hardware watchdog.",
     "The maintained enabled full-board DT, networking/input/audio/video/Vulkan and sustained behavior remain separate acceptance work.",
-    "The diagnostic Mesa set has paired Wayland/EGL/GBM/Gallium libraries; complete installed X11/GLX packaging is still being prepared.",
+    "The diagnostic Mesa set has paired Wayland/EGL/GBM/Gallium libraries; the full X11/GLX/VA package build and isolated install pass are recorded in validation-desktop-package.json; its native qualification remains open.",
     "Independent boot, a normal systemd/uwsm session and persistent owner setup remain incomplete. No flashable installer or full hardware support claim."
   ]
 }

@@ -28,7 +28,18 @@
     "llvm": false,
     "vulkan_drivers": [],
     "cpu": "cortex-a57",
-    "note": "Coherent EGL/GBM/Gallium RAM qualification bundle. A complete installed Mesa package with GLX/X11 remains separate."
+    "note": "Coherent EGL/GBM/Gallium RAM qualification bundle. Full X11/GLX/VA package build and isolated installation are recorded separately; native full-package qualification remains open."
   },
-  "qualified_scope": "Native unprivileged Hyprland 0.56.2 with 1280x720 HDMI, monitor IPC and screenshot. Full Omarchy session and sustained/independent boot remain open."
+  "qualified_scope": "Native unprivileged Hyprland 0.56.2 with 1280x720 HDMI, monitor IPC and screenshot. Full Omarchy session and sustained/independent boot remain open.",
+  "desktop_package": {
+    "recipe": "mesa-shield/PKGBUILD",
+    "version": "1:26.2.4-99.1",
+    "build_flags": [
+      "--with-x11",
+      "--with-va"
+    ],
+    "receipt": "validation-desktop-package.json",
+    "installed_on_owner_USB": false,
+    "native_tested": false
+  }
 }
