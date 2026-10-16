@@ -47,6 +47,11 @@
         "path": "ports/shield/kernel-patches/0007-darcy-vbus-open-drain.patch",
         "sha256": "679476f43380565136f126b3ea8d3166ae9a1fda1ef0f4145e4d7676e80f2372",
         "reason": "Encode the existing active-high open-drain intent explicitly for both Darcy VBUS enables. A04 RAM test verified live flags and raw GPIO mode/level against recovery; USB storage enumeration and physical rail voltage remain unqualified."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0008-a04-xusb-host-mc-reset.patch",
+        "sha256": "8b195d2f63595b664895f493b63aa4e4ff4d0689c5c2fc2868203a26295ddff1",
+        "reason": "Describe the XUSB host MC reset in the A04 PMC reset array, retaining CAR reset. After matched recovery host teardown this restored firmware DMA, root hubs, SuperSpeed drive enumeration and exact owned-partition read-only admission in a bounded RAM test. Desktop and sustained storage acceptance remain open."
       }
     ],
     "variant": "omarchy-a04",
