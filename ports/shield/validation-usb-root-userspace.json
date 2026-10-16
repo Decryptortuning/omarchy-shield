@@ -1,8 +1,8 @@
 {
-  "status": "Native USB3 storage, read-only Btrfs root and unprivileged Arch/Hyprland version queries passed; desktop and full hardware acceptance remain open",
+  "status": "Maintained eight-patch kernel passed native USB3 storage, read-only Btrfs root and unprivileged Arch/Hyprland version queries; desktop and full hardware acceptance remain open",
   "board_variant": "darcy-t210-a04",
-  "native_runtime_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
-  "native_runtime_kernel_patch_count": 5,
+  "native_runtime_kernel_source_commit": "5c512ea9c7d2ea8e5771c41661de283b2208a812",
+  "native_runtime_kernel_patch_count": 8,
   "full_hardware_acceptance": {
     "passed": 0,
     "total": 19
@@ -48,7 +48,9 @@
         }
       },
       "fan_samples": 30,
-      "fan_maximum_RPM": 5835
+      "fan_maximum_RPM": 5835,
+      "native_kernel_patch_count": 5,
+      "native_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910"
     },
     {
       "component_version": 28,
@@ -90,7 +92,9 @@
       "fan_samples": 30,
       "fan_maximum_RPM": 5806,
       "mount_failure": "btrfs Unknown parameter 'nologreplay'; modern parser accepts rescue=nologreplay",
-      "exact_owner_identity_helper_passed_blockRO_enforced": true
+      "exact_owner_identity_helper_passed_blockRO_enforced": true,
+      "native_kernel_patch_count": 5,
+      "native_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910"
     },
     {
       "component_version": 29,
@@ -134,7 +138,9 @@
       "mount_failure": null,
       "exact_owner_identity_helper_passed_blockRO_enforced": true,
       "RO_and_rescue_nologreplay_readback_verified": true,
-      "filesystem_unmounted": true
+      "filesystem_unmounted": true,
+      "native_kernel_patch_count": 5,
+      "native_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910"
     },
     {
       "component_version": 30,
@@ -193,7 +199,9 @@
         "fixed_unprivileged_uid": 65534,
         "compositor_or_services_started": false,
         "writable_mounts": false
-      }
+      },
+      "native_kernel_patch_count": 5,
+      "native_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910"
     },
     {
       "component_version": 31,
@@ -255,7 +263,76 @@
         "Hyprland_reported_version": "0.56.2",
         "Hyprland_build_commit": "efb50993780079460b0cbed1363e2166a2de1d9f",
         "XDG_RUNTIME_DIR": "/run (existing read-only directory; fixed version-only early-return path)"
-      }
+      },
+      "native_kernel_patch_count": 5,
+      "native_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910"
+    },
+    {
+      "component_version": 32,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "b5b4b46d440e1be2a46c686a83979840b53effa202d86693270d26949a796a4a",
+        "Image": "0fb0db96c7fce183b37657f5cda2a6c292d72cb6d12470ddb1e208508d95016b",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "d22d2a8789c43cd0ecb80f81bdc4591d0f8baecb717cff393ea4fc004fae813a"
+      },
+      "completed_utc": "2026-10-16T13:25:26.495811+00:00",
+      "console_bytes": 152775,
+      "console_sha256": "6424910d33981e6bbccfaf640d3471b3098a84c1b33d12294076c6805a6641a3",
+      "Windows_capture_bytes": 90934,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.072869,
+      "legacy_host_removed": true,
+      "legacy_VBUSoff_settled_2s": true,
+      "modern_host_failure": null,
+      "external_USB_enumerated": true,
+      "filesystem_mounted": true,
+      "filesystem_or_partition_writes": false,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 41500,
+          "maximum_millidegrees_C": 53000
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45875,
+          "maximum_millidegrees_C": 51000
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45562,
+          "maximum_millidegrees_C": 54937
+        }
+      },
+      "fan_samples": 30,
+      "fan_maximum_RPM": 5806,
+      "mount_failure": null,
+      "exact_owner_identity_helper_passed_blockRO_enforced": true,
+      "RO_and_rescue_nologreplay_readback_verified": true,
+      "filesystem_unmounted": true,
+      "native_userspace": {
+        "uname_status": 0,
+        "package_query_status": 0,
+        "packages": {
+          "linux-shield": "7.1.0-6",
+          "omarchy": "4.0.0.alpha-99.6",
+          "omarchy-settings": "4.0.0.alpha-99.6",
+          "omarchy-shield": "0.1.0-6"
+        },
+        "Hyprland_version_status": 0,
+        "Hyprland_failure": null,
+        "fixed_unprivileged_uid": 65534,
+        "compositor_or_services_started": false,
+        "writable_mounts": false,
+        "Hyprland_reported_version": "0.56.2",
+        "Hyprland_build_commit": "efb50993780079460b0cbed1363e2166a2de1d9f",
+        "XDG_RUNTIME_DIR": "/run (existing read-only directory; fixed version-only early-return path)"
+      },
+      "native_kernel_patch_count": 8,
+      "native_kernel_source_commit": "5c512ea9c7d2ea8e5771c41661de283b2208a812",
+      "all_four_USB_modules_exact_maintained_build": true,
+      "normal_XUDC_without_private_observation_work": true,
+      "probe_DT_thermal_reset_root_guards_unchanged31": true
     }
   ],
   "maintained_eight_patch_build": {
@@ -296,7 +373,9 @@
     "compiled_reset_contract_and_previous_DT_negative_control": "passed",
     "normal_QEMU_boot_passed": true,
     "QEMU_missing_MC_stopped_before_userspace": true,
-    "native_eight_patch_bundle_booted": false
+    "native_Image_and_matching_USB_modules_booted_with_bounded_probe_DT": true,
+    "native_component_version": 32,
+    "full_enabled_DT_and_standard_diagnostic_initramfs_booted": false
   },
   "handoff_contract": {
     "matching_recovery_kernel_release": "4.9.141-g9d1bd583388e",
@@ -309,7 +388,7 @@
     "canonical_Omarchy_path": "/usr/bin/omarchy; share/bin/omarchy is an absolute symlink, so a mounted-prefix -f check incorrectly escaped the root"
   },
   "limits": [
-    "Native tests retained the earlier five-patch Image and matching diagnostic modules; the fresh maintained eight-patch bundle has only offline/QEMU qualification.",
+    "Native27\u201331 retained the earlier five-patch Image/modules. Native32 qualifies the maintained eight-patch Image and four matching unmodified USB modules with the bounded GPU-disabled probe DT/initramfs. The full enabled board DT and independent boot remain unqualified.",
     "Version queries as UID65534 with no writable mounts or device nodes are not a systemd boot, rendered compositor, desktop login, GPU test or owner provision.",
     "USB host/SSD acceptance also needs sustained mixed traffic, both roles/ports, integrity, suspend/resume and an independent boot path.",
     "GPUB remains quiescent/disabled with all paging ASIDs denied; enabling graphics requires a different reviewed and measured handoff.",
