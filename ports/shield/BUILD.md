@@ -192,3 +192,31 @@ python3 ports/shield/tools/check-xusb-supplies.py --kernel-source "$kernel_sourc
 ```
 
 The next seven physical diagnostics reused that exact kernel and matching modules, enabled USB host firmware and retained automatic authenticated recovery. [The storage investigation receipt](validation-usb-storage-probes.json) records the power-management, startup-order, register, firmware and canonical-PHY comparisons. None reached external-drive enumeration or a filesystem mount, so these results do not qualify USB-root boot. The [attended reconnect follow-up](validation-usb-hotplug-probe.json) retained the 30-second kernel-uptime budget and strict owner-identity/read-only checks, with the same unresolved drive detection and an inconclusive reconnect-timing control. The owner cannot determine the reconnect time; timed manual reconnects are retired and no timing answer is pending. The [automatic observation tests](validation-usb-vbus-gpio.json) kept the drive connected and verified drive-port tuning plus raw VBUS GPIO mode/level. Explicit active-high open-drain GPIO flags correct the board definition; patch 7 carries that intent into the maintained A04 source. The builder checks the compiled, overlaid A04 DT and hashes its VBUS contract report. All four tests returned automatically within the reset budget, but none enumerated the drive. The tests retained the earlier five-patch Image/modules; the updated maintained DT was compiled separately, and no complete seven-patch bundle is claimed. Do not rewrite the prepared drive merely to update a RAM-loaded diagnostic.
+
+
+## Paired Mesa desktop libraries
+
+The native compositor receipt uses Mesa 26.2.4 at the commit in [mesa.lock.json](mesa.lock.json), with [the combined Tegra API patch](mesa-patches/0001-tegra-current-gallium-api.patch). Apply that patch once to a checkout of the locked commit. `tools/build-mesa.py` rejects other tracked changes and writes only to a new output directory. It reads the prepared ARM root as its sysroot; it does not install libraries, enter that root, contact the Shield or change boot partitions.
+
+The host needs AArch64 GCC/G++, pkg-config, Ninja, Bison, Flex, QEMU user emulation and Meson 1.4 or newer with Mako, PyYAML and packaging. The tested build uses GCC 13.3 and Meson 1.12.1. The builder runs the ARM root's matching Wayland scanner through QEMU, avoiding a protocol-version mismatch with the host scanner.
+
+```bash
+python3 ports/shield/tools/build-mesa.py \
+  --source "$source_root/mesa" --rootfs "$build_root/rootfs" \
+  --output "$build_root/mesa-desktop" --meson "$tools_venv/bin/meson" \
+  --with-x11
+```
+
+`--with-x11` adds the paired X11/GLX components needed for installed-desktop preparation. Omitting it reproduces the smaller Wayland/EGL/GBM/Gallium diagnostic configuration. Both configurations currently build only the Nouveau and Tegra Gallium drivers, without Vulkan or video-codec frontends. They do not replace or qualify those separate subsystems. The output manifest records the libraries and explicitly leaves native qualification false; installation and hardware tests are separate steps. Keep EGL, GBM, its backend, Gallium and any GLX/DRI components from the same build because Mesa checks their internal interface identity.
+
+The actual-source checks run on Linux without opening a GPU:
+
+```bash
+python3 ports/shield/tools/check-mesa-reset.py \
+  --source "$source_root/mesa" --output "$build_root/mesa-reset-check"
+python3 ports/shield/tools/check-mesa-surfaces.py \
+  --source "$source_root/mesa" --build "$build_root/mesa-desktop/build" \
+  --output "$build_root/mesa-surface-check"
+```
+
+The first check reproduces the baseline null-callback crash in a child and verifies optional callback forwarding. The second compiles the real current Mesa API headers and Tegra callback bodies to check framebuffer textures, clear surfaces, scissor rectangles, null attachments and preservation of caller data. These checks supplement the physical compositor result; they do not qualify every hardware clear path, application or sustained session.
