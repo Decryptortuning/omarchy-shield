@@ -4,6 +4,8 @@ Experimental fork for the owner's connected **Shield TV (`darcy`, original Tegra
 
 This branch adds `aarch64-shield`, Arch Linux ARM integration and guarded Shield lifecycle handling. Start with [port status and build inputs](ports/shield/README.md), [connected Darcy findings](ports/shield/DARCY.md), its [hardware acceptance matrix](ports/shield/hardware-darcy.json) and [platform integration notes](docs/shield-port.md).
 
+The current boot blocker is external USB drive enumeration: the host controller starts, while seven bounded tests have not detected the prepared drive. Each test returned to authenticated recovery automatically. [Storage investigation results](ports/shield/validation-usb-storage-probes.json) record the tested variants and remaining limits.
+
 Upstream: [omacom/omarchy](https://github.com/omacom/omarchy). Omarchy's desktop, applications and themes remain the basis of this port.
 
 ## Upstream Omarchy

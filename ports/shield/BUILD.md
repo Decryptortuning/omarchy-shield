@@ -164,3 +164,5 @@ The A04 build runs the actual-source provider/refcount harness before compilatio
 ```sh
 python3 ports/shield/tools/check-xusb-supplies.py --kernel-source "$kernel_source" --output "$build_root/xusb-supplies-regression.json"
 ```
+
+The next seven physical diagnostics reused that exact kernel and matching modules, enabled USB host firmware and retained automatic authenticated recovery. [The storage investigation receipt](validation-usb-storage-probes.json) records the power-management, startup-order, register, firmware and canonical-PHY comparisons. None reached external-drive enumeration or a filesystem mount, so these results do not qualify USB-root boot. The prepared reconnect probe keeps the 30-second kernel-uptime budget and strict owner-identity/read-only storage checks; it requires one physical reconnect during the observation window. Do not rewrite the prepared drive merely to update a RAM-loaded diagnostic.

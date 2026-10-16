@@ -1,0 +1,420 @@
+{
+  "date": "2026-10-15",
+  "timezone": "America/Phoenix",
+  "scope": "Seven bounded native USB host/storage investigations with automatic recovery; external USB disk enumeration remains unresolved",
+  "source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
+  "board_variant": "darcy-t210-a04",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "kernel_build_evidence": "validation-xusb-supplies.json",
+  "common_components": {
+    "Image": {
+      "bytes": 45812224,
+      "sha256": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9"
+    },
+    "cmdline.txt": {
+      "bytes": 458,
+      "sha256": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065"
+    }
+  },
+  "runtime_scope": "Private RAM diagnostics derived from the maintained supplier-fix kernel; disabled GPU/SMMU retention policy, matching modules and observational XUDC overlay retained; these are not desktop images",
+  "offline_checks": {
+    "owner_USB_helper": "Static ARM64; exact kernel/A04/probe stamp/controller/disk/partition/FSID/size before block read-only enforcement; no raw identity published",
+    "storage_worker_ARM_cases": 7,
+    "host_observer_ARM_cases": 6,
+    "gadget_delay_ARM_cases": 5,
+    "monitor_ARM_fault_deadline_cases": 5,
+    "fixed_kernel_deadline_ARM_entry_cases": 3,
+    "CAR_helper_ARM_guard_cases": 3,
+    "CAR_actual_kernel_register_offsets_checked": 12,
+    "FPCI_source_and_compiled_DT_range_check": true,
+    "archive_and_DT_full_delta_checks": "passed for each changed candidate",
+    "source_aware_shellcheck_and_ARM_PID1_syntax": "passed"
+  },
+  "measured_findings": {
+    "host_driver": "USB2 and USB3 root hubs and firmware initialized; the external drive did not enumerate before the bounded discovery limit",
+    "normal_PM_hold": "Host/root-hub policy on readback; three active-controller snapshots; SuperSpeed clamps released, but no drive detected",
+    "physical_port_map": "Working recovery identifies the SanDisk on USB3 root port 2; stock and modern board definitions map USB3-1 to companion USB2-2",
+    "drive_VBUS": "Regulator reports enabled at 5 V with one consumer; software readback does not measure the electrical voltage",
+    "root_ports": "All nine PORTSC values 0x000002a0, powered/RxDetect/no connection bit in three active snapshots",
+    "MFINDEX": "Zero in three snapshots; this does not prove a clock failure",
+    "CAR_resets": "Host 89, SuperSpeed 156 and source 143 reset bits clear in three direct read-only snapshots",
+    "CAR_sequencers": "PLLE_AUX and XUSBIO_PLL_CFG0 bit 24 enabled in three direct read-only snapshots; this extends the earlier unmeasured global sequencer state",
+    "FPCI": "Bus master/memory/I/O enabled; BAR matches 70090000; selected CSB page 0 before and after samples; CPUCTL 0 then 0x20, without the HALTED bit; no firmware-crash claim",
+    "firmware_comparison": "Upstream original-T210 50.29 and matching Shield OTA original-T210 50.26 both started but did not enumerate the drive",
+    "canonical_PHY_comparison": "Restoring all four canonical host PHY bindings also failed to enumerate the drive; PC gadget capture and automatic recovery continued working"
+  },
+  "firmware_inputs": [
+    {
+      "source": "linux-firmware ab23307cfe7f9366c819025ca3e4778299bc2db2",
+      "version_id": "0x50290003",
+      "sha256": "941873a6a70993b5c40a608cedc4608c281458c11949092d4bce125b96a92025",
+      "bytes": 126464
+    },
+    {
+      "source": "Matching NVIDIA Shield OTA 13961458_4387.0822; harvest/firmware.json artifact 84",
+      "version_id": "0x50260003",
+      "sha256": "d8546e8a0202bf78fe33deb02de7e7673bf2c8383bf223efe4806b69136ec7a3",
+      "bytes": 126464,
+      "private_diagnostic_only": true,
+      "blob_redistribution_authority_established": false
+    }
+  ],
+  "native_runs": [
+    {
+      "component_version": 14,
+      "completed_utc": "2026-10-16T01:02:11.644641+00:00",
+      "scope": "Isolated drive-port PHYs; upstream 50.29 firmware; read-only storage worker",
+      "external_USB_disk_detected": false,
+      "owner_identity_helper_executed": false,
+      "filesystem_mounted": false,
+      "PC_capture_bytes": 73830,
+      "PC_capture_sha256": "043249c862260dd3fbdf0d9ee701f4b83051b5a8c657b50daf8b4e940a19c16e",
+      "PC_USB_speed": "super-speed",
+      "PC_USB_configured": true,
+      "reset_kernel_uptime_seconds": 29.053791,
+      "authenticated_root_recovery_returned": true,
+      "temperatures_C": {
+        "CPU": {
+          "samples": 30,
+          "max": 51.5,
+          "last": 40.5
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "max": 50.0,
+          "last": 44.75
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "max": 54.0,
+          "last": 44.5
+        }
+      },
+      "fan": {
+        "samples": 30,
+        "logical_pwm": 255,
+        "enable_mode": 2,
+        "max_RPM": 5806
+      },
+      "console_bytes": 123743,
+      "console_sha256": "46fba1e9025c4358219cd08e643c06e0db900c75cd5947ff5138a076e5f1bd7a",
+      "components": {
+        "initramfs.cpio.gz": {
+          "bytes": 1673612,
+          "sha256": "c5021371b49c51a3b3ec425750ccfb1410778cafa6381ff64b4376564d9b4739"
+        },
+        "probe.dtb": {
+          "bytes": 73043,
+          "sha256": "ff84cc6f11e054764d46ada22f3b713e2cebd566bf443e8817b32ccb5b220f9f"
+        }
+      }
+    },
+    {
+      "component_version": 15,
+      "completed_utc": "2026-10-16T01:06:38.122355+00:00",
+      "scope": "Normal PM hold and active-controller port/regulator observations",
+      "external_USB_disk_detected": false,
+      "owner_identity_helper_executed": false,
+      "filesystem_mounted": false,
+      "PC_capture_bytes": 78701,
+      "PC_capture_sha256": "a95e9ee659ffb7f5f53ecc3e653b6018436bab85058391b726f9bdf078c5f405",
+      "PC_USB_speed": "super-speed",
+      "PC_USB_configured": true,
+      "reset_kernel_uptime_seconds": 29.049726,
+      "authenticated_root_recovery_returned": true,
+      "temperatures_C": {
+        "CPU": {
+          "samples": 30,
+          "max": 51.0,
+          "last": 40.0
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "max": 49.375,
+          "last": 44.625
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "max": 53.312,
+          "last": 44.25
+        }
+      },
+      "fan": {
+        "samples": 30,
+        "logical_pwm": 255,
+        "enable_mode": 2,
+        "max_RPM": 5835
+      },
+      "console_bytes": 137257,
+      "console_sha256": "87da1a4724d5a6f9aa339c9fc3f44c840bc836b28304cd16037d9dac5957c02c",
+      "components": {
+        "initramfs.cpio.gz": {
+          "bytes": 1674244,
+          "sha256": "a6e512b3cd8d7832dd3b0f2111374076241a3e3a18b02d048afafe29f65ebb77"
+        },
+        "probe.dtb": {
+          "bytes": 73043,
+          "sha256": "ff84cc6f11e054764d46ada22f3b713e2cebd566bf443e8817b32ccb5b220f9f"
+        }
+      }
+    },
+    {
+      "component_version": 16,
+      "completed_utc": "2026-10-16T01:09:34.412359+00:00",
+      "scope": "Five-second host-only window before PC gadget; named clock observations",
+      "external_USB_disk_detected": false,
+      "owner_identity_helper_executed": false,
+      "filesystem_mounted": false,
+      "PC_capture_bytes": 82181,
+      "PC_capture_sha256": "93192ef42abbec7d6b239f73b83cbb68828c63720a116482edf9114cd7111732",
+      "PC_USB_speed": "super-speed",
+      "PC_USB_configured": true,
+      "reset_kernel_uptime_seconds": 29.050947,
+      "authenticated_root_recovery_returned": true,
+      "temperatures_C": {
+        "CPU": {
+          "samples": 30,
+          "max": 49.5,
+          "last": 39.5
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "max": 48.625,
+          "last": 44.062
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "max": 51.812,
+          "last": 44.0
+        }
+      },
+      "fan": {
+        "samples": 30,
+        "logical_pwm": 255,
+        "enable_mode": 2,
+        "max_RPM": 5830
+      },
+      "console_bytes": 140851,
+      "console_sha256": "2234d7ca99937588594050eb42a0cb38f76a821af2857e9a34a80311746f1930",
+      "components": {
+        "initramfs.cpio.gz": {
+          "bytes": 1674480,
+          "sha256": "283ffab8a0519d45e07e9c7b035cdcd0c33297f1466698f6d9bad1398f0c9e16"
+        },
+        "probe.dtb": {
+          "bytes": 73043,
+          "sha256": "ff84cc6f11e054764d46ada22f3b713e2cebd566bf443e8817b32ccb5b220f9f"
+        }
+      }
+    },
+    {
+      "component_version": 17,
+      "completed_utc": "2026-10-16T01:12:17.704177+00:00",
+      "scope": "Read-only fixed CAR reset, gate and sequencer register observations",
+      "external_USB_disk_detected": false,
+      "owner_identity_helper_executed": false,
+      "filesystem_mounted": false,
+      "PC_capture_bytes": 89035,
+      "PC_capture_sha256": "cc2ab10e85b55cf49ecf1d503cddc0131db4d79a01023c3ac5a57e872b7b8c36",
+      "PC_USB_speed": "super-speed",
+      "PC_USB_configured": true,
+      "reset_kernel_uptime_seconds": 29.061089,
+      "authenticated_root_recovery_returned": true,
+      "temperatures_C": {
+        "CPU": {
+          "samples": 30,
+          "max": 49.0,
+          "last": 39.5
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "max": 48.25,
+          "last": 43.937
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "max": 51.875,
+          "last": 43.875
+        }
+      },
+      "fan": {
+        "samples": 30,
+        "logical_pwm": 255,
+        "enable_mode": 2,
+        "max_RPM": 5835
+      },
+      "console_bytes": 144693,
+      "console_sha256": "7a9362eb65c3154f3315195343423af3a1b36c27c519b563ffafb4ffbf92f75a",
+      "components": {
+        "initramfs.cpio.gz": {
+          "bytes": 1967554,
+          "sha256": "f4f48c1da4aedbd3cb887b3edcb4a238cd81205fd33a7d384f4f973748e1f9dd"
+        },
+        "probe.dtb": {
+          "bytes": 73043,
+          "sha256": "ff84cc6f11e054764d46ada22f3b713e2cebd566bf443e8817b32ccb5b220f9f"
+        }
+      }
+    },
+    {
+      "component_version": 18,
+      "completed_utc": "2026-10-16T01:16:46.378030+00:00",
+      "scope": "Read-only fixed FPCI/current-page-zero Falcon processor observations",
+      "external_USB_disk_detected": false,
+      "owner_identity_helper_executed": false,
+      "filesystem_mounted": false,
+      "PC_capture_bytes": 89331,
+      "PC_capture_sha256": "610bed6a20cf3d5a381fb9d2e423104073259a4e7f4d1f52b9872e75ae3716d1",
+      "PC_USB_speed": "super-speed",
+      "PC_USB_configured": true,
+      "reset_kernel_uptime_seconds": 29.060809,
+      "authenticated_root_recovery_returned": true,
+      "temperatures_C": {
+        "CPU": {
+          "samples": 30,
+          "max": 50.0,
+          "last": 40.5
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "max": 49.437,
+          "last": 44.687
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "max": 52.625,
+          "last": 44.75
+        }
+      },
+      "fan": {
+        "samples": 30,
+        "logical_pwm": 255,
+        "enable_mode": 2,
+        "max_RPM": 5835
+      },
+      "console_bytes": 145070,
+      "console_sha256": "63e8fba1b2e82fa6b19b4eccca6ec3328e58c8086e05ed88087f2b94da5315ff",
+      "components": {
+        "initramfs.cpio.gz": {
+          "bytes": 1968084,
+          "sha256": "4df95ceb52616e2619eeb5bbede73629ea0b984ab683aa10843e2629dd0ad4eb"
+        },
+        "probe.dtb": {
+          "bytes": 73043,
+          "sha256": "ff84cc6f11e054764d46ada22f3b713e2cebd566bf443e8817b32ccb5b220f9f"
+        }
+      }
+    },
+    {
+      "component_version": 19,
+      "completed_utc": "2026-10-16T01:18:59.382071+00:00",
+      "scope": "Only firmware changed to the matching Shield OTA 50.26 image",
+      "external_USB_disk_detected": false,
+      "owner_identity_helper_executed": false,
+      "filesystem_mounted": false,
+      "PC_capture_bytes": 89283,
+      "PC_capture_sha256": "f4713a861296c9f8ffa7727ce9222ad3e36b4f07f42ca77871325f763bc8ab2f",
+      "PC_USB_speed": "super-speed",
+      "PC_USB_configured": true,
+      "reset_kernel_uptime_seconds": 29.060805,
+      "authenticated_root_recovery_returned": true,
+      "temperatures_C": {
+        "CPU": {
+          "samples": 30,
+          "max": 48.5,
+          "last": 40.0
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "max": 48.125,
+          "last": 44.0
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "max": 51.75,
+          "last": 44.0
+        }
+      },
+      "fan": {
+        "samples": 30,
+        "logical_pwm": 255,
+        "enable_mode": 2,
+        "max_RPM": 5835
+      },
+      "console_bytes": 145070,
+      "console_sha256": "65078c27c4821faa4625bd05438a14ae9806fa7b3234a0067ae1de45e24efe7e",
+      "components": {
+        "initramfs.cpio.gz": {
+          "bytes": 1968060,
+          "sha256": "f124b7b59402994ee4a3f36f26004dd10ce8e25c186c767324565866a6ee3747"
+        },
+        "probe.dtb": {
+          "bytes": 73043,
+          "sha256": "ff84cc6f11e054764d46ada22f3b713e2cebd566bf443e8817b32ccb5b220f9f"
+        }
+      }
+    },
+    {
+      "component_version": 20,
+      "completed_utc": "2026-10-16T01:21:27.321420+00:00",
+      "scope": "Restore four canonical host PHY bindings and matching PID1 assertion; upstream 50.29 firmware",
+      "external_USB_disk_detected": false,
+      "owner_identity_helper_executed": false,
+      "filesystem_mounted": false,
+      "PC_capture_bytes": 89283,
+      "PC_capture_sha256": "c46e6b50cf8a8ebb1d766e257fe9d80c5d33f7ac1c125425670d7c69f6d9a719",
+      "PC_USB_speed": "super-speed",
+      "PC_USB_configured": true,
+      "reset_kernel_uptime_seconds": 29.059627,
+      "authenticated_root_recovery_returned": true,
+      "temperatures_C": {
+        "CPU": {
+          "samples": 30,
+          "max": 49.0,
+          "last": 39.5
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "max": 47.812,
+          "last": 43.687
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "max": 50.875,
+          "last": 43.375
+        }
+      },
+      "fan": {
+        "samples": 30,
+        "logical_pwm": 255,
+        "enable_mode": 2,
+        "max_RPM": 5806
+      },
+      "console_bytes": 145070,
+      "console_sha256": "0afdf6708f11a893713aaee77ecdea5c9425f948b4b27b9eefff5921b20499be",
+      "components": {
+        "initramfs.cpio.gz": {
+          "bytes": 1968097,
+          "sha256": "57133a8b81894918118c77f732887738c7078bd7fba04ec970890562f319c08c"
+        },
+        "probe.dtb": {
+          "bytes": 73063,
+          "sha256": "376b5cfb8d43ab55ac9c1538be42adac6aee92b65307bba256e64f2ccc023106"
+        }
+      }
+    }
+  ],
+  "read_only_storage_contract": "Fixed owner-USB helper, block read-only enforcement/readback, Btrfs ro,nologreplay,subvol=@; verify mount read-only/read known file presence/unmount. The helper and mount were never reached in these runs",
+  "next_test": "Prepared hotplug probe 21 extends discovery from 10 to 20 seconds, still clipped at kernel uptime 22 with reset requested before 30 seconds; waiting for owner physical availability; not executed",
+  "physical_full_hardware_passes": 0,
+  "physical_full_hardware_entries": 19,
+  "not_qualified": [
+    "External USB disk enumeration and Btrfs filesystem access",
+    "Sustained or mixed USB traffic and role transitions",
+    "Native GPU/Omarchy desktop and independent boot",
+    "Full hardware qualification or production firmware activation"
+  ],
+  "filesystem_or_partition_writes": false,
+  "raw_device_identifiers_or_keys_published": false,
+  "native_diagnostic_images_published": false
+}
