@@ -1,0 +1,156 @@
+{
+  "date": "2026-10-15",
+  "timezone": "America/Phoenix",
+  "scope": "Maintained VBUS supplier preflight, fresh A04 build and one physical30s SuperSpeed serial RAM diagnostic with the original probe DT",
+  "source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
+  "board_variant": "darcy-t210-a04",
+  "kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "source_files": {
+    "kernel.lock.json": "023237d2877c4a36706abe87d9dfb550af1c50ea216ef62d6b2d0bd558a76364",
+    "kernel-patches/0005-xusb-child-supplies.patch": "99c41f5bc990a08b3c28dd92b143e50a0850afe65b4a6fbf507a35dc9ac79e64",
+    "build-kernel.sh": "6240e7314e78843b3f3266dce2f4940f1e572af8de90cd96fd0d37e6997e1373",
+    "tools/check-xusb-supplies.py": "d4e43f08fe935caa88ea35935631667bd68b1fcc9e104dd0e91d811550935c5a",
+    "tests/xusb-supplies-harness.c": "3ec007d12aca242e5b9f2eaad35ba2434a57753428de2e50e28f0a3d03294e01"
+  },
+  "change": {
+    "driver": "drivers/phy/tegra/xusb.c",
+    "behavior": "Resolve available child USB2 VBUS phandles before hardware probe/MMIO/reset; propagate supplier failures with balanced temporary references; real port regulator ownership unchanged",
+    "electrical_or_voltage_enable_changes": false,
+    "temporary_DT_supplier_properties_required": false,
+    "ordinary_build_uses_original_board_DT": true
+  },
+  "build": {
+    "fresh_verified_source_and_object_roots": true,
+    "kernel_config_byte_identical_to_prior_build": true,
+    "complete_kernel_and_modules": "passed",
+    "artifact_checksums": "passed",
+    "artifacts": {
+      "Image": {
+        "bytes": 45812224,
+        "sha256": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9"
+      },
+      "Image.gz": {
+        "bytes": 17269219,
+        "sha256": "20dd6be03da7d85ac6cf5dd8f78356fbe2d5b9b9f328510243f7dd477a1a422d"
+      },
+      "initramfs.cpio.gz": {
+        "bytes": 733522,
+        "sha256": "3ac4e95d71e018bf7403b32faf6e882d7229aadc77f24e355517f21b48132b07"
+      },
+      "tegra210-p2894-0050-a04.dtb": {
+        "bytes": 72718,
+        "sha256": "361401229f0975df14578b0521e6fe8fa9af3f9bd79ae87182b83134eb0e9f80"
+      },
+      "kernel-modules.tar.zst": {
+        "bytes": 19131705,
+        "sha256": "42b3734dff361271746c0acf390d93030dffb835b7789524937b201e572b9635"
+      },
+      "kernel.config": {
+        "bytes": 324427,
+        "sha256": "e372186f9afb3b03ef12e53e8d8b21b1958f0bbe03794118f94400b1b9e2ee9a"
+      },
+      "busybox.config": {
+        "bytes": 37920,
+        "sha256": "579644e1ad37d4975f83293e854cf1096ac0f4ce8ac8f70a363528b2bb365fb3"
+      },
+      "sources.lock.json": {
+        "bytes": 5289,
+        "sha256": "023237d2877c4a36706abe87d9dfb550af1c50ea216ef62d6b2d0bd558a76364"
+      }
+    }
+  },
+  "checks": {
+    "actual_source_supplier_and_reference_cases": 11,
+    "supplier_source_sha256": "e49817b7589b6dbecc062b24c1220d3f1ab59c7e732c57c57fdce4ab2b401471",
+    "supplier_errors_precede_hardware_MMIO_reset": true,
+    "port_unit_tests": 33,
+    "input_provenance_and_changed_builder_shellcheck": "passed",
+    "actual_source_SMMU_harness": "passed;39groups128ASIDs, strict/default/disabled-GPU retention and paging refusal",
+    "QEMU_normal_kernel_ramdisk_boot": "passed",
+    "QEMU_missing_MC_panics_before_PID1": "passed",
+    "linked_init_order": "ramoops2 < MC3 < OF3s < SMMUgate4 < padctl6",
+    "native_module_pairing": "Fresh build modules/metadata and identical observational XUDC source rebuilt against this exact prepared tree",
+    "native_runtime_delta": "Original probe DT restored; PID1,BusyBox,helpers,gadget identity,monitor/reset policy and cmdline exactly native12",
+    "actual_loaded_segments_and_independent_runner_host_ready": "passed"
+  },
+  "native": {
+    "qualified_utc": "2026-10-16T00:07:17.460138+00:00",
+    "native_component_version": 13,
+    "source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
+    "host_bytes": 71639,
+    "host_capture_sha256": "d7b7d703f78528f88dc4449fb03874e3f66cb6c9283587828733ebefe78367b2",
+    "host_live_temperature_and_fan_lines_seen": true,
+    "capture_status": "disconnected_after_capture",
+    "USB_speed": "super-speed",
+    "USB_state": "configured",
+    "PHY_PLL_enabled_locked_three_samples": true,
+    "padctl_setup_retry_failure_absent": true,
+    "original_probe_DT_without_temporary_supply_properties": true,
+    "temperature_C": {
+      "CPU": {
+        "samples": 30,
+        "first": 51.5,
+        "last": 40.0,
+        "min": 40.0,
+        "max": 51.5
+      },
+      "TMP451-local-board": {
+        "samples": 30,
+        "first": 49.625,
+        "last": 44.5,
+        "min": 44.5,
+        "max": 49.687
+      },
+      "TMP451-remote-diode": {
+        "samples": 30,
+        "first": 53.0,
+        "last": 44.625,
+        "min": 44.5,
+        "max": 53.0
+      }
+    },
+    "fan": {
+      "samples": 30,
+      "logical_pwm": 255,
+      "enable_mode": 2,
+      "max_RPM": 5835,
+      "last_RPM": 5806,
+      "tach_nonzero_after_grace": true
+    },
+    "reset_uptime_seconds": 29.031855,
+    "authenticated_root_recovery_returned": true,
+    "no_image_left_loaded": true,
+    "partition_writes": false
+  },
+  "native_components": {
+    "initramfs.cpio.gz": {
+      "bytes": 1310180,
+      "sha256": "d25410125914d73bbfb606d3eac1145ac177b6e67e3261ebe207240e7c75d71f"
+    },
+    "Image": {
+      "bytes": 45812224,
+      "sha256": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9"
+    },
+    "cmdline.txt": {
+      "bytes": 458,
+      "sha256": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065"
+    },
+    "probe.dtb": {
+      "bytes": 73067,
+      "sha256": "7879a9207e5096e8e405a992ab46d36cced551887fea41030002f510e73e5f0a"
+    }
+  },
+  "recovery_control": "Existing key-only recovery returned authenticated root ADB without menu input; authentication enabled; no image left loaded",
+  "physical_full_hardware_passes": 0,
+  "physical_full_hardware_entries": 19,
+  "not_qualified": [
+    "USB host/storage, sustained or mixed traffic and role switching",
+    "Bidirectional commands/interactive shell, independent Linux boot and native desktop/GPU",
+    "DVFS,SMP,RAM stress, automatic fan curves or sustained load",
+    "Rebuilt paired desktop packages or a flashable installer",
+    "Other board profiles"
+  ],
+  "partition_writes": false,
+  "raw_device_identifiers_published": false,
+  "earlier_evidence": "validation-headless-usb.json"
+}
