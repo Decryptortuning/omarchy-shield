@@ -1,0 +1,284 @@
+From: Omarchy Shield contributors
+Subject: [PATCH] iommu/nouveau: quarantine inherited A04 GPU address space
+
+A native A04 full-zero GPUB write changed 0x8c0b0a09 to 0x80000000:
+all four selectors are writable, while the enable bit remained set. Add a
+default-off, stamped handoff mode that reserves ASID zero and verifies its
+PTB data is hardware-denied before clearing the GPU selectors to that ASID.
+Do not infer that the register is entirely read-only or secure.
+
+Keep the other 38 reset checks. Paging can use ASIDs 1..127; GPUB attach
+must read back its new low selector, and detach must restore the denied
+selector before freeing an ASID. Old masters must already be quiesced.
+
+Nouveau's Tegra instance allocator must respect the domain's forced aperture,
+not the GPU's separate bit-34 IOMMU tag. With T210's 32-bit SMMU aperture,
+upper GPU selectors remain on the denied ASID and cannot refer to an old
+or another client's page table. No alternative renderer or IOMMU bypass.
+
+Mapped-domain setup failures now return before GPU power-up, rather than
+continuing with direct addressing after an IOMMU error.
+
+This is an experimental warm-handoff candidate. The first test keeps GPU
+and display disabled; driver, firmware and rendering need separate tests.
+
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -27,6 +27,8 @@
+ /* Experimental recovery handoff; masters must already be quiesced. */
+ static bool reset_inherited;
+ static bool preserve_disabled_gpu;
++static bool quarantine_gpub_inherited;
++static bool gpub_quarantine_active;
+ static bool handoff_reset_complete;
+ module_param_named(reset_inherited, reset_inherited, bool, 0400);
+ MODULE_PARM_DESC(reset_inherited,
+@@ -36,9 +38,16 @@
+ MODULE_PARM_DESC(preserve_disabled_gpu,
+ 		"Retain GPUB state only for the stamped GPU-disabled RAM probe; forbid paging ASIDs");
+ 
++module_param_named(quarantine_gpub_inherited, quarantine_gpub_inherited, bool, 0400);
++MODULE_PARM_DESC(quarantine_gpub_inherited,
++		"Require denied ASID zero for stamped A04 GPUB handoff; incompatible with retention");
++
+ /* MC probe errors are swallowed by the parent, so verify before device_init. */
+ static int __init tegra_smmu_check_handoff_reset(void)
+ {
++	if (quarantine_gpub_inherited && (!reset_inherited || preserve_disabled_gpu))
++		panic("tegra-smmu: GPUB quarantine requires reset without retention");
++
+ 	if (preserve_disabled_gpu && !reset_inherited)
+ 		panic("tegra-smmu: GPU retention requires inherited reset");
+ 
+@@ -310,6 +319,8 @@
+ 
+ static void tegra_smmu_free_asid(struct tegra_smmu *smmu, unsigned int id)
+ {
++	if (gpub_quarantine_active && id == 0)
++		panic("tegra-smmu: cannot release GPUB quarantine ASID zero");
+ 	clear_bit(id, smmu->asids);
+ }
+ 
+@@ -397,7 +408,20 @@
+ 		value &= ~SMMU_ASID_MASK;
+ 		value |= SMMU_ASID_VALUE(asid);
+ 		value |= SMMU_ASID_ENABLE;
++		if (gpub_quarantine_active && group->reg == 0xaac) {
++			if (asid == 0 || asid >= smmu->soc->num_asids)
++				panic("tegra-smmu: invalid GPUB paging ASID");
++			/* Only the low 4GiB aperture is used; other selectors stay
++			 * on denied ASID zero, never on another client's tables.
++			 */
++			value = SMMU_ASID_ENABLE | SMMU_ASID_VALUE(asid);
++		}
+ 		smmu_writel(smmu, value, group->reg);
++		if (gpub_quarantine_active && group->reg == 0xaac) {
++			smmu_flush(smmu);
++			if (smmu_readl(smmu, group->reg) != value)
++				panic("tegra-smmu: GPUB paging ASID readback rejected");
++		}
+ 	} else {
+ 		pr_warn("%s group from swgroup %u not found\n", __func__,
+ 				swgroup);
+@@ -430,7 +454,14 @@
+ 		value &= ~SMMU_ASID_MASK;
+ 		value |= SMMU_ASID_VALUE(asid);
+ 		value &= ~SMMU_ASID_ENABLE;
++		if (gpub_quarantine_active && group->reg == 0xaac)
++			value = 0;
+ 		smmu_writel(smmu, value, group->reg);
++		if (gpub_quarantine_active && group->reg == 0xaac) {
++			smmu_flush(smmu);
++			if (smmu_readl(smmu, group->reg) & ~SMMU_ASID_ENABLE)
++				panic("tegra-smmu: GPUB detach did not restore quarantine");
++		}
+ 	}
+ 
+ 	for (i = 0; i < smmu->soc->num_clients; i++) {
+@@ -1144,6 +1175,9 @@
+ 	const char *status, *stamp;
+ 	bool valid;
+ 	u32 value, observed;
++
++	if (quarantine_gpub_inherited && (!reset_inherited || preserve_disabled_gpu))
++		panic("tegra-smmu: GPUB quarantine requires reset without retention");
+ 
+ 	if (!reset_inherited) {
+ 		if (preserve_disabled_gpu)
+@@ -1181,10 +1215,60 @@
+ 		bitmap_fill(smmu->asids, smmu->soc->num_asids);
+ 	}
+ 
++	if (quarantine_gpub_inherited) {
++		gpu = of_find_node_by_path("/gpu@57000000");
++		chosen = of_find_node_by_path("/chosen");
++		valid = gpu && chosen &&
++			of_device_is_compatible(gpu, "nvidia,gm20b") &&
++			!of_property_read_string(gpu, "status", &status) &&
++			(!strcmp(status, "disabled") || !strcmp(status, "okay")) &&
++			!of_property_read_string(chosen, "shield,first-ram-probe", &stamp) &&
++			!strcmp(stamp, "a04-first-ram-probe-v1") &&
++			smmu->soc->num_asids == 128 && smmu->soc->num_swgroups == 39;
++		of_node_put(gpu);
++		of_node_put(chosen);
++		for (i = 0; i < smmu->soc->num_swgroups; i++)
++			if (smmu->soc->swgroups[i].reg == 0xaac)
++				gpu_groups++;
++		if (!valid || gpu_groups != 1)
++			panic("tegra-smmu: GPUB quarantine requires exact A04 RAM probe");
++
++		/* Reserve a hardware-denied ASID before any IOMMU registration.
++		 * The matching legacy driver's unused PTB reset value is zero:
++		 * no read/write permissions and no page-directory pointer.
++		 */
++		set_bit(0, smmu->asids);
++		smmu_writel(smmu, 0, SMMU_PTB_ASID);
++		smmu_flush(smmu);
++		if (SMMU_PTB_ASID_VALUE(smmu_readl(smmu, SMMU_PTB_ASID)) != 0)
++			panic("tegra-smmu: cannot select GPUB quarantine PTB zero");
++		smmu_writel(smmu, 0, SMMU_PTB_DATA);
++		smmu_flush(smmu);
++		if (smmu_readl(smmu, SMMU_PTB_DATA) != 0)
++			panic("tegra-smmu: cannot deny GPUB quarantine PTB zero");
++	}
++
+ 	for (i = 0; i < smmu->soc->num_swgroups; i++) {
+ 		const struct tegra_smmu_swgroup *group = &smmu->soc->swgroups[i];
+ 
+ 		value = smmu_readl(smmu, group->reg);
++		if (quarantine_gpub_inherited && group->reg == 0xaac) {
++			/* Native A04 full-zero writes clear all four selectors but
++			 * retain ASID_ENABLE. Every selector must resolve to denied
++			 * ASID zero before other paging ASIDs can become available.
++			 */
++			smmu_writel(smmu, 0, group->reg);
++			smmu_flush(smmu);
++			observed = smmu_readl(smmu, group->reg);
++			if (observed & ~SMMU_ASID_ENABLE)
++				panic("tegra-smmu: GPUB quarantine rejected (%#x -> %#x)",
++				      value, observed);
++			gpub_quarantine_active = true;
++			dev_info(smmu->dev, "GPUB quarantine verified (%#x -> %#x); PTB zero denied, ASID zero reserved\n",
++				 value, observed);
++			cleared += !!((value & SMMU_ASID_ENABLE) && !(observed & SMMU_ASID_ENABLE));
++			continue;
++		}
+ 		if (preserve_disabled_gpu && group->reg == 0xaac) {
+ 			dev_info(smmu->dev, "retained inactive GPUB %#x; all paging ASIDs unavailable\n", value);
+ 			continue;
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+@@ -97,12 +97,32 @@
+ 	return 0;
+ }
+ 
+-static void
++static u64
++nvkm_device_tegra_iommu_limit(const struct iommu_domain *domain,
++			     unsigned int iommu_bit)
++{
++	u64 limit;
++
++	if (!iommu_bit || iommu_bit >= 64)
++		return 0;
++	limit = 1ULL << iommu_bit;
++	if (domain->geometry.force_aperture) {
++		/* nvkm_mm below allocates from zero. */
++		if (domain->geometry.aperture_start)
++			return 0;
++		if (domain->geometry.aperture_end < limit)
++			limit = domain->geometry.aperture_end + 1;
++	}
++	return limit;
++}
++
++static int
+ nvkm_device_tegra_probe_iommu(struct nvkm_device_tegra *tdev)
+ {
+ #if IS_ENABLED(CONFIG_IOMMU_API)
+ 	struct device *dev = &tdev->pdev->dev;
+ 	unsigned long pgsize_bitmap;
++	u64 limit;
+ 	int ret;
+ 
+ #if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
+@@ -115,14 +135,16 @@
+ #endif
+ 
+ 	if (!tdev->func->iommu_bit)
+-		return;
++		return 0;
+ 
+ 	mutex_init(&tdev->iommu.mutex);
+ 
+ 	if (device_iommu_mapped(dev)) {
+ 		tdev->iommu.domain = iommu_paging_domain_alloc(dev);
+-		if (IS_ERR(tdev->iommu.domain))
++		if (IS_ERR(tdev->iommu.domain)) {
++			ret = PTR_ERR(tdev->iommu.domain);
+ 			goto error;
++		}
+ 
+ 		/*
+ 		 * A IOMMU is only usable if it supports page sizes smaller
+@@ -136,23 +158,32 @@
+ 			tdev->iommu.pgshift = fls(pgsize_bitmap & ~PAGE_MASK);
+ 			if (tdev->iommu.pgshift == 0) {
+ 				dev_warn(dev, "unsupported IOMMU page size\n");
++				ret = -EINVAL;
+ 				goto free_domain;
+ 			}
+ 			tdev->iommu.pgshift -= 1;
+ 		}
+ 
++		limit = nvkm_device_tegra_iommu_limit(tdev->iommu.domain,
++						    tdev->func->iommu_bit);
++		if (limit < (1ULL << tdev->iommu.pgshift)) {
++			dev_err(dev, "unsupported IOMMU aperture\n");
++			ret = -EINVAL;
++			goto free_domain;
++		}
++
+ 		ret = iommu_attach_device(tdev->iommu.domain, dev);
+ 		if (ret)
+ 			goto free_domain;
+ 
+ 		ret = nvkm_mm_init(&tdev->iommu.mm, 0, 0,
+-				   (1ULL << tdev->func->iommu_bit) >>
+-				   tdev->iommu.pgshift, 1);
++				   limit >> tdev->iommu.pgshift, 1);
+ 		if (ret)
+ 			goto detach_device;
+-	}
+-
+-	return;
++		dev_info(dev, "IOMMU address limit %#llx bytes\n", limit);
++	}
++
++	return 0;
+ 
+ detach_device:
+ 	iommu_detach_device(tdev->iommu.domain, dev);
+@@ -163,7 +194,10 @@
+ error:
+ 	tdev->iommu.domain = NULL;
+ 	tdev->iommu.pgshift = 0;
+-	dev_err(dev, "cannot initialize IOMMU MM\n");
++	dev_err(dev, "cannot initialize IOMMU MM: %d\n", ret);
++	return ret;
++#else
++	return 0;
+ #endif
+ }
+ 
+@@ -314,7 +348,9 @@
+ 	if (ret)
+ 		goto free;
+ 
+-	nvkm_device_tegra_probe_iommu(tdev);
++	ret = nvkm_device_tegra_probe_iommu(tdev);
++	if (ret)
++		goto free;
+ 
+ 	ret = nvkm_device_tegra_power_up(tdev);
+ 	if (ret)

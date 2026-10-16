@@ -27,7 +27,7 @@ All three profiles include the full module set, LLVM and an extra kallsyms link 
 
 The A04 build also runs actual-source USB supplier and OTG VBUS ownership regressions before compilation, and includes their reports in `SHA256SUMS`. The OTG change follows the [upstream Tegra210 regulator ownership finding](https://lists.infradead.org/pipermail/linux-phy/2026-January/028641.html), with successful-operation tracking to handle duplicate HOST requests and regulator failures. It leaves fixed-host init/exit unchanged. The fresh kernel, 1,561 matching ARM64 modules and QEMU boot passed; [validation-usb-vbus-ownership.json](validation-usb-vbus-ownership.json) pins the inputs and results. This candidate has not booted on the Shield. These offline checks do not qualify physical role switching. The later [USB-root follow-up](validation-usb-root-userspace.json) separately resolves enumeration in the bounded recovery-handoff test.
 
-The current eight-patch A04 build also verifies the final compiled VBUS GPIO specifiers and the XUSBC reset array (`MC_XUSB_HOST` before `CAR_XUSB_HOST`), and hashes both contract reports in `SHA256SUMS`. These DT checks reject the prior definitions. The fresh full bundle passes checksum, source, configuration, module-vermagic and QEMU checks; [validation-usb-root-userspace.json](validation-usb-root-userspace.json) pins its artifacts separately from the physical five-patch diagnostic. Recovery must release the old host through its matched normal driver path before this measured handoff; the DT fix alone does not qualify arbitrary warm-state entry or independent boot.
+The A04 build also verifies the final compiled VBUS GPIO specifiers and the XUSBC reset array (`MC_XUSB_HOST` before `CAR_XUSB_HOST`), and hashes both contract reports in `SHA256SUMS`. These DT checks reject the prior definitions. The fresh full bundle passes checksum, source, configuration, module-vermagic and QEMU checks; [validation-usb-root-userspace.json](validation-usb-root-userspace.json) pins its artifacts separately from the physical five-patch diagnostic. Recovery must release the old host through its matched normal driver path before this measured handoff; the DT fix alone does not qualify arbitrary warm-state entry or independent boot.
 
 ## Signed ARM filesystem and packages
 
@@ -134,7 +134,7 @@ The diagnostic tool checks kernel compression identity, stock input hashes/heade
 
 ## A04 inherited SMMU state
 
-The A04 kernel includes a default-off experimental `tegra_smmu.reset_inherited=1` parameter. It is for a reviewed recovery-to-Linux handoff after old DMA masters have been quiesced. It clears and verifies only the enable bit of the 39 SWGROUP registers already described by the T210 SoC table, before the existing cache flush, global enable and IOMMU registration. The register set is documented by [upstream commit 4a91b11c](https://github.com/torvalds/linux/commit/4a91b11c0a100532c466e07a1372d134ab0e753d), citing the Tegra X1 TRM with NVIDIA maintainer acknowledgement. Client registers, PTB slots and the default identity policy stay unchanged.
+The A04 kernel includes a default-off experimental `tegra_smmu.reset_inherited=1` parameter. It is for a reviewed recovery-to-Linux handoff after old DMA masters have been quiesced. It clears and verifies only the enable bit of the 39 SWGROUP registers already described by the T210 SoC table, before the existing cache flush, global enable and IOMMU registration. The register set is documented by [upstream commit 4a91b11c](https://github.com/torvalds/linux/commit/4a91b11c0a100532c466e07a1372d134ab0e753d), citing the Tegra X1 TRM with NVIDIA maintainer acknowledgement. With this reset mode alone, client registers, PTB slots and the default identity policy stay unchanged; the separately gated GPU quarantine below additionally denies PTB zero.
 
 A requested unsupported, repeated or rejected reset panics. A completion gate runs at subsystem phase 4, after the MC driver's architecture registration and OF platform population at phase 3s, and before the selected DMA drivers at phase 6; this also stops boot if MC probing never reaches the helper or fails before successful SMMU registration. The normal kernel behavior is unchanged while the parameter is off. This does not stop old DMA, establish RAM/EMC stability or qualify native userspace.
 
@@ -148,6 +148,28 @@ SHIELD_DIST_DIR="$build_root/kernel" bash ports/shield/tools/smoke-smmu-gate.sh
 ```
 
 The host harness checks all 39 registers and 128 ASID values, crossed-profile rejection, protected-write failure, an absent MC, the completion latch, invalid retention contracts, untouched GPUB state and refusal of all paging allocations in retention mode. The second command intentionally requests the reset on QEMU `virt`, where no Tegra MC can complete it, and requires a kernel panic before userspace. Neither is a physical SMMU or DMA qualification.
+
+### GPU quarantine and offscreen rendering
+
+The maintained A04 lock now contains nine applied patches, including [the GPUB/Nouveau handoff correction](kernel-patches/0010-a04-gpub-quarantine.patch). The separately gated `tegra_smmu.quarantine_gpub_inherited=1` mode requires the inherited reset, the exact A04 first-probe stamp and no retention request. It reserves ASID zero, verifies denied PTB data and clears all four GPU selectors to zero. The enable bit may remain set, as measured on this board. Normal paging can then use ASIDs 1–127; GPU attach/detach enforce selector readbacks. Nouveau clamps instance allocations to the forced domain aperture and propagates IOMMU setup errors before power-up.
+
+`check-smmu-handoff.py` now compiles the actual reset, allocator/free, GPU attach/detach, Nouveau aperture and IOMMU setup functions against explicit MMIO/API models. It retains the old disabled-GPU retention cases and covers banked PTB state, reserved ASID zero, all available paging IDs, rejected writes, cleanup and returned failures. These source tests complement the measured hardware result in [validation-gpu-rendering.json](validation-gpu-rendering.json).
+
+The guarded rendering helpers can be built independently:
+
+```sh
+bash ports/shield/tools/build-gpu-render-helpers.sh "$rootfs" "$build_root/new-gpu-helpers"
+```
+
+This creates two ARM ELF payloads and checksums; it executes or deploys neither. The static launcher only admits the exact reviewed diagnostic environment, an already verified read-only owner root and the fixed Nouveau render device. It mounts isolated RAM device/runtime directories, reopens the namespace root FD, verifies mount types, drops privileges and bounds the child to nine seconds. The dynamic helper uses the ARM root's GBM/EGL/GLES libraries, requires the hardware renderer and checks a GPU clear and shader triangle through an offscreen FBO. The caller's independent thermal/fan/reset supervision remains necessary; these helpers are not an installer or general desktop launcher.
+
+The namespace regression needs root on a Linux build host and uses a new output directory:
+
+```sh
+python3 ports/shield/tools/check-gpu-render-namespace.py --output "$build_root/new-namespace-test"
+```
+
+It creates only private RAM/sysfs/proc mounts, reproduces the stale-FD failure and checks the corrected UID-65534 view. It creates a character-node entry for metadata checks but never opens a physical device or accesses an owner filesystem. The namespace disappears when the test exits. The physical GPU result remains distinct from this host regression.
 
 ### Early persistent diagnostic console
 
