@@ -36,7 +36,12 @@
       {
         "path": "ports/shield/kernel-patches/0005-xusb-child-supplies.patch",
         "sha256": "99c41f5bc990a08b3c28dd92b143e50a0850afe65b4a6fbf507a35dc9ac79e64",
-        "reason": "Resolve real child USB2 VBUS providers before padctl initialization/reset can destroy inherited UPHY configuration on deferred probe; temporary DT ordering experiment restored native SuperSpeed, driver build/native qualification pending."
+        "reason": "Resolve real child USB2 VBUS providers before padctl initialization/reset can destroy inherited UPHY configuration on deferred probe. Fresh build and bounded A04 RAM boot preserved UPHY and captured SuperSpeed gadget logs; external USB storage remains unqualified."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0006-t210-otg-vbus-ownership.patch",
+        "sha256": "2bc0460a4f333fd3e7465e7e1f6bfe5a15c29c90ef57c54c979d0b8bdf44fe31",
+        "reason": "Track the Tegra210 OTG callback's successful VBUS enable reference; prevent unowned disables and repeated-HOST leaks, preserve ownership and return errors on regulator failure. Offline candidate; native role switching and external storage remain unqualified."
       }
     ],
     "variant": "omarchy-a04",
