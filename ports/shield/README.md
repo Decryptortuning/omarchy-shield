@@ -12,7 +12,7 @@ Seven [USB host/storage follow-ups](validation-usb-storage-probes.json) started 
 
 Current source also includes an [offline-qualified OTG VBUS ownership fix](validation-usb-vbus-ownership.json). The actual-source regression, fresh full kernel/module build and QEMU boot passed. This new candidate has not booted on the Shield, leaves the fixed-host drive path unchanged and does not establish an external-storage fix.
 
-Timed manual reconnects have been retired. The [next automatic observation candidate](validation-usb-host-pads-candidate.json) leaves the drive connected and adds its USB2/SS1/LFPS state plus VBUS GPIO/pinmux snapshots. Offline ARM guard, register-offset, observer, syntax and exact-bundle checks passed; it has not run on the Shield. An attended power-cycle fallback remains required for a future RAM boot.
+Timed manual reconnects have been retired. Four [automatic drive-port tests](validation-usb-vbus-gpio.json) returned to authenticated recovery without controller input. They found and corrected missing explicit open-drain flags on both VBUS enables; live DT checks and raw GPIO readings now match working recovery. The maintained A04 DT compiles, and the builder rejects incorrect VBUS GPIO definitions. The external drive still does not enumerate, so USB-root and desktop boot remain blocked.
 
 The [reusable board-source map](BOARD_SOURCES.md) identifies the original Darcy definitions inside LineageOS's T210 Foster hardware project, its compressed-kernel boot recipe and specific Linux radio firmware mappings. [board-sources.lock.json](board-sources.lock.json) pins these research inputs independently of the built kernel/component lock.
 

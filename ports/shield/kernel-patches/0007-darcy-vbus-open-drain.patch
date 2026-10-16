@@ -1,0 +1,34 @@
+From: Omarchy Shield contributors
+Subject: [PATCH] arm64: dts: tegra: encode Darcy VBUS open-drain GPIO flags
+
+Both USB VBUS enable nodes already declare gpio-open-drain, but the
+modern gpiolib legacy-property quirk only matches reg-fixed-voltage,
+not their regulator-fixed compatible. Encode the existing electrical
+intent in the GPIO specifier itself. Keep the original pins, polarity,
+voltages and legacy property unchanged.
+
+A bounded Darcy A04 RAM test with these two flag cells verified the live
+DT and raw Tegra CNF/OE/OUT/IN bits against working recovery. The drive
+enable is released high and the PC enable remains driven low. This does
+not resolve external-drive enumeration or qualify the physical 5V rail.
+
+--- a/arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra210-p2894.dtsi
+@@ -2034,7 +2034,7 @@
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+ 
+-		gpio = <&gpio TEGRA_GPIO(CC, 5) GPIO_ACTIVE_HIGH>;
++		gpio = <&gpio TEGRA_GPIO(CC, 5) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 		enable-active-high;
+ 		gpio-open-drain;
+ 	};
+@@ -2045,7 +2045,7 @@
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+ 
+-		gpio = <&gpio TEGRA_GPIO(CC, 4) GPIO_ACTIVE_HIGH>;
++		gpio = <&gpio TEGRA_GPIO(CC, 4) (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+ 		enable-active-high;
+ 		gpio-open-drain;
+ 	};
