@@ -179,6 +179,10 @@ cp "$kernel_out/arch/arm64/boot/Image" "$dist/Image"
 cp "$kernel_out/arch/arm64/boot/Image.gz" "$dist/Image.gz"
 cp "$kernel_out/arch/arm64/boot/dts/$dtb" "$dist/"
 python3 "$port_dir/tools/apply-device-tree-overlays.py" "$project_root" "$lock_file" "$dist/$(basename -- "$dtb")"
+if [[ $variant == "omarchy-a04" ]]; then
+  python3 "$port_dir/tools/check-vbus-gpio.py" \
+    --dtb "$dist/$(basename -- "$dtb")" --output "$dist/vbus-gpio-contract.json"
+fi
 cp "$kernel_out/.config" "$dist/kernel.config"
 cp "$busybox_out/.config" "$dist/busybox.config"
 cp "$lock_file" "$dist/sources.lock.json"
@@ -214,7 +218,7 @@ fi
     sha256sum applied-patches.json >> SHA256SUMS
   fi
   if [[ $variant == "omarchy-a04" ]]; then
-    sha256sum xusb-supplies-regression.json xusb-otg-vbus-regression.json >> SHA256SUMS
+    sha256sum xusb-supplies-regression.json xusb-otg-vbus-regression.json vbus-gpio-contract.json >> SHA256SUMS
   fi
   if [[ -f device-tree-overlays.json ]]; then
     sha256sum device-tree-overlays.json >> SHA256SUMS

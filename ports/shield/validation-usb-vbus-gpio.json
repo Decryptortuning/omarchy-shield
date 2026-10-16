@@ -1,0 +1,247 @@
+{
+  "status": "Native electrical correction verified; external USB storage still unresolved",
+  "board_variant": "darcy-t210-a04",
+  "runtime_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
+  "runtime_kernel_patch_count": 5,
+  "full_hardware_acceptance": {
+    "passed": 0,
+    "total": 19
+  },
+  "manual_drive_reconnect_required": false,
+  "native_tests": [
+    {
+      "component_version": 22,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "74e88c4380ccacad7ab255b7b1f395aa9ad8ee43806be4d4cb5429f2c4edd9d7",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "376b5cfb8d43ab55ac9c1538be42adac6aee92b65307bba256e64f2ccc023106"
+      },
+      "completed_utc": "2026-10-16T12:29:41.365977+00:00",
+      "console_bytes": 149034,
+      "console_sha256": "4ada8bbc8153b5b7ff61ae7b2edcdb9a498cbead196412d4acc6244ab7144bd5",
+      "Windows_capture_bytes": 92161,
+      "configured_SuperSpeed_PC_serial": true,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.059539,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 42500,
+          "maximum_millidegrees_C": 55500
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 47625,
+          "maximum_millidegrees_C": 53437
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 47125,
+          "maximum_millidegrees_C": 57125
+        }
+      },
+      "fan_samples": 30,
+      "fan_all_pwm255_enable2": true,
+      "fan_maximum_RPM": 5806,
+      "external_USB_enumerated": false,
+      "filesystem_mounted": false,
+      "filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 23,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "4b808845aea041e23222bbaa5084ceac9ff1b181965b52d69e8855def0200d23",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "376b5cfb8d43ab55ac9c1538be42adac6aee92b65307bba256e64f2ccc023106"
+      },
+      "completed_utc": "2026-10-16T12:36:47.352286+00:00",
+      "console_bytes": 149725,
+      "console_sha256": "7fb72e42064c30a951f4c7a74252d76a691fc70bdf57812728723b37bdb15f4f",
+      "Windows_capture_bytes": 88544,
+      "configured_SuperSpeed_PC_serial": true,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.064867,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 42500,
+          "maximum_millidegrees_C": 54500
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 47000,
+          "maximum_millidegrees_C": 52437
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 46625,
+          "maximum_millidegrees_C": 56000
+        }
+      },
+      "fan_samples": 30,
+      "fan_all_pwm255_enable2": true,
+      "fan_maximum_RPM": 5835,
+      "external_USB_enumerated": false,
+      "filesystem_mounted": false,
+      "filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 24,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "4b808845aea041e23222bbaa5084ceac9ff1b181965b52d69e8855def0200d23",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "e954fcbc1dfc5797fcdc9275a160aab3ba572e17508703d52c6012a05706cf9c"
+      },
+      "completed_utc": "2026-10-16T12:40:09.994633+00:00",
+      "console_bytes": 149725,
+      "console_sha256": "514cdb4712894e67eab8f654feebd89c87b764c47cb8662ff2716ceedd35a21c",
+      "Windows_capture_bytes": 88544,
+      "configured_SuperSpeed_PC_serial": true,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.064871,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 42000,
+          "maximum_millidegrees_C": 52500
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45875,
+          "maximum_millidegrees_C": 50875
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45875,
+          "maximum_millidegrees_C": 54062
+        }
+      },
+      "fan_samples": 30,
+      "fan_all_pwm255_enable2": true,
+      "fan_maximum_RPM": 5830,
+      "external_USB_enumerated": false,
+      "filesystem_mounted": false,
+      "filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 26,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "aee5f44042e95cb8f4c1ab5dc21b1590503879b1aa91e2a3f5d586f094fd8a68",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "e954fcbc1dfc5797fcdc9275a160aab3ba572e17508703d52c6012a05706cf9c"
+      },
+      "completed_utc": "2026-10-16T12:44:47.917005+00:00",
+      "console_bytes": 151377,
+      "console_sha256": "378015b39d526a6bc31637910e912d9cc2ebaba346de85c3b1ca625919b7f5ac",
+      "Windows_capture_bytes": 93970,
+      "configured_SuperSpeed_PC_serial": true,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.064842,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 41500,
+          "maximum_millidegrees_C": 52500
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 46000,
+          "maximum_millidegrees_C": 51062
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45687,
+          "maximum_millidegrees_C": 54937
+        }
+      },
+      "fan_samples": 30,
+      "fan_all_pwm255_enable2": true,
+      "fan_maximum_RPM": 5835,
+      "external_USB_enumerated": false,
+      "filesystem_mounted": false,
+      "filesystem_or_partition_writes": false
+    }
+  ],
+  "observations": {
+    "22": "Drive SS1 electrical tuning matches driver constants; PCIe5 LFPS override fields clear. Generic GPIO filter missed modern regulator consumer labels.",
+    "23": "Corrected exact-controller/offset selector captures both GPIOs. Source tracing identifies legacy gpio-open-drain property ignored for regulator-fixed compatible with flags0.",
+    "24": "Only two VBUS GPIO flag cells changed0to6, preserving existing active-high open-drain intent. Generic GPIO direction still reports logical output; it cannot verify physical open-drain release.",
+    "26": "Same electrical settings as24, with raw driver GPIO and live DT observations. Both live12byte specifiers exactly match original controller/offset and flags6. Three raw snapshots match recovery VBUS pin mode/level."
+  },
+  "raw_Tegra_GPIO": {
+    "bank": 7,
+    "port": 0,
+    "modern_three_samples": {
+      "CNF": "0xb2",
+      "OE": "0xa0",
+      "OUT": "0x80",
+      "IN": "0x10"
+    },
+    "working_recovery": {
+      "CNF": "0xb2",
+      "OE": "0xa0",
+      "OUT": "0x80",
+      "IN": "0x10"
+    },
+    "drive_enable_GPIO228_CC4": {
+      "GPIO_mode": true,
+      "physical_output_enable": false,
+      "input_high": true
+    },
+    "PC_enable_GPIO229_CC5": {
+      "GPIO_mode": true,
+      "physical_output_enable": true,
+      "output_high": false
+    },
+    "physical_5V_rail_measured": false
+  },
+  "source_contract": {
+    "legacy_property_condition_compatible": "reg-fixed-voltage",
+    "actual_board_regulator_compatible": "regulator-fixed",
+    "explicit_DT_flags": 6,
+    "explicit_flag_meaning": "GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN",
+    "generic_direction_limitation": "gpiod_get_direction returns logical output for emulated open-drain before consulting the hardware direction callback",
+    "GPIO_decoder": "Actual Tegra debugfs producer serializes CNF/OE/OUT/IN; offsets228/229 are bank7/port0 bits4/5"
+  },
+  "maintained_fix": {
+    "patch": "kernel-patches/0007-darcy-vbus-open-drain.patch",
+    "sha256": "679476f43380565136f126b3ea8d3166ae9a1fda1ef0f4145e4d7676e80f2372",
+    "only_default_A04_lock_updated": true,
+    "compiled_A04_DT_sha256": "69421f5150c14e5203a82710395256996db0fa94e32105a3129366246b2860d0",
+    "compiled_A04_and_CEC_overlay_checked": true,
+    "only_two_compiled_GPIO_flag_cells_differ": true,
+    "previous_actual_compiled_DT_negative_control": "rejected",
+    "build_output_contract_checker": "tools/check-vbus-gpio.py",
+    "new_full_seven_patch_bundle_built": false,
+    "new_kernel_Image_or_modules_built": false
+  },
+  "offline_checks": {
+    "actual_source_quirk_converter_and_flag_controls": "passed",
+    "current_serializer_ARM_observer_cases": 7,
+    "raw_GPIO_live_DT_ARM_observer_cases": 8,
+    "source_aware_shellcheck_and_ARM_syntax": "passed",
+    "all_other_archive_entries_or_DT_properties_preserved": "passed",
+    "input_provenance": "passed",
+    "Python_unit_tests": 33,
+    "builder_shellcheck": "passed"
+  },
+  "offline_failure_retained": {
+    "candidate": 25,
+    "reason": "Tiny diagnostic BusyBox stat lacks format option; replaced by explicitly tested wc applet in26",
+    "native_staged_or_executed": false
+  },
+  "limits": [
+    "No automatic observation run detected the external drive or invoked its filesystem admission helper.",
+    "Digital GPIO mode/level does not measure external VBUS voltage or prove complete board power/signal integrity.",
+    "The separate six-patch OTG ownership kernel remains unbooted. These native tests retained the earlier five-patch Image/modules.",
+    "The maintained seven-patch DT compiles and its exact delta is verified; no complete seven-patch kernel bundle or independent desktop boot is claimed.",
+    "Native graphics, USB-root boot, role switching and full hardware acceptance remain open."
+  ],
+  "primary_source_references": [
+    "https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux/+/80119a77e5b03747b8886505df1b3cb26f49168d/drivers/gpio/gpiolib-of.c"
+  ]
+}

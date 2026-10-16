@@ -42,6 +42,11 @@
         "path": "ports/shield/kernel-patches/0006-t210-otg-vbus-ownership.patch",
         "sha256": "2bc0460a4f333fd3e7465e7e1f6bfe5a15c29c90ef57c54c979d0b8bdf44fe31",
         "reason": "Track the Tegra210 OTG callback's successful VBUS enable reference; prevent unowned disables and repeated-HOST leaks, preserve ownership and return errors on regulator failure. Offline candidate; native role switching and external storage remain unqualified."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0007-darcy-vbus-open-drain.patch",
+        "sha256": "679476f43380565136f126b3ea8d3166ae9a1fda1ef0f4145e4d7676e80f2372",
+        "reason": "Encode the existing active-high open-drain intent explicitly for both Darcy VBUS enables. A04 RAM test verified live flags and raw GPIO mode/level against recovery; USB storage enumeration and physical rail voltage remain unqualified."
       }
     ],
     "variant": "omarchy-a04",

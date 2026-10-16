@@ -1,5 +1,5 @@
 {
-  "status": "Offline-qualified automatic observation candidate; no native staging or boot",
+  "status": "Executed once; drive PHY observations captured, GPIO label filter corrected in subsequent tests",
   "board_variant": "darcy-t210-a04",
   "component_version": 22,
   "purpose": "Automatic read-only drive-port USB2/SS1/PCIe5-LFPS and VBUS pin observations; no timed owner interaction",
@@ -93,16 +93,58 @@
     "timing_clarification_pending": false,
     "drive_stays_connected_for_new_observer": true
   },
-  "native_execution_performed": false,
-  "device_actions_performed": [],
+  "native_execution_performed": true,
+  "device_actions_performed": [
+    "One bounded native22 RAM boot; automatic authenticated recovery return"
+  ],
   "full_hardware_acceptance": {
     "passed": 0,
     "total": 19
   },
   "limits": [
-    "This candidate has not run on the Shield and does not establish a USB host fix.",
-    "The older native-proven kernel and matching modules are retained to isolate the added observations; the separate newer OTG accounting kernel remains unbooted.",
-    "Ordinary attended fallback is still required for a future RAM boot; there is no manual unplug cue.",
-    "Filesystem mount, USB desktop boot, GPU and sustained hardware qualification remain open."
-  ]
+    "Native22 did not detect the external drive or mount a filesystem.",
+    "The old GPIO label filter missed modern consumer labels; corrected follow-up measurements are in validation-usb-vbus-gpio.json.",
+    "Five-patch native-proven kernel retained; independent boot, GPU and desktop acceptance remain open."
+  ],
+  "native_result": {
+    "component_version": 22,
+    "artifact_sha256": {
+      "initramfs.cpio.gz": "74e88c4380ccacad7ab255b7b1f395aa9ad8ee43806be4d4cb5429f2c4edd9d7",
+      "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+      "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+      "probe.dtb": "376b5cfb8d43ab55ac9c1538be42adac6aee92b65307bba256e64f2ccc023106"
+    },
+    "completed_utc": "2026-10-16T12:29:41.365977+00:00",
+    "console_bytes": 149034,
+    "console_sha256": "4ada8bbc8153b5b7ff61ae7b2edcdb9a498cbead196412d4acc6244ab7144bd5",
+    "Windows_capture_bytes": 92161,
+    "configured_SuperSpeed_PC_serial": true,
+    "authenticated_root_recovery_returned": true,
+    "recovery_reset_kernel_uptime_seconds": 29.059539,
+    "thermal": {
+      "CPU": {
+        "samples": 30,
+        "minimum_millidegrees_C": 42500,
+        "maximum_millidegrees_C": 55500
+      },
+      "TMP451-local-board": {
+        "samples": 30,
+        "minimum_millidegrees_C": 47625,
+        "maximum_millidegrees_C": 53437
+      },
+      "TMP451-remote-diode": {
+        "samples": 30,
+        "minimum_millidegrees_C": 47125,
+        "maximum_millidegrees_C": 57125
+      }
+    },
+    "fan_samples": 30,
+    "fan_all_pwm255_enable2": true,
+    "fan_maximum_RPM": 5806,
+    "external_USB_enumerated": false,
+    "filesystem_mounted": false,
+    "filesystem_or_partition_writes": false
+  },
+  "followup_receipt": "validation-usb-vbus-gpio.json",
+  "GPIO_observer_native_limit": "Offline legacy-label fixture passed, but native modern consumer labels did not match. Exact-controller/offset reader in23 and raw hardware reader in26 supersede it."
 }
