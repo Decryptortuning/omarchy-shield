@@ -1,0 +1,28 @@
+From: Omarchy Shield contributors
+Subject: [PATCH] arm64: dts: tegra: reset Darcy A04 XUSB memory client
+
+The matching recovery driver flushes the XUSB host memory client when
+powering down XUSBC, and normally releases it during power-up. Describe
+that reset in the A04 XUSBC power domain so the existing PMC reset-array
+sequence also blocks/drains and releases the MC client around startup.
+Retain the original CAR reset, using the MC-then-CAR order already used
+by the VI domain. No new register-writing implementation is needed.
+
+A bounded A04 RAM test after normal recovery host-driver removal failed
+the firmware DMA load with the original reset list. Adding only this
+MC reset restored firmware loading, both root hubs, SuperSpeed SanDisk
+enumeration and the exact owned-partition read-only admission check.
+Full storage/desktop acceptance is a separate qualification.
+
+--- a/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a04.dts
++++ b/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a04.dts
+@@ -76,3 +76,9 @@
+ 		};
+ 	};
+ };
++
++/* Release an inherited host MC flush when powering XUSBC back up. */
++&pd_xusbhost {
++	resets = <&mc TEGRA210_MC_RESET_XUSB_HOST>,
++		 <&tegra_car TEGRA210_CLK_XUSB_HOST>;
++};

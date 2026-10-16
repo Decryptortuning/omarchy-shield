@@ -182,6 +182,8 @@ python3 "$port_dir/tools/apply-device-tree-overlays.py" "$project_root" "$lock_f
 if [[ $variant == "omarchy-a04" ]]; then
   python3 "$port_dir/tools/check-vbus-gpio.py" \
     --dtb "$dist/$(basename -- "$dtb")" --output "$dist/vbus-gpio-contract.json"
+  python3 "$port_dir/tools/check-xusb-host-reset.py" \
+    --dtb "$dist/$(basename -- "$dtb")" --output "$dist/xusb-host-reset-contract.json"
 fi
 cp "$kernel_out/.config" "$dist/kernel.config"
 cp "$busybox_out/.config" "$dist/busybox.config"
@@ -218,7 +220,8 @@ fi
     sha256sum applied-patches.json >> SHA256SUMS
   fi
   if [[ $variant == "omarchy-a04" ]]; then
-    sha256sum xusb-supplies-regression.json xusb-otg-vbus-regression.json vbus-gpio-contract.json >> SHA256SUMS
+    sha256sum xusb-supplies-regression.json xusb-otg-vbus-regression.json \
+      vbus-gpio-contract.json xusb-host-reset-contract.json >> SHA256SUMS
   fi
   if [[ -f device-tree-overlays.json ]]; then
     sha256sum device-tree-overlays.json >> SHA256SUMS

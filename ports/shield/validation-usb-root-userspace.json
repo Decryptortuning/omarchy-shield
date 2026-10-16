@@ -1,0 +1,324 @@
+{
+  "status": "Native USB3 storage, read-only Btrfs root and unprivileged Arch/Hyprland version queries passed; desktop and full hardware acceptance remain open",
+  "board_variant": "darcy-t210-a04",
+  "native_runtime_kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
+  "native_runtime_kernel_patch_count": 5,
+  "full_hardware_acceptance": {
+    "passed": 0,
+    "total": 19
+  },
+  "manual_drive_reconnect_required": false,
+  "supersedes_external_storage_blocker_in": "validation-usb-vbus-gpio.json",
+  "native_tests": [
+    {
+      "component_version": 27,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "aee5f44042e95cb8f4c1ab5dc21b1590503879b1aa91e2a3f5d586f094fd8a68",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "e954fcbc1dfc5797fcdc9275a160aab3ba572e17508703d52c6012a05706cf9c"
+      },
+      "completed_utc": "2026-10-16T12:59:25.717147+00:00",
+      "console_bytes": 123184,
+      "console_sha256": "3328ae6b54d1353d6f088295b73dbe5825e448d26c17344b3e8c738ee263a585",
+      "Windows_capture_bytes": 69513,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.068234,
+      "legacy_host_removed": true,
+      "legacy_VBUSoff_settled_2s": true,
+      "modern_host_failure": "DMA controller not ready0; firmwareload-110 before root hubs",
+      "external_USB_enumerated": false,
+      "filesystem_mounted": false,
+      "filesystem_or_partition_writes": false,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 42500,
+          "maximum_millidegrees_C": 55000
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 47437,
+          "maximum_millidegrees_C": 53437
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 46875,
+          "maximum_millidegrees_C": 57500
+        }
+      },
+      "fan_samples": 30,
+      "fan_maximum_RPM": 5835
+    },
+    {
+      "component_version": 28,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "aee5f44042e95cb8f4c1ab5dc21b1590503879b1aa91e2a3f5d586f094fd8a68",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "d22d2a8789c43cd0ecb80f81bdc4591d0f8baecb717cff393ea4fc004fae813a"
+      },
+      "completed_utc": "2026-10-16T13:03:44.292260+00:00",
+      "console_bytes": 153196,
+      "console_sha256": "0bc6b23968b59af6512ec915075041549d6a8d804a7864707f2ca7a906a6068b",
+      "Windows_capture_bytes": 94794,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.064882,
+      "legacy_host_removed": true,
+      "legacy_VBUSoff_settled_2s": true,
+      "modern_host_failure": null,
+      "external_USB_enumerated": true,
+      "filesystem_mounted": false,
+      "filesystem_or_partition_writes": false,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 41000,
+          "maximum_millidegrees_C": 53000
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45937,
+          "maximum_millidegrees_C": 51250
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45812,
+          "maximum_millidegrees_C": 54562
+        }
+      },
+      "fan_samples": 30,
+      "fan_maximum_RPM": 5806,
+      "mount_failure": "btrfs Unknown parameter 'nologreplay'; modern parser accepts rescue=nologreplay",
+      "exact_owner_identity_helper_passed_blockRO_enforced": true
+    },
+    {
+      "component_version": 29,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "49faa234a6c702c6c2069adc7e04538955095f462ba955f94697395e23f78872",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "d22d2a8789c43cd0ecb80f81bdc4591d0f8baecb717cff393ea4fc004fae813a"
+      },
+      "completed_utc": "2026-10-16T13:06:32.382880+00:00",
+      "console_bytes": 155243,
+      "console_sha256": "9696921043bd0ca9f76b887df76d48c80acaeec3f9811ea03197e8dcdc708c39",
+      "Windows_capture_bytes": 91756,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.064821,
+      "legacy_host_removed": true,
+      "legacy_VBUSoff_settled_2s": true,
+      "modern_host_failure": null,
+      "external_USB_enumerated": true,
+      "filesystem_mounted": true,
+      "filesystem_or_partition_writes": false,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 40500,
+          "maximum_millidegrees_C": 51000
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 44750,
+          "maximum_millidegrees_C": 49437
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 44812,
+          "maximum_millidegrees_C": 52687
+        }
+      },
+      "fan_samples": 30,
+      "fan_maximum_RPM": 5806,
+      "mount_failure": null,
+      "exact_owner_identity_helper_passed_blockRO_enforced": true,
+      "RO_and_rescue_nologreplay_readback_verified": true,
+      "filesystem_unmounted": true
+    },
+    {
+      "component_version": 30,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "2396fdca79171906b41f2dd7fe3c4479a7d5936351ac10dddee4fc7bba9db2fb",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "d22d2a8789c43cd0ecb80f81bdc4591d0f8baecb717cff393ea4fc004fae813a"
+      },
+      "completed_utc": "2026-10-16T13:13:32.522356+00:00",
+      "console_bytes": 156688,
+      "console_sha256": "2ba4c1067e23b2439a43efb19f4a0af8569794a787930182158171b940b3209c",
+      "Windows_capture_bytes": 97041,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.06877,
+      "legacy_host_removed": true,
+      "legacy_VBUSoff_settled_2s": true,
+      "modern_host_failure": null,
+      "external_USB_enumerated": true,
+      "filesystem_mounted": true,
+      "filesystem_or_partition_writes": false,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 41500,
+          "maximum_millidegrees_C": 52500
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45812,
+          "maximum_millidegrees_C": 51062
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45437,
+          "maximum_millidegrees_C": 54812
+        }
+      },
+      "fan_samples": 30,
+      "fan_maximum_RPM": 5806,
+      "mount_failure": null,
+      "exact_owner_identity_helper_passed_blockRO_enforced": true,
+      "RO_and_rescue_nologreplay_readback_verified": true,
+      "filesystem_unmounted": true,
+      "native_userspace": {
+        "uname_status": 0,
+        "package_query_status": 0,
+        "packages": {
+          "linux-shield": "7.1.0-6",
+          "omarchy": "4.0.0.alpha-99.6",
+          "omarchy-settings": "4.0.0.alpha-99.6",
+          "omarchy-shield": "0.1.0-6"
+        },
+        "Hyprland_version_status": 134,
+        "Hyprland_failure": "Minimal chroot omitted XDG_RUNTIME_DIR; actual v0.56.2 main.cpp checks before argument parsing",
+        "fixed_unprivileged_uid": 65534,
+        "compositor_or_services_started": false,
+        "writable_mounts": false
+      }
+    },
+    {
+      "component_version": 31,
+      "artifact_sha256": {
+        "initramfs.cpio.gz": "3facafe2c13a4a2bdf9839bae8fa36efb68b260c1772a1546337bd201a2d994e",
+        "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+        "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+        "probe.dtb": "d22d2a8789c43cd0ecb80f81bdc4591d0f8baecb717cff393ea4fc004fae813a"
+      },
+      "completed_utc": "2026-10-16T13:19:33.391393+00:00",
+      "console_bytes": 157386,
+      "console_sha256": "dfd7e2256a655d557494383cb09742c4dac63c0ac58c48d90ce4c0850d13b4a7",
+      "Windows_capture_bytes": 97264,
+      "authenticated_root_recovery_returned": true,
+      "recovery_reset_kernel_uptime_seconds": 29.072868,
+      "legacy_host_removed": true,
+      "legacy_VBUSoff_settled_2s": true,
+      "modern_host_failure": null,
+      "external_USB_enumerated": true,
+      "filesystem_mounted": true,
+      "filesystem_or_partition_writes": false,
+      "thermal": {
+        "CPU": {
+          "samples": 30,
+          "minimum_millidegrees_C": 41500,
+          "maximum_millidegrees_C": 53000
+        },
+        "TMP451-local-board": {
+          "samples": 30,
+          "minimum_millidegrees_C": 46000,
+          "maximum_millidegrees_C": 51125
+        },
+        "TMP451-remote-diode": {
+          "samples": 30,
+          "minimum_millidegrees_C": 45625,
+          "maximum_millidegrees_C": 54937
+        }
+      },
+      "fan_samples": 30,
+      "fan_maximum_RPM": 5806,
+      "mount_failure": null,
+      "exact_owner_identity_helper_passed_blockRO_enforced": true,
+      "RO_and_rescue_nologreplay_readback_verified": true,
+      "filesystem_unmounted": true,
+      "native_userspace": {
+        "uname_status": 0,
+        "package_query_status": 0,
+        "packages": {
+          "linux-shield": "7.1.0-6",
+          "omarchy": "4.0.0.alpha-99.6",
+          "omarchy-settings": "4.0.0.alpha-99.6",
+          "omarchy-shield": "0.1.0-6"
+        },
+        "Hyprland_version_status": 0,
+        "Hyprland_failure": null,
+        "fixed_unprivileged_uid": 65534,
+        "compositor_or_services_started": false,
+        "writable_mounts": false,
+        "Hyprland_reported_version": "0.56.2",
+        "Hyprland_build_commit": "efb50993780079460b0cbed1363e2166a2de1d9f",
+        "XDG_RUNTIME_DIR": "/run (existing read-only directory; fixed version-only early-return path)"
+      }
+    }
+  ],
+  "maintained_eight_patch_build": {
+    "source_base_commit": "4e15cc9f7db815f704b7f2da5da1ea7363a35e47",
+    "new_patch": "kernel-patches/0008-a04-xusb-host-mc-reset.patch",
+    "new_patch_sha256": "8b195d2f63595b664895f493b63aa4e4ff4d0689c5c2fc2868203a26295ddff1",
+    "artifact_sha256": {
+      "hardware.json": "2dbd4f401fdd898894783f5104309f88f376aacd07b7ecb5ab0c8b5ea8bb84b6",
+      "source-verification.json": "b63dc9928194a1ed444471c1082761e54e5ee41857ede10212d984df7146e5fe",
+      "applied-patches.json": "9787a192c9f796893f8160e2828e6795bea23d9c49a329fa13ec8f442d5c360a",
+      "ramdisk-profile.json": "c91561c586ab20f6daef268d9388f7a843be7197c343f23dd1f8b37bb7a90ff9",
+      "tegra210-p2894-0050-a04.dtb": "db2ec903daf01b7aab718af7f6ef819f9708eace0c5581900656f09a23b5ad83",
+      "busybox.config": "314b7b7664b38d2d4038402226d087556455ff90c4e3e81693ea6065608e0c15",
+      "xusb-supplies-regression.json": "80151c7bc47d0a88395c261c38bb12b35404818d928e602b65dfb67e59e41ea9",
+      "kernel-release.txt": "b9cf517bf62a6d338d261cac6eac2bccd5f3f04415f85748f623af937ffee44c",
+      "device-tree-overlays.json": "b91a0b46d8e820473e8a4a089bae31e8e06c31d32537c7590a1638dbd7b2f546",
+      "initramfs.cpio.gz": "070ae94f1927c6eda432fa0c8041e1d69f02eb5e33ebb19e45af2424d7dec3bf",
+      "Image": "0fb0db96c7fce183b37657f5cda2a6c292d72cb6d12470ddb1e208508d95016b",
+      "xusb-host-reset-contract.json": "d6fc76715d54c8ca8ba4d79b657dff3fbd2605b6dd5f66a9577d7b0b7d083a5b",
+      "SHA256SUMS": "80257a01bfe293b849a8dadd193ecf51605e4a88368da46930958ff33d56b52f",
+      "compiler.txt": "3635b8631d4ebcd8ed7586f4e01e7a6b44407de9d38db6e01daca9c242ed7a53",
+      "Image.gz": "06cb6a3bd0d284b91d54e7da98b22164cfbc8450628b3665450528bf95c6aabb",
+      "sources.lock.json": "65c3391aa590bd04711b1a8f5283f71302c225d3c10135fcae834faf73f745c3",
+      "kernel-modules.tar.zst": "c8bdef4ff25a1ad57fb7c30df6e33f1ce68a1368a024c8f8367f436c4c780070",
+      "kernel.config": "e372186f9afb3b03ef12e53e8d8b21b1958f0bbe03794118f94400b1b9e2ee9a",
+      "xusb-otg-vbus-regression.json": "479e15f9a6c11499f7ffb15fb8a1ddbcc0a901e7379c09428269e219eb0bbc15",
+      "vbus-gpio-contract.json": "da4e96c490587931aaa1038064bfec98ed108b41670cda4913ffbd6d8de670ff"
+    },
+    "module_count": 1561,
+    "all_module_vermagic_matches_release_and_aarch64": true,
+    "Image_config_and_all_module_bytes_identical_six_patch_build": true,
+    "only_DT_delta_from_seven_patch": [
+      [
+        "/pmc@7000e400/powergates/xusbc",
+        "resets"
+      ]
+    ],
+    "compiled_reset_contract_and_previous_DT_negative_control": "passed",
+    "normal_QEMU_boot_passed": true,
+    "QEMU_missing_MC_stopped_before_userspace": true,
+    "native_eight_patch_bundle_booted": false
+  },
+  "handoff_contract": {
+    "matching_recovery_kernel_release": "4.9.141-g9d1bd583388e",
+    "published_manifest_kernel_revision": "9d1bd583388e37cf3afb552f435186867526c493",
+    "match_scope": "Published build manifest revision agrees with running recovery uname; no independent complete binary reconstruction claimed",
+    "legacy_normal_driver_remove": "Exact tegra-xusb 70090000.xusb, only after no persistent block mounts and display/host1x quiescence; verify host children removed, VBUS2 disabled/users0, PC gadget retained, settle2s; effect never replayed",
+    "MC_reset": "XUSBC reset array now MC_XUSB_HOST13 then original CAR_XUSB_HOST89, via existing PMC/MC/reset framework",
+    "mount_option": "ro,rescue=nologreplay,subvol=@; exact readback plus block RO enforced before file access",
+    "Btrfs_state_E": "Expected -EROFS fs_error when full-RO rescue disables log replay; this marker alone is not evidence of filesystem corruption",
+    "canonical_Omarchy_path": "/usr/bin/omarchy; share/bin/omarchy is an absolute symlink, so a mounted-prefix -f check incorrectly escaped the root"
+  },
+  "limits": [
+    "Native tests retained the earlier five-patch Image and matching diagnostic modules; the fresh maintained eight-patch bundle has only offline/QEMU qualification.",
+    "Version queries as UID65534 with no writable mounts or device nodes are not a systemd boot, rendered compositor, desktop login, GPU test or owner provision.",
+    "USB host/SSD acceptance also needs sustained mixed traffic, both roles/ports, integrity, suspend/resume and an independent boot path.",
+    "GPUB remains quiescent/disabled with all paging ASIDs denied; enabling graphics requires a different reviewed and measured handoff.",
+    "No raw device IDs, owner filesystem IDs, keys, firmware binaries or private logs are published."
+  ],
+  "primary_source_references": [
+    "https://ftp.fau.de/lineageos/full/foster/20261005/build-manifest.xml",
+    "https://github.com/LineageOS/android_kernel_nvidia_kernel/blob/9d1bd583388e37cf3afb552f435186867526c493/drivers/platform/tegra/powergate/powergate-t21x.c",
+    "https://github.com/torvalds/linux/blob/80119a77e5b03747b8886505df1b3cb26f49168d/drivers/memory/tegra/mc.c",
+    "https://github.com/hyprwm/Hyprland/blob/efb50993780079460b0cbed1363e2166a2de1d9f/src/main.cpp"
+  ]
+}
