@@ -15,14 +15,23 @@ typedef uint32_t u32;
 #define __init
 #define SMMU_ASID_ENABLE (1U << 31)
 #define SMMU_PTB_ASID 0x01c
+#define SMMU_PTB_ASID_VALUE(x) ((x) & 0x7f)
+#define SMMU_PTB_DATA 0x020
+#define SMMU_ASID_MASK 0x7f
+#define SMMU_ASID_VALUE(x) ((x) & SMMU_ASID_MASK)
+#define BIT(x) (1U << (x))
+#define pr_warn(...) test_info(__VA_ARGS__)
 #define dev_info(device, ...) test_info(__VA_ARGS__)
 struct device_node { int kind; };
 struct device { struct device_node *of_node; };
-struct tegra_smmu_swgroup { unsigned int reg; };
+struct tegra_smmu_swgroup { unsigned int reg, swgroup; };
+struct tegra_mc_client { unsigned int swgroup; struct { struct { unsigned int reg, bit; } smmu; } regs; };
 struct tegra_smmu_soc {
   const struct tegra_smmu_swgroup *swgroups;
   unsigned int num_swgroups;
   unsigned int num_asids;
+  const struct tegra_mc_client *clients;
+  unsigned int num_clients;
 };
 struct tegra_smmu { struct device *dev; const struct tegra_smmu_soc *soc; unsigned long *asids; };
 static const struct tegra_smmu_swgroup groups[] = {
@@ -36,6 +45,10 @@ static const char *gpu_status, *probe_stamp;
 static unsigned long asids[128 / (8 * sizeof(unsigned long))];
 static struct device_node gpu_node = {1}, chosen_node = {2};
 static unsigned int gpu_writes;
+static bool quarantine_gpub_inherited, gpub_quarantine_active;
+static u32 ptb[128], before_ptb[128];
+static unsigned int selected_ptb;
+static int write_rejected = -1;
 static int stuck_register = -1;
 static jmp_buf panic_jump;
 static bool expect_panic;
@@ -51,6 +64,10 @@ static void test_info(const char *format, ...)
 static void set_bit(unsigned long id, unsigned long *map)
 {
   map[id / (8 * sizeof(*map))] |= 1UL << (id % (8 * sizeof(*map)));
+}
+static void clear_bit(unsigned long id, unsigned long *map)
+{
+  map[id / (8 * sizeof(*map))] &= ~(1UL << (id % (8 * sizeof(*map))));
 }
 static unsigned long find_first_zero_bit(unsigned long *map, unsigned int size)
 {
@@ -107,6 +124,7 @@ static u32 smmu_readl(struct tegra_smmu *smmu, unsigned int reg)
   assert(reg < sizeof(registers) && reg % 4 == 0);
   reads++;
   if (reg == SMMU_PTB_ASID) drains++;
+  if (reg == SMMU_PTB_DATA) return ptb[selected_ptb];
   return registers[reg / 4];
 }
 static void smmu_writel(struct tegra_smmu *smmu, u32 value, unsigned int reg)
@@ -114,7 +132,10 @@ static void smmu_writel(struct tegra_smmu *smmu, u32 value, unsigned int reg)
   bool documented = false;
   for (unsigned int i = 0; i < sizeof(groups) / sizeof(groups[0]); i++)
     if (groups[i].reg == reg) documented = true;
-  assert(documented && reg < sizeof(registers) && reg % 4 == 0);
+  assert((documented || reg == SMMU_PTB_ASID || reg == SMMU_PTB_DATA) && reg < sizeof(registers) && reg % 4 == 0);
+  if ((int)reg == write_rejected) return;
+  if (reg == SMMU_PTB_ASID) selected_ptb = SMMU_PTB_ASID_VALUE(value);
+  if (reg == SMMU_PTB_DATA) ptb[selected_ptb] = value;
   writes++;
   if (reg == 0xaac) gpu_writes++;
   registers[reg / 4] = value;
@@ -138,6 +159,11 @@ static void fixture(void)
   gpu_status = "disabled";
   probe_stamp = "a04-first-ram-probe-v1";
   gpu_writes = 0;
+  quarantine_gpub_inherited = gpub_quarantine_active = false;
+  write_rejected = -1;
+  selected_ptb = 19;
+  for (unsigned int i = 0; i < 128; i++) ptb[i] = 0xe0080000U + i;
+  memcpy(before_ptb, ptb, sizeof(ptb));
   memset(asids, 0, sizeof(asids));
 }
 
@@ -273,6 +299,94 @@ int main(void)
     unsigned int id = 999;
     assert(tegra_smmu_alloc_asid(&smmu, &id) == 0 && id == expected);
   }
-  puts("PASS: actual reset/gate/allocator, 39 groups and 128 ASIDs; strict reset, stamped disabled-GPU retention, no GPUB writes or paging allocation");
+
+  /* Quarantine is explicit, incompatible with retention, and cannot bypass
+   * either early helper admission or the pre-device completion gate. */
+  fixture(); quarantine_gpub_inherited = true;
+  MUST_PANIC(tegra_smmu_reset_handoff(&smmu));
+  MUST_PANIC(tegra_smmu_check_handoff_reset());
+  assert(writes == 0);
+  fixture(); reset_inherited = preserve_disabled_gpu = quarantine_gpub_inherited = true;
+  MUST_PANIC(tegra_smmu_reset_handoff(&smmu));
+  MUST_PANIC(tegra_smmu_check_handoff_reset());
+  assert(writes == 0);
+  for (unsigned int fault = 0; fault < 10; fault++) {
+    fixture(); reset_inherited = quarantine_gpub_inherited = true;
+    if (fault == 0) gpu_present = false;
+    if (fault == 1) chosen_present = false;
+    if (fault == 2) gpu_matches = false;
+    if (fault == 3) gpu_status = NULL;
+    if (fault == 4) gpu_status = "okay-but-wrong";
+    if (fault == 5) probe_stamp = NULL;
+    if (fault == 6) probe_stamp = "different-probe";
+    if (fault == 7) soc.num_asids = 127;
+    if (fault == 8) soc.num_swgroups--;
+    if (fault == 9) machine_matches = false;
+    MUST_PANIC(tegra_smmu_reset_handoff(&smmu));
+    assert(reads == 0 && writes == 0);
+    soc.num_asids = 128; soc.num_swgroups = sizeof(groups) / sizeof(groups[0]);
+  }
+  /* Selecting PTB zero, denying it, and clearing selectors are all mandatory.
+   * A failed MMIO write cannot leave an apparently admitted paging pool. */
+  fixture(); reset_inherited = quarantine_gpub_inherited = true; write_rejected = SMMU_PTB_ASID;
+  MUST_PANIC(tegra_smmu_reset_handoff(&smmu));
+  assert(!gpub_quarantine_active && gpu_writes == 0 && memcmp(ptb,before_ptb,sizeof(ptb)) == 0);
+  fixture(); reset_inherited = quarantine_gpub_inherited = true; write_rejected = SMMU_PTB_DATA;
+  MUST_PANIC(tegra_smmu_reset_handoff(&smmu));
+  assert(!gpub_quarantine_active && gpu_writes == 0);
+  fixture(); reset_inherited = quarantine_gpub_inherited = true; write_rejected = 0xaac;
+  registers[0xaac/4] = 0x8c0b0a09;
+  MUST_PANIC(tegra_smmu_reset_handoff(&smmu));
+  assert(!gpub_quarantine_active && !handoff_reset_complete);
+
+  /* Exact native33 enable-bit-stuck behavior, 128 packed selector patterns,
+   * disabled and enabled GPU DT status; only PTB zero may change. */
+  for (unsigned int pattern = 0; pattern < 128; pattern++) {
+    fixture(); reset_inherited = quarantine_gpub_inherited = true;
+    gpu_status = pattern % 2 ? "okay" : "disabled";
+    u32 packed = SMMU_ASID_ENABLE;
+    for (unsigned int selector = 0; selector < 4; selector++)
+      packed |= ((pattern + selector * 17) & 0x7f) << (selector * 8);
+    registers[0xaac/4] = packed; stuck_register = 0xaac;
+    tegra_smmu_reset_handoff(&smmu);
+    assert(gpub_quarantine_active && !handoff_reset_complete && ptb[0] == 0);
+    assert(registers[0xaac/4] == SMMU_ASID_ENABLE && gpu_writes == 1);
+    for (unsigned int id = 1; id < 128; id++) assert(ptb[id] == before_ptb[id]);
+    for (unsigned int i = 0; i < soc.num_swgroups; i++)
+      if (groups[i].reg != 0xaac) assert(!(registers[groups[i].reg/4] & SMMU_ASID_ENABLE));
+    MUST_PANIC(tegra_smmu_check_handoff_reset());
+    handoff_reset_complete = true;
+    assert(tegra_smmu_check_handoff_reset() == 0);
+    for (unsigned int expected = 1; expected < 128; expected++) {
+      unsigned int id = 999;
+      assert(tegra_smmu_alloc_asid(&smmu,&id) == 0 && id == expected);
+      tegra_smmu_enable(&smmu, GPU_GROUP_ID, id);
+      assert(registers[0xaac/4] == (SMMU_ASID_ENABLE | id));
+      tegra_smmu_disable(&smmu, GPU_GROUP_ID, id);
+      assert(registers[0xaac/4] == SMMU_ASID_ENABLE);
+    }
+    unsigned int id = 999;
+    assert(tegra_smmu_alloc_asid(&smmu,&id) == -ENOSPC && id == 999);
+    tegra_smmu_free_asid(&smmu,1);
+    assert(tegra_smmu_alloc_asid(&smmu,&id) == 0 && id == 1);
+    MUST_PANIC(tegra_smmu_free_asid(&smmu,0));
+    MUST_PANIC(tegra_smmu_enable(&smmu,GPU_GROUP_ID,0));
+    MUST_PANIC(tegra_smmu_enable(&smmu,GPU_GROUP_ID,128));
+    write_rejected = 0xaac;
+    MUST_PANIC(tegra_smmu_enable(&smmu,GPU_GROUP_ID,1));
+    write_rejected = -1;
+    tegra_smmu_enable(&smmu,GPU_GROUP_ID,1);
+    write_rejected = 0xaac;
+    MUST_PANIC(tegra_smmu_disable(&smmu,GPU_GROUP_ID,1));
+    assert(registers[0xaac/4] == (SMMU_ASID_ENABLE | 1));
+  }
+  /* Fully writable hardware remains valid; other protected groups still stop. */
+  fixture(); reset_inherited = quarantine_gpub_inherited = true;
+  tegra_smmu_reset_handoff(&smmu);
+  assert(registers[0xaac/4] == 0 && gpub_quarantine_active);
+  fixture(); reset_inherited = quarantine_gpub_inherited = true; stuck_register = groups[1].reg;
+  MUST_PANIC(tegra_smmu_reset_handoff(&smmu));
+  assert(!handoff_reset_complete);
+  puts("PASS: actual reset/gate/allocator/free/GPUB attach/detach; 39 groups,128 selectors,127 paging ASIDs; PTB0 reserved+denied; rejected writes stop; old retention controls pass");
   return 0;
 }

@@ -1,0 +1,379 @@
+{
+  "status": "Native GM20B Nouveau initialization and unprivileged hardware GLES rendering passed in bounded RAM diagnostics; HDMI and Omarchy session remain open",
+  "board_variant": "darcy-t210-a04",
+  "full_hardware_acceptance": {
+    "passed": 0,
+    "total": 19,
+    "reason": "Subsystem acceptance includes sustained behavior, rendered Hyprland, Vulkan and other unfinished checks"
+  },
+  "upstream_kernel_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "kernel_patch_count": 9,
+  "maintained_kernel_lock_sha256": "7671056914f110a4ed4805c73f7243b9535c10b81620757f1382b9e63bd07bd7",
+  "kernel_Image_sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0",
+  "full_build": {
+    "modules": 1561,
+    "vermagic": "7.1.0-shield-bringup SMP preempt mod_unload aarch64",
+    "all_modules_AArch64": true,
+    "only_module_changed_from_eight_patch_build": "nouveau.ko",
+    "configuration_and_board_DTB_identical_eight_patch_build": true,
+    "all19_checksum_entries_passed": true,
+    "QEMU_checks": [
+      "normal diagnostic boot",
+      "missing MC rejects requested inherited reset before userspace",
+      "GPU quarantine without reset rejects before userspace"
+    ]
+  },
+  "GPU_handoff": {
+    "default_off_parameter": "tegra_smmu.quarantine_gpub_inherited=1",
+    "requires_reset_no_retention_and_exact_A04_probe_stamp": true,
+    "GPUB_before": "0x8c0b0a09",
+    "GPUB_after": "0x80000000",
+    "quarantine_ASID": 0,
+    "PTB_zero_denied_write_readback_verified": true,
+    "paging_ASIDs_available": 127,
+    "Nouveau_IOMMU_aperture_bytes": 4294967296,
+    "attach_and_detach_readbacks_required": true
+  },
+  "native_tests": [
+    {
+      "component_version": 33,
+      "completed_utc": "2026-10-16T14:01:03.958707+00:00",
+      "outcome": "Strict full-zero clear rejected retained enablebit; selectors cleared; panic beforePID1",
+      "console_bytes": 11037,
+      "console_sha256": "7d74f770ef948e35eb9d4cbeee03459f59870b6fcb2b42f74511b0bd5c3aeb81",
+      "Windows_capture_bytes": 0,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": null,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 2290206,
+          "sha256": "b5b4b46d440e1be2a46c686a83979840b53effa202d86693270d26949a796a4a"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "8ff7266149b65b05ce447be87123841e7158db1353f6738d52a6e1bde6e1e275"
+        },
+        "cmdline.txt": {
+          "bytes": 457,
+          "sha256": "d8988a67f84a177109563884f36cc62e52e6f9f5d5e5a06f0011c6cf4d8d8d86"
+        },
+        "probe.dtb": {
+          "bytes": 73071,
+          "sha256": "d22d2a8789c43cd0ecb80f81bdc4591d0f8baecb717cff393ea4fc004fae813a"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 34,
+      "completed_utc": "2026-10-16T14:20:52.438052+00:00",
+      "outcome": "DeniedPTB0/reservedASID0 handoff, USBroot/native queries passed",
+      "console_bytes": 152862,
+      "console_sha256": "888392d9cc2810735d83464a1296dbbc886e48b03c660ac08beab584f1dbbea3",
+      "Windows_capture_bytes": 95090,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": 29.068341,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 2290206,
+          "sha256": "b5b4b46d440e1be2a46c686a83979840b53effa202d86693270d26949a796a4a"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0"
+        },
+        "cmdline.txt": {
+          "bytes": 462,
+          "sha256": "3d46ba4025e24e4ab5be49b575e96bde721a8a6cca338e7484cafe65e86be340"
+        },
+        "probe.dtb": {
+          "bytes": 73071,
+          "sha256": "d22d2a8789c43cd0ecb80f81bdc4591d0f8baecb717cff393ea4fc004fae813a"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 35,
+      "completed_utc": "2026-10-16T14:26:01.852472+00:00",
+      "outcome": "GPU device/IOMMUgroup registered; BusyBox path guard stopped before Nouveau load",
+      "console_bytes": 153170,
+      "console_sha256": "8196eb6321d5c7444bc358ea2f1e40eea335473a4177e0fefa83d65e6c04a599",
+      "Windows_capture_bytes": 95303,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": 29.096893,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 3330389,
+          "sha256": "29d7f0f3142bcb41191040554074ed274da951dd2cd76c38c6256ac83b89e165"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0"
+        },
+        "cmdline.txt": {
+          "bytes": 462,
+          "sha256": "3d46ba4025e24e4ab5be49b575e96bde721a8a6cca338e7484cafe65e86be340"
+        },
+        "probe.dtb": {
+          "bytes": 73067,
+          "sha256": "b69c3f40888c6a2ff3d978cc7f2357b800fc13f22eb301c1247609c6e11f8f16"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 36,
+      "completed_utc": "2026-10-16T14:30:01.361108+00:00",
+      "outcome": "Nouveau GM20B initialized, IOMMU used, render226:128 registered",
+      "console_bytes": 158318,
+      "console_sha256": "ccfddb016af7a47a90604a2b592d2c751b18e83fd530a8937278381d945f9adf",
+      "Windows_capture_bytes": 98781,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": 29.094541,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 3330431,
+          "sha256": "549ff2bf15d0fd0f9e3e837b206fcd228fd267dc1f8124830636342b1ac47aff"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0"
+        },
+        "cmdline.txt": {
+          "bytes": 462,
+          "sha256": "3d46ba4025e24e4ab5be49b575e96bde721a8a6cca338e7484cafe65e86be340"
+        },
+        "probe.dtb": {
+          "bytes": 73067,
+          "sha256": "b69c3f40888c6a2ff3d978cc7f2357b800fc13f22eb301c1247609c6e11f8f16"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 37,
+      "completed_utc": "2026-10-16T14:37:18.935293+00:00",
+      "outcome": "Unprivileged EGL helper ran; device discovery failed beforeGPUdraw",
+      "console_bytes": 158632,
+      "console_sha256": "13d121ad7f3ed2161ef96c1a29878d8af33017839b1a6dd4d49966746cff09a2",
+      "Windows_capture_bytes": 98552,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": 29.094144,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 3666448,
+          "sha256": "da81f79fdfeecf30b16760bf5fd6a82b2097833b62beebece9155114a997124a"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0"
+        },
+        "cmdline.txt": {
+          "bytes": 462,
+          "sha256": "3d46ba4025e24e4ab5be49b575e96bde721a8a6cca338e7484cafe65e86be340"
+        },
+        "probe.dtb": {
+          "bytes": 73067,
+          "sha256": "b69c3f40888c6a2ff3d978cc7f2357b800fc13f22eb301c1247609c6e11f8f16"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 39,
+      "completed_utc": "2026-10-16T14:43:17.346074+00:00",
+      "outcome": "RAM DRM directory mode corrected; EGL still software-only because oldnamespace rootFD",
+      "console_bytes": 158765,
+      "console_sha256": "458ff06be0bd59387c33aba497da7a58e3b74d4566030724b2ac0d62ae8dc24f",
+      "Windows_capture_bytes": 98859,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": 29.095865,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 3666651,
+          "sha256": "fd343e64ac897baf17e6ceb5da7971356115a809869840185d43e7d2ab0d1591"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0"
+        },
+        "cmdline.txt": {
+          "bytes": 462,
+          "sha256": "3d46ba4025e24e4ab5be49b575e96bde721a8a6cca338e7484cafe65e86be340"
+        },
+        "probe.dtb": {
+          "bytes": 73067,
+          "sha256": "b69c3f40888c6a2ff3d978cc7f2357b800fc13f22eb301c1247609c6e11f8f16"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 40,
+      "completed_utc": "2026-10-16T14:48:12.656168+00:00",
+      "outcome": "GBM diagnostic proved dev/sys pathsENOENT from saved pre-namespace rootFD",
+      "console_bytes": 159119,
+      "console_sha256": "4ca9fba2dc76caa50a5f98f063ff2945ee4359ee948117c59a9c6bd603f17375",
+      "Windows_capture_bytes": 98646,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": 29.09471,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 3667884,
+          "sha256": "df9b621ebb854a00999ba77e82330afbf543a536254cfe50ec79f3ee87dfd477"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0"
+        },
+        "cmdline.txt": {
+          "bytes": 462,
+          "sha256": "3d46ba4025e24e4ab5be49b575e96bde721a8a6cca338e7484cafe65e86be340"
+        },
+        "probe.dtb": {
+          "bytes": 73067,
+          "sha256": "b69c3f40888c6a2ff3d978cc7f2357b800fc13f22eb301c1247609c6e11f8f16"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    },
+    {
+      "component_version": 41,
+      "completed_utc": "2026-10-16T14:52:34.467915+00:00",
+      "outcome": "Correct namespace rootFD; unprivileged hardware GLES clear andshader triangle pixel readbacks passed",
+      "console_bytes": 159998,
+      "console_sha256": "4ff93f4aa692fcd75e648aa05173e2b5ff09f7fbb5b31466379e16de1aaa5307",
+      "Windows_capture_bytes": 99889,
+      "authenticated_root_recovery_returned": true,
+      "reset_recovery_uptime_seconds": 29.099466,
+      "artifacts": {
+        "initramfs.cpio.gz": {
+          "bytes": 3668410,
+          "sha256": "e3fc6f8a090a5e37765dbb343404955591325d35bda66dfee9df9500b7ee50e1"
+        },
+        "Image": {
+          "bytes": 45812224,
+          "sha256": "83aa943b568f69763cca165d306ce7574e4001a4a52c6767fa6c3896820dd2a0"
+        },
+        "cmdline.txt": {
+          "bytes": 462,
+          "sha256": "3d46ba4025e24e4ab5be49b575e96bde721a8a6cca338e7484cafe65e86be340"
+        },
+        "probe.dtb": {
+          "bytes": 73067,
+          "sha256": "b69c3f40888c6a2ff3d978cc7f2357b800fc13f22eb301c1247609c6e11f8f16"
+        }
+      },
+      "USB_filesystem_or_partition_writes": false
+    }
+  ],
+  "offscreen_render": {
+    "component_version": 41,
+    "UID": 65534,
+    "capabilities": "effective/permitted/inheritable zero",
+    "backend": "GBM verified render FD + EGL surfaceless GLES FBO",
+    "render_node": "renderD128",
+    "major_minor": "226:128",
+    "libdrm_device_lookup_status": 0,
+    "libdrm_bus_type": "platform",
+    "EGL": "1.5",
+    "vendor": "Mesa Project",
+    "renderer": "NV12B",
+    "GL_version": "OpenGL ES 3.2 Mesa 26.2.4-arch1.1",
+    "surface": "16x16 RGBA texture/FBO",
+    "clear_RGBA": [
+      32,
+      64,
+      127,
+      255
+    ],
+    "triangle_RGBA": [
+      191,
+      64,
+      32,
+      255
+    ],
+    "expected_clear_RGBA": [
+      32,
+      64,
+      128,
+      255
+    ],
+    "expected_triangle_RGBA": [
+      191,
+      64,
+      32,
+      255
+    ],
+    "RGB_tolerance": 2,
+    "helper_status": 0,
+    "software_renderers_rejected": true,
+    "shader_cache_disabled": true,
+    "child_time_limit_seconds": 9,
+    "root_filesystem_read_only": true,
+    "device_and_runtime_mounts": "isolated RAM namespace",
+    "sysfs_and_procfs": "read-only",
+    "filesystem_unmounted_cleanly": true,
+    "thermal": {
+      "CPU": {
+        "samples": 30,
+        "minimum_millidegrees_C": 41500,
+        "maximum_millidegrees_C": 52500
+      },
+      "TMP451-local-board": {
+        "samples": 30,
+        "minimum_millidegrees_C": 46062,
+        "maximum_millidegrees_C": 50875
+      },
+      "TMP451-remote-diode": {
+        "samples": 30,
+        "minimum_millidegrees_C": 45812,
+        "maximum_millidegrees_C": 54125
+      }
+    },
+    "fan_maximum_RPM": 5806
+  },
+  "private_diagnostic_repairs": [
+    "Use exact minimal ARM BusyBox for path checks; avoid unavailable readlink-f and stat-c",
+    "Set RAM DRM directory mode0755 explicitly despite PID1umask077",
+    "Reopen root directory FD after mountnamespace creation; oldFD resolves an earlier mount tree",
+    "Retry only two allowlisted read-only preflight commands; never retry staging or execute effects"
+  ],
+  "firmware_payloads": {
+    "acr/bl.bin": "a7d1cfe19e108ffc54c3d4e69242b64a1e2211112b8fac660feb2c400a72a56e",
+    "acr/ucode_load.bin": "b3e365b0deddaf81bd8a8ad446f0dac2a74de61c786c8170d2959568fe9fc292",
+    "pmu/desc.bin": "70b0ea947d5b8d7457de99543bf140e6f077a7499ba1215f8bd2db1cb62ef92d",
+    "pmu/image.bin": "d1106d2e3f1daa864be00449093378febf79921e047abd52b50c2c2d99f6c310",
+    "pmu/sig.bin": "7d780addbf88d67aeeac939bea27b0238a0da2d8b23aab93e862127f8ff371d8",
+    "gr/fecs_bl.bin": "75a1f6ee5a3fd9c19d2d6d9d992af7926c2569a35edc963f0188b2b633a5b823",
+    "gr/fecs_inst.bin": "6add9631ba952a9127b05c467bca57b27b1e43ac8c8b3f038c07b8c83db37f61",
+    "gr/fecs_data.bin": "5a9f9181df2babacad69cebf25db84b826862fc756b9086615994e4f1cbca473",
+    "gr/fecs_sig.bin": "f93a11e8a43cef8445b0c2a7a96d659831c0a293dc40ed9db34e30fa86bd934c",
+    "gr/gpccs_inst.bin": "3906a04c60a0d7b1b1483344318f3c5e1482acc284360a333b42240114dfb182",
+    "gr/gpccs_data.bin": "ff552f59151de5ab9a65ffa7b5c0d661dfd25f2b60c04640e5b0895fca53456f",
+    "gr/sw_ctx.bin": "c2134c3c6ba5d0c83cd6f2a84da25239fc9586b009d3ba9acfba44e15a5a583f",
+    "gr/sw_nonctx.bin": "060d8c8eaf1bd8736849913cc035b15d08f33287ae3b1e83097c83531b010984",
+    "gr/sw_bundle_init.bin": "b287695bc7ab91fb03b738172d56b8df738cb7903852d425b88bfc66585db98d",
+    "gr/sw_method_init.bin": "6372e2f6f547d7bd086beb066ce46ac379795f95c38eeeedd9e13c7b32515b24"
+  },
+  "source_tests": [
+    "Actual SMMU reset/gate/allocator/free/attach/detach functions with banked fake MMIO,39groups,128packedpatterns,127pagingASIDs,oldretentioncontrols",
+    "Actual Nouveau aperture and probe setup functions:4GiBforcedvs16GiBtag,bounds,allocation/attach/MMerrors andcleanup",
+    "Actual ARM helper argument/UID/kernel refusal before mount/device ioctl",
+    "Actual RAM mount function underumask077 plus rejected old-source negative",
+    "Real private Linux namespaces: old-rootFD child cannot see device; reopened-rootFD UID65534child sees226:128 without opening it"
+  ],
+  "limits": [
+    "Bounded recovery-to-Linux warm handoff only; exact old-master shutdown and measured RAM reservations remain required",
+    "Single CPU; CPU/EMC DVFS and fully enabled board DT not qualified",
+    "HDMI/host1x remained disabled; Hyprland compositor, Vulkan, sustained load and independent boot untested",
+    "Prepared USB root still has linux-shield7.1.0-6; recipe7 has not yet been packaged/installed; tested kernel and nouveau module came from matching RAM components",
+    "No NVIDIA firmware binaries, raw logs, serials, owner filesystem IDs or keys published"
+  ],
+  "read_only_preflight_abort": {
+    "component_version": 38,
+    "device_image_loaded_or_executed": false,
+    "reason": "Read-only ADB dmesg failure before staging; subsequent read succeeded; recovery/kexec0/stageabsence verified"
+  }
+}

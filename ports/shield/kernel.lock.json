@@ -52,6 +52,11 @@
         "path": "ports/shield/kernel-patches/0008-a04-xusb-host-mc-reset.patch",
         "sha256": "8b195d2f63595b664895f493b63aa4e4ff4d0689c5c2fc2868203a26295ddff1",
         "reason": "Describe the XUSB host MC reset in the A04 PMC reset array, retaining CAR reset. After matched recovery host teardown this restored firmware DMA, root hubs, SuperSpeed drive enumeration and exact owned-partition read-only admission in a bounded RAM test. Desktop and sustained storage acceptance remain open."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0010-a04-gpub-quarantine.patch",
+        "sha256": "07b4e1f22e80dcb72414b2af4c3fa3ff29629f195b2bb50041dde6607c28ebbc",
+        "reason": "Experimental exactA04stamped GPUBquarantine/PTB0denial/ASIDreservation andNouveauforced-aperture bound; notyetnativequalified."
       }
     ],
     "variant": "omarchy-a04",
