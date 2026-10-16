@@ -25,6 +25,8 @@ The default lock selects original Tegra210 Darcy A04, matching the connected dev
 
 All three profiles include the full module set, LLVM and an extra kallsyms link pass. QEMU uses its own virtual DTB; its pass does not exercise a Shield overlay or peripheral. Output contains raw `Image`, diagnostic initramfs, DTB, matching modules, checksum-locked hardware matrix and provenance. No Android boot header or flashing command is supplied. The kernel package validates the lock's board/DTB pair and ships only that selected DTB.
 
+The A04 build also runs actual-source USB supplier and OTG VBUS ownership regressions before compilation, and includes their reports in `SHA256SUMS`. The OTG change follows the [upstream Tegra210 regulator ownership finding](https://lists.infradead.org/pipermail/linux-phy/2026-January/028641.html), with successful-operation tracking to handle duplicate HOST requests and regulator failures. It leaves fixed-host init/exit unchanged. The fresh kernel, 1,561 matching ARM64 modules and QEMU boot passed; [validation-usb-vbus-ownership.json](validation-usb-vbus-ownership.json) pins the inputs and results. This candidate has not booted on the Shield. These offline checks do not qualify physical role switching or resolve the external-storage enumeration blocker.
+
 ## Signed ARM filesystem and packages
 
 The base tarball, signature and keyring are checksum-pinned. Signature verification additionally requires the exact Arch Linux ARM build-system fingerprint in the lock. The download URL points at a moving upstream archive: if it changes, the fetch fails instead of accepting a new base. Retain the verified cache or review a new signed input deliberately.

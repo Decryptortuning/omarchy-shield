@@ -1,0 +1,131 @@
+{
+  "status": "offline-qualified; native execution not performed",
+  "board_variant": "darcy-t210-a04",
+  "base_repo_commit": "2e67e411fabaabcf0b021fd981e003d98491e0e6",
+  "kernel_base_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "upstream_issue": "https://lists.infradead.org/pipermail/linux-phy/2026-January/028641.html",
+  "candidate_source_sha256": {
+    "ports/shield/kernel-patches/0006-t210-otg-vbus-ownership.patch": "2bc0460a4f333fd3e7465e7e1f6bfe5a15c29c90ef57c54c979d0b8bdf44fe31",
+    "ports/shield/kernel.lock.json": "7fbedf19503e8ef528be88d805562ad2839dc682197ebd257a10ad86425ea4a2",
+    "ports/shield/build-kernel.sh": "95d883e00e1bf098a019591b8c7133ce86b5f9c7b5210cb0f75e3b98dc4aeb83",
+    "ports/shield/tools/check-xusb-otg-vbus.py": "0b71a30e4c787856ae13baee7c6d9d95905ae69d72fb96de9647e7395bf37d06",
+    "ports/shield/tests/xusb-otg-vbus-harness.c": "b664403be5553ddbed7163cfbf873db08f8ff944879bc8b5f3b79010b7c56f49"
+  },
+  "ordered_kernel_patch_sha256": [
+    "f4866659db21453464cae5fde06151284190086c6fb1a36fdfa70ec1e5e2ce47",
+    "8652026eef2097e967f808f39c4c16a767ff614a4f9fa66e3a80ccf1449eb62d",
+    "eee85f2583713f124f79b9a7be202d7c7b28b6c45af2f4f8d47d21abc6f05199",
+    "71ce47ebada995ec3a23513c73926a856aa498fd012bca250579c97c6193faa2",
+    "99c41f5bc990a08b3c28dd92b143e50a0850afe65b4a6fbf507a35dc9ac79e64",
+    "2bc0460a4f333fd3e7465e7e1f6bfe5a15c29c90ef57c54c979d0b8bdf44fe31"
+  ],
+  "change": {
+    "driver": "drivers/phy/tegra/xusb-tegra210.c",
+    "callback": "tegra210_usb2_phy_set_mode",
+    "ownership": "Track the successful OTG callback regulator enable reference under the existing padctl lock. Duplicate HOST requests do not acquire extra references; NONE releases only an owned reference. Regulator failures preserve ownership and are returned.",
+    "fixed_host_init_exit_unchanged": true,
+    "host_device_workqueue_ordering_changed": false
+  },
+  "actual_source_regression": {
+    "source_sha256": "6fe4b2ef77b10afd4b71dc0da8c07aca4dc1762baad8d147ee25c2c044a3c101",
+    "header_sha256": "601c2634dfdb5ed6aa5eb039dc0432794dff9686255cdc537986d6febac32d09",
+    "result": "PASS: shared-powered NONE/DEVICE, duplicate HOST/NONE, failed enable/retry, failed disable/retry, direct swaps, ignored modes and independent ownership; 729 six-role sequences balanced",
+    "all_six_role_sequences": 729,
+    "negative_controls": {
+      "actual_driver": {
+        "returncode": 0,
+        "expected_failure": false
+      },
+      "baseline_unowned_disable": {
+        "returncode": -6,
+        "expected_failure": true
+      },
+      "shared_supply_is_not_consumer_ownership": {
+        "returncode": -6,
+        "expected_failure": true
+      },
+      "duplicate_host_leaks_reference": {
+        "returncode": -6,
+        "expected_failure": true
+      },
+      "failed_enable_must_propagate": {
+        "returncode": -6,
+        "expected_failure": true
+      },
+      "successful_disable_releases_ownership": {
+        "returncode": -6,
+        "expected_failure": true
+      }
+    },
+    "instrumentation": "GCC -Wall -Wextra -Werror and undefined-behavior sanitizer; fake regulator and MMIO helper boundaries, actual callback and port declaration"
+  },
+  "build": {
+    "result": "passed",
+    "fresh_source_tree_verified_git_blobs": 94276,
+    "kernel_release": "7.1.0-shield-bringup",
+    "artifact_sha256": {
+      "Image": "0fb0db96c7fce183b37657f5cda2a6c292d72cb6d12470ddb1e208508d95016b",
+      "Image.gz": "06cb6a3bd0d284b91d54e7da98b22164cfbc8450628b3665450528bf95c6aabb",
+      "initramfs.cpio.gz": "e6a351a3a4e5f7b97ca85513cb2277d66ca86d12a9daa27ae1cef48765863485",
+      "kernel-modules.tar.zst": "9d069790404ce59e060ff581c603618c7a4cd0d0d9e1a6ba73b3772aaa2c8549",
+      "kernel.config": "e372186f9afb3b03ef12e53e8d8b21b1958f0bbe03794118f94400b1b9e2ee9a",
+      "tegra210-p2894-0050-a04.dtb": "361401229f0975df14578b0521e6fe8fa9af3f9bd79ae87182b83134eb0e9f80",
+      "sources.lock.json": "7fbedf19503e8ef528be88d805562ad2839dc682197ebd257a10ad86425ea4a2"
+    },
+    "module_count": 1561,
+    "all_module_vermagic_matches_release_and_aarch64": true,
+    "kernel_config_identical_to_prior_native_candidate": true,
+    "board_DTB_identical_to_prior_native_candidate": true,
+    "all_bundle_checksums_passed": true,
+    "regression_reports_in_SHA256SUMS": true,
+    "flashable_image": false
+  },
+  "qemu": {
+    "result": "passed",
+    "machine": "virt",
+    "cpu": "cortex-a57",
+    "marker": "SHIELD_LINUX_QEMU_SELFTEST_PASS",
+    "log_sha256": "ecf05a981773ddf2c18be7682a901fa78db3ef2ae7c6996f38906c53887aeaaf",
+    "scope": "Kernel and diagnostic userspace boot only; virtual board does not exercise Tegra USB hardware"
+  },
+  "integration_checks": {
+    "pinned_input_validation": "passed",
+    "python_unit_tests": 33,
+    "platform_shell_suites": [
+      "shield-platform",
+      "hw-platform",
+      "platform-packages",
+      "pacman-templates",
+      "lifecycle-dispatch",
+      "image-target-platform",
+      "image-deferred-hardware",
+      "hyprland-startup-cursor"
+    ],
+    "all_platform_shell_suites_passed": true,
+    "builder_shellcheck_and_new_python_syntax": "passed",
+    "existing_actual_source_supplier_cases": 11
+  },
+  "static_source_comparison": {
+    "stock_SS_production_tuples_matching_modern_driver": 16,
+    "original_T210_lane_maps_equal": true,
+    "vendor_family_reference_commit": "807d12f6c4fe37e12ea70a6ec9d3bedb78d13233",
+    "vendor_source_is_not_verified_working_recovery_binary_source": true,
+    "scope": "The captured stock SS tuning tuples already match modern-driver programming; no tuning-table copy or lane-index change follows from this comparison."
+  },
+  "device_actions_performed": [],
+  "physical_acceptance": {
+    "native_boot_of_this_candidate": "not performed",
+    "physical_USB_role_switching": "unqualified",
+    "external_storage_enumeration": "unresolved",
+    "native_desktop_boot": "not achieved",
+    "full_hardware_tests_passed": 0,
+    "full_hardware_tests_total": 19,
+    "prepared_hotplug_probe_21": "held; not executed; retains the prior kernel and reviewed payload"
+  },
+  "limits": [
+    "This OTG callback change leaves the fixed-host drive-port init/exit path unchanged and is not evidence of an external-storage fix.",
+    "Actual-source tests model regulator and MMIO API boundaries; they do not exercise physical VBUS, concurrent host/device workqueues, hotplug or sustained traffic.",
+    "The new bundle is an offline build, not a flashable or approved unattended hardware test.",
+    "The previous physical probe receipts remain scoped to their exact older components."
+  ]
+}

@@ -85,6 +85,8 @@ python3 "$port_dir/tools/apply-kernel-patches.py" "$project_root" "$lock_file" "
 if [[ $variant == "omarchy-a04" ]]; then
   python3 "$port_dir/tools/check-xusb-supplies.py" \
     --kernel-source "$kernel_src" --output "$dist/xusb-supplies-regression.json"
+  python3 "$port_dir/tools/check-xusb-otg-vbus.py" \
+    --kernel-source "$kernel_src" --output "$dist/xusb-otg-vbus-regression.json"
 fi
 
 archive="$build_root/downloads/busybox-$busybox_version.tar.bz2"
@@ -210,6 +212,9 @@ fi
   fi
   if [[ -f applied-patches.json ]]; then
     sha256sum applied-patches.json >> SHA256SUMS
+  fi
+  if [[ $variant == "omarchy-a04" ]]; then
+    sha256sum xusb-supplies-regression.json xusb-otg-vbus-regression.json >> SHA256SUMS
   fi
   if [[ -f device-tree-overlays.json ]]; then
     sha256sum device-tree-overlays.json >> SHA256SUMS

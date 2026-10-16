@@ -10,6 +10,8 @@ The [RAM handoff follow-up](DARCY.md#ram-handoff-measurements--october-15) recor
 
 Seven [USB host/storage follow-ups](validation-usb-storage-probes.json) started both root hubs and captured SuperSpeed PC logs, but none detected the prepared flash drive. Normal power-management holds, a host-only startup window, two specifically matched Tegra210 firmware versions and the complete board PHY bindings did not resolve enumeration. Read-only register observations establish released host/SS/source resets and enabled hardware sequencers; they do not establish a firmware crash. No filesystem mount or write occurred. A controlled drive-reconnect test is prepared; native desktop boot remains blocked.
 
+Current source also includes an [offline-qualified OTG VBUS ownership fix](validation-usb-vbus-ownership.json). The actual-source regression, fresh full kernel/module build and QEMU boot passed. This new candidate has not booted on the Shield, leaves the fixed-host drive path unchanged and does not establish an external-storage fix.
+
 The [reusable board-source map](BOARD_SOURCES.md) identifies the original Darcy definitions inside LineageOS's T210 Foster hardware project, its compressed-kernel boot recipe and specific Linux radio firmware mappings. [board-sources.lock.json](board-sources.lock.json) pins these research inputs independently of the built kernel/component lock.
 
 The [integration plan](INTEGRATION_PLAN.md) orders the remaining board/firmware work, recovery and boot handoff, reproducible builds, native diagnostics, full hardware qualification and owner installation/update support. It includes the first implementation batch and acceptance checks for all 19 subsystems.
