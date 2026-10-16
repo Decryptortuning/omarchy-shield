@@ -1,0 +1,108 @@
+{
+  "status": "Offline-qualified automatic observation candidate; no native staging or boot",
+  "board_variant": "darcy-t210-a04",
+  "component_version": 22,
+  "purpose": "Automatic read-only drive-port USB2/SS1/PCIe5-LFPS and VBUS pin observations; no timed owner interaction",
+  "manual_drive_reconnect_required": false,
+  "attended_power_cycle_fallback_required": true,
+  "kernel_source_commit": "a5ac0ecd3fcbd9cd41831c2ca1f68f5839666910",
+  "artifact_sha256": {
+    "initramfs.cpio.gz": "74e88c4380ccacad7ab255b7b1f395aa9ad8ee43806be4d4cb5429f2c4edd9d7",
+    "Image": "e9650557ca62a0d4e3b0f8bb09e4b801552c06816619a8e69f2cbfd7ac9a77e9",
+    "cmdline.txt": "a39fe6b7c666d872bef5faa36a68210068ad9efbfaaeaa4cda2a9e68d1a7c065",
+    "probe.dtb": "376b5cfb8d43ab55ac9c1538be42adac6aee92b65307bba256e64f2ccc023106"
+  },
+  "parent_component_version": 21,
+  "Image_DT_cmdline_firmware_modules_thermal_reset_and_storage_guard_unchanged": true,
+  "only_archive_entries_changed": [
+    "init",
+    "sbin/shield-phy-read"
+  ],
+  "observations_added": [
+    "USB2-2 pad electrical state for the flash-drive companion port",
+    "SS1 electrical state and PCIe5 AUX_RX/LFPS override and TX IDDQ state for the flash-drive lane",
+    "PCIe6 AUX_RX/LFPS and TX IDDQ state for PC-facing comparison",
+    "Named VBUS GPIO direction/level and pinmux ownership through the existing read-only debugfs observer"
+  ],
+  "read_only_helper": {
+    "register_count": 31,
+    "new_driver_offsets_checked": 11,
+    "actual_DT_base_range_and_T210_lane_mapping_checked": true,
+    "outside_allowlist_byte_identical_to_previous_qualified_helper": true,
+    "open_mode": "O_RDONLY",
+    "mapping": "PROT_READ",
+    "source_sha256": "80c56436d1426b6cd4871b780acb9751bc710a671fe28122571ebc843d8c8d75",
+    "binary_sha256": "b94cafe72f3c41ab010c122cabf31602575d67b3555ef4c4369434b84cbdee8d",
+    "actual_ARM_guard_cases": [
+      {
+        "case": "unprivileged-no-arguments",
+        "status": 64,
+        "no_device_open": true
+      },
+      {
+        "case": "unexpected-argument",
+        "status": 64,
+        "no_device_open": true
+      },
+      {
+        "case": "root-wrong-board",
+        "status": 64,
+        "no_device_open": true
+      }
+    ],
+    "real_MMIO_actions_during_offline_checks": false
+  },
+  "pin_observer": {
+    "actual_ARM_BusyBox": true,
+    "cases": [
+      {
+        "case": "actual-recovery-snapshot",
+        "passed": true
+      },
+      {
+        "case": "missing-files",
+        "passed": true
+      },
+      {
+        "case": "unrelated-lines",
+        "passed": true
+      },
+      {
+        "case": "stop",
+        "passed": true
+      },
+      {
+        "case": "late",
+        "passed": true
+      }
+    ],
+    "source_sha256": "fe05f994f93e8aaaaaa0d75d0a1f72f214bf7d8b06e7871ce0a5ffde5b579adf",
+    "scope": "Actual function and saved working recovery snapshots; private fixture files only"
+  },
+  "PID1_qualification": {
+    "exact_added_observer_delta_only": true,
+    "source_aware_shellcheck": "passed",
+    "actual_ARM_shell_syntax": "passed",
+    "default_control_plan_only": "passed",
+    "reset_deadline_seconds": 30,
+    "no_new_synchronous_driver_work_in_PID1": true
+  },
+  "workflow_decision": {
+    "manual_timed_hotplug_retired": true,
+    "prior_hotplug_result": "inconclusive; owner cannot determine actual reconnect time",
+    "timing_clarification_pending": false,
+    "drive_stays_connected_for_new_observer": true
+  },
+  "native_execution_performed": false,
+  "device_actions_performed": [],
+  "full_hardware_acceptance": {
+    "passed": 0,
+    "total": 19
+  },
+  "limits": [
+    "This candidate has not run on the Shield and does not establish a USB host fix.",
+    "The older native-proven kernel and matching modules are retained to isolate the added observations; the separate newer OTG accounting kernel remains unbooted.",
+    "Ordinary attended fallback is still required for a future RAM boot; there is no manual unplug cue.",
+    "Filesystem mount, USB desktop boot, GPU and sustained hardware qualification remain open."
+  ]
+}
