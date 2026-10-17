@@ -17,16 +17,17 @@
  
    interconnect-names: true
    interconnects: true
-@@ -80,6 +84,18 @@
+@@ -80,6 +84,19 @@
      type: object
  
  allOf:
 +  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: nvidia,tegra210-dc
-+    else:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: nvidia,tegra210-dc
++    then:
 +      properties:
 +        resets:
 +          maxItems: 1
