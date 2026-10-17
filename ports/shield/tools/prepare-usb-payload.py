@@ -7,7 +7,7 @@ import shutil
 import tempfile
 import uuid
 from package_set import PACKAGES, admitted_archives
-from usb_root_profile import admit_payload, database_profile, digest, installed_versions, root_profile, transition_absences, validate_manifest
+from usb_root_profile import admit_payload, database_profile, digest, host_metadata_execute, installed_versions, root_profile, transition_absences, validate_manifest
 
 
 def main():
@@ -58,7 +58,7 @@ def main():
     payload.mkdir()
     for archive in archives:
       shutil.copy2(archive, payload / archive.name)
-    admit_payload(manifest, payload)
+    admit_payload(manifest, payload, execute=host_metadata_execute)
     (staged / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     staged.rename(output)
   print('Prepared exact six-component host payload; USB and boot remain unchanged.')

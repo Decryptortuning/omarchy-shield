@@ -12,7 +12,8 @@ enum sg_fault {
 };
 enum sg_sample_kind { SG_DISCOVERING, SG_WARMING, SG_HEALTHY, SG_SAMPLE_FAILED };
 enum sg_operation { SG_STATUS = 1, SG_ABORT = 2, SG_QUIESCE = 3,
-                    SG_RECOVER_FAULT = 4, SG_RECOVER_QUIESCE = 5 };
+                    SG_RECOVER_FAULT = 4, SG_RECOVER_QUIESCE = 5,
+                    SG_RECOVER_READY = 6 };
 
 struct sg_sample {
   uint64_t sequence, at_ns;

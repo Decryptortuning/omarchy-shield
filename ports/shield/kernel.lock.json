@@ -87,6 +87,11 @@
         "path": "ports/shield/kernel-patches/0016-sdhci-fixed-1v8-signaling.patch",
         "sha256": "967272d5e3bfb2b1b3f58787c2bcca93fc900dbc6fee016059b4faeda15cec2b",
         "reason": "Recognize a valid fixed 1.8V-only VQMMC supply even when faster timing capabilities are disabled; preserve dual-voltage, no-1.8V and error paths. Native78/80 qualified conservative 8-bit 35.84 MHz operation with restricted probe DT, not default high-speed timing."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0017-btrfs-subvol-info-return.patch",
+        "sha256": "2d0c76538b0346ac850bc0518d573bdeca038f06ae1c4030b466811a5199149e",
+        "reason": "Backport upstream 75a41e3e51eb0d6f7a4969c5056298c2aa3e85f2: reset the successful GET_SUBVOL_INFO backref lookup return to zero so native/compat callers copy the completed record. Read-only VM exposed all-zero records for ordinary subvolumes; no board, driver, UAPI layout or error handling changes."
       }
     ],
     "variant": "omarchy-a04",

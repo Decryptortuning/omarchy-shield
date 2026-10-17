@@ -11,6 +11,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
 from unittest import mock
@@ -111,6 +112,10 @@ class RootTransactionTests(PlanFixture, unittest.TestCase):
     self.commands.append(command)
     if self.fail and self.fail(command):
       raise subprocess.CalledProcessError(1, command)
+    if command[:2] == ['/usr/bin/bsdtar', '-xOf']:
+      self.assertEqual(command[-1], '.PKGINFO')
+      with tarfile.open(command[2], 'r:xz') as archive:
+        return archive.extractfile('.PKGINFO').read().decode('ascii')
     if command[:3] == ['btrfs', 'subvolume', 'get-default']:
       return 'ID 5 (FS_TREE)\n'
     if command[:3] == ['btrfs', 'subvolume', 'snapshot']:

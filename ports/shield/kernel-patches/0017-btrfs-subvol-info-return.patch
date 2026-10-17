@@ -1,0 +1,12 @@
+diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
+index 81e87bc..68b33f3 100644
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -2048,6 +2048,7 @@ static int _btrfs_ioctl_get_subvol_info(struct inode *inode,
+ 			ret = -ENOENT;
+ 			goto out;
+ 		}
++		ret = 0;
+ 	}
+ 
+ out:

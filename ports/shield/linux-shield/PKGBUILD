@@ -3,7 +3,7 @@
 # This package never writes a boot partition.
 pkgname=linux-shield
 pkgver=7.1.0
-pkgrel=8
+pkgrel=9
 pkgdesc='Experimental Shield Tegra kernel components; boot image installation is separate'
 arch=('aarch64')
 license=('GPL-2.0-only')

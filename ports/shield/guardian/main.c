@@ -235,8 +235,19 @@ int main(int argc, char **argv)
     }
     if (state.phase == SG_WORK && !ready_sent) {
       static const char msg[] = "READY=1\nSTATUS=finite guardian health verified";
-      if (SG_PROFILE_ROLE == 2 && sendto(notify, msg, sizeof(msg) - 1,
-          MSG_DONTWAIT | MSG_NOSIGNAL, (struct sockaddr *)&notify_addr, notify_length) != (ssize_t)(sizeof(msg) - 1))
+      bool delivered;
+      if (SG_PROFILE_ROLE == 2) {
+        delivered = sendto(notify, msg, sizeof(msg) - 1,
+          MSG_DONTWAIT | MSG_NOSIGNAL, (struct sockaddr *)&notify_addr, notify_length) == (ssize_t)(sizeof(msg) - 1);
+      } else {
+        /* One event after the first validated keepalive, never a work grant.
+         * RAM PID1 independently requests pinned STATUS/health/reserve before
+         * starting a worker. No polling or watchdog/deadline change is needed.
+         */
+        struct sg_request r = request(SG_RECOVER_READY, 0, boot);
+        delivered = send(recovery, &r, sizeof(r), MSG_DONTWAIT | MSG_NOSIGNAL) == (ssize_t)sizeof(r);
+      }
+      if (!delivered)
         sg_fault(&state, SG_LOST_RECOVERY);
       else ready_sent = true;
     }

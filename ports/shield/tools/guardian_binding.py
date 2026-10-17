@@ -13,7 +13,7 @@ PROFILE = INSTALL / 'profile.json'
 BOARD = {'model': 'NVIDIA Shield TV (Darcy A04)',
          'compatible': ['nvidia,p2894-0050-a04', 'nvidia,darcy', 'nvidia,tegra210'],
          'stamp': 'a04-first-ram-probe-v1'}
-IMAGE_SHA256 = 'e6b49a014b90ca443b024cc576e82d71a3330bd404c2b919c77c633eed28f721'
+IMAGE_SHA256 = 'b7865e9b7e077ea3f75ed740e66566811e704641b8cc7840843d8f94a3452186'
 CONFIG_SHA256 = 'ce00a1be7b8b2a800f57bc8a8bd7b8b261515221e444cc327c0959af963ce11b'
 DTB_SHA256 = '378996e1e9ff1c5d434b125d8ef543555a9f661d02779c0ca9b22e9cb7b9d96d'
 TIMING = {'open_seconds': 120, 'work_seconds': 540, 'final_seconds': 600,
@@ -23,7 +23,7 @@ SOURCE_NAMES = frozenset(['guardian/main.c', 'guardian/sampler.c', 'guardian/sta
   'guardian/profile.h', 'qualification/restart-recovery.c', 'tools/guardian_binding.py',
   'tools/guardian_client.py', 'tools/qualification_recovery.py', 'tools/usb_root_profile.py',
   'tools/qualification_profile.py', 'tools/prepare-qualification-overlay.py',
-  'tools/prepare-qualification-root.py', 'tools/prepare-guardian.py'])
+  'tools/prepare-qualification-root.py', 'tools/prepare-guardian.py', 'tools/maintenance_accounts.py'])
 BODY_FIELDS = {'format_version', 'role', 'board', 'kernel', 'dtb', 'filesystem',
                'overlay_sha256', 'sources', 'recovery_helper', 'account', 'timing'}
 

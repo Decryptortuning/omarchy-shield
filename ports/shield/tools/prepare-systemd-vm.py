@@ -120,6 +120,18 @@ def write_file(root, relative, data, mode):
   return path
 
 
+def new_directory(path, mode):
+  # The host output stays private, while guest directories have exact declared
+  # modes. mkdir(mode) alone is filtered by a private build-host umask.
+  path.mkdir(mode=mode)
+  descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+  try:
+    os.fchmod(descriptor, mode)
+  finally:
+    os.close(descriptor)
+  return path
+
+
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
   for name in ['installation', 'prepared', 'payload-manifest', 'base-components', 'output']:
@@ -179,15 +191,15 @@ def main():
     'installation_receipt_sha256': args.installation_receipt_sha256,
     'native_profile_sha256': installation['profile_sha256'], 'sources': hashes,
     'uid_probe': {'sha256': digest(binary), 'bytes': binary.stat().st_size}})
-  seed = output / 'seed'; seed.mkdir(mode=0o700)
-  root = seed / profile['filesystem']['subvolumes']['root']; root.mkdir()
+  seed = new_directory(output / 'seed', 0o700)
+  root = new_directory(seed / profile['filesystem']['subvolumes']['root'], 0o755)
   with (output / 'copy.log').open('xb') as log: ACTOR.copy_root(source, root, log)
   for name, mode in [('dev', 0o755), ('proc', 0o755), ('sys', 0o755), ('run', 0o755),
                      ('tmp', 0o1777), ('root', 0o700), ('mnt', 0o755), ('media', 0o755)]:
     path = root / name; path.mkdir(exist_ok=True); path.chmod(mode)
   ACTOR.verify_prepared(root, prepared, payload)
-  private = root / str(PREFIX).lstrip('/'); private.mkdir(mode=0o700)
-  public = root / str(USER_PREFIX).lstrip('/'); public.mkdir(mode=0o755)
+  private = new_directory(root / str(PREFIX).lstrip('/'), 0o700)
+  public = new_directory(root / str(USER_PREFIX).lstrip('/'), 0o755)
   for origin, target, mode in [(TOOLS / 'systemd-vm-guest.py', private / 'guest.py', 0o644),
       (TOOLS / 'systemd_vm_profile.py', private / 'systemd_vm_profile.py', 0o644),
       (PORT / 'qualification/vm-user-probe.py', public / 'user-probe.py', 0o644),
@@ -259,7 +271,7 @@ TimeoutStartSec=5
   for purpose, relative in [('home', 'home'), ('log', 'var/log')]:
     original = root / relative
     original.rename(seed / profile['filesystem']['subvolumes'][purpose])
-    original.mkdir(mode=0o755)
+    new_directory(original, 0o755)
   image = output / 'root.btrfs'
   with image.open('xb') as stream: stream.truncate(IMAGE_BYTES)
   volumes = profile['filesystem']['subvolumes']

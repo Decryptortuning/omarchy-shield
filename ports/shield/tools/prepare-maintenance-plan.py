@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from usb_candidate_transaction import validate_plan
 from usb_root_profile import database_profile, digest, require
-from maintenance_accounts import account_preimages
+from maintenance_accounts import original_account_baseline
 
 
 def main():
@@ -21,31 +21,23 @@ def main():
   root = args.base_rootfs.resolve(strict=True)
   require(root != Path('/') and (root / 'var/lib/shield-linux/sources.lock.json').is_file(), 'Use the pinned original USB reference')
   manifest = json.loads(args.payload_manifest.read_text())
-  require(digest(args.account_preimages_receipt) == args.account_preimages_receipt_sha256,
-          'Original account evidence pin differs')
-  accounts = json.loads(args.account_preimages_receipt.read_text())
-  require(type(accounts['format_version']) is int and accounts['format_version'] == 1
-          and accounts['scope'] == 'Original immutable host image account evidence only'
-          and accounts['image_unchanged'] is True and type(accounts['root_id']) is int
-          and accounts['root_id'] == 256 and accounts['image_sha256'] == args.base_image_sha256
-          and accounts['actual_physical_USB_preimages_verified'] is False
-          and accounts['physical_write_authority'] is False and accounts['boot_ready'] is False,
-          'Wrong original-image account evidence')
-  account_preimages(root, accounts['account_preimages'])
+  original, _contents = original_account_baseline(root, args.account_preimages_receipt.absolute(),
+    args.account_preimages_receipt_sha256, args.base_image_sha256)
+  accounts = original['account_preimages']
   critical = ['etc/fstab', 'etc/pacman.conf', 'usr/bin/pacman', 'usr/lib/libc.so.6',
               'usr/lib/omarchy/shield/kernel/Image', 'var/lib/shield-linux/package-build.json',
               'usr/bin/pacman-key', 'usr/bin/gpg', 'usr/bin/gpgconf',
               'usr/share/pacman/keyrings/archlinuxarm.gpg',
               'usr/share/pacman/keyrings/archlinuxarm-trusted',
               'usr/share/pacman/keyrings/archlinuxarm-revoked']
-  critical += sorted(accounts['account_preimages'])
+  critical += sorted(accounts)
   plan = {'format_version': 1, 'candidate_id': manifest['candidate_id'],
           'filesystem_uuid': manifest['filesystem_uuid'], 'original_subvolumes': {'root': '@', 'home': '@home', 'log': '@log'},
           'minimum_free_bytes': 3 * 1024**3, 'base_database': database_profile(root),
           'base_files': {name: digest(root / name) for name in critical},
           'payload_manifest_sha256': digest(args.payload_manifest),
           'base_image_sha256': args.base_image_sha256,
-          'base_account_preimages': accounts['account_preimages'],
+          'base_account_preimages': accounts,
           'original_image_account_receipt_sha256': args.account_preimages_receipt_sha256,
           'payload_canonical_sha256': hashlib.sha256(json.dumps(manifest, sort_keys=True,
              separators=(',', ':'), ensure_ascii=True).encode()).hexdigest(),

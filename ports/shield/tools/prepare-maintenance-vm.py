@@ -13,7 +13,7 @@ import sys
 
 from stock_boot import read_newc, write_newc
 from usb_candidate_transaction import validate_plan
-from usb_root_profile import admit_payload, digest, require
+from usb_root_profile import admit_payload, digest, host_metadata_execute, require
 
 BUSYBOX_SHA256 = '3f8cea86400f302ca3e798ccabb1c2b2594026c1e6b281ce986de8b79d92d0a8'
 
@@ -44,7 +44,7 @@ def main():
   validate_plan(plan, manifest)
   require(plan['base_image_sha256'] == args.base_image_sha256,
           'Account plan and original image differ')
-  admit_payload(manifest, args.payload / 'packages')
+  admit_payload(manifest, args.payload / 'packages', execute=host_metadata_execute)
   toolroot_receipt = json.loads(regular(args.toolroot / 'receipt.json').read_text())
   toolroot_archive = regular(args.toolroot / 'toolroot.tar.gz')
   require(digest(toolroot_archive) == toolroot_receipt['archive_sha256'], 'Toolroot archive differs')
