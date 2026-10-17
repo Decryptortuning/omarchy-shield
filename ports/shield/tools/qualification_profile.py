@@ -6,7 +6,10 @@ creates an account, mounts storage, enables a boot or claims a guardian ready.
 import gzip
 import hashlib
 import json
+import os
 from pathlib import Path
+import re
+import stat
 import xml.etree.ElementTree as ET
 from usb_root_profile import digest, require, rooted, validate_manifest
 
@@ -19,11 +22,16 @@ HOME = '/home/' + USER
 # policy version requires one coordinated review, not guessed action aliases.
 LOGIN1_POLICY = 'usr/share/polkit-1/actions/org.freedesktop.login1.policy'
 SYSTEMD1_POLICY = 'usr/share/polkit-1/actions/org.freedesktop.systemd1.policy'
+PORTABLE1_POLICY = 'usr/share/polkit-1/actions/org.freedesktop.portable1.policy'
+ACTION_DIRECTORY = 'usr/share/polkit-1/actions'
+ACTION_CATALOG_COUNT = 32
+ACTION_CATALOG_SHA256 = '0c9357c7c277481b377f4fb33cf1601b89d2f264a5bb47ffb80bcba0bceb7838'
 LOGIND_MAN = 'usr/share/man/man5/logind.conf.5.gz'
 MANAGER_MAN = 'usr/share/man/man5/systemd-system.conf.5.gz'
 PRIMARY_SHA256 = {
   LOGIN1_POLICY: 'b2c416657bac00b38e66d37a3c4a541bdd0000d06aabe0a5f6e94580ea4c7807',
   SYSTEMD1_POLICY: '05b867df07111f0693828fce4db65e6d14d653244952f7a598f4a4b600164d3b',
+  PORTABLE1_POLICY: 'cf64e4b40ec9a3ae18cc45e54acd92dc61a80c7785c8362198f6f2bcea486591',
   LOGIND_MAN: 'db2f19443c24d2a7e563e15bdc4a36ef57d1e50b543f7467647f29c7a63a0051',
   MANAGER_MAN: 'a7b6f501710ecbdd1cb81c5201718f26dabeec30085b2de163f6430ebaa12aed',
 }
@@ -55,6 +63,8 @@ SYSTEMD1_DENIED = (
   'org.freedesktop.systemd1.set-environment',
   'org.freedesktop.systemd1.reload-daemon',
 )
+PORTABLE1_DENIED = ('org.freedesktop.portable1.attach-images',)
+DENIED_ACTIONS = LOGIN1_DENIED + SYSTEMD1_DENIED + PORTABLE1_DENIED
 LOGIND_IGNORE_KEYS = (
   'HandlePowerKey', 'HandlePowerKeyLongPress',
   'HandleRebootKey', 'HandleRebootKeyLongPress',
@@ -67,6 +77,60 @@ POLKIT_PATH = 'etc/polkit-1/rules.d/00-shield-qualification.rules'
 LOGIND_PATH = 'etc/systemd/logind.conf.d/90-shield-qualification.conf'
 
 
+def action_catalog(root):
+  """Admit the complete source catalog and its incoming implication closure.
+
+  Source files must belong to this host caller (root in real preparation).
+  Runtime readiness independently requires root ownership on the target.
+  Whitespace tokenization is conservative; exact catalog hashes pin the actual
+  installed implication spelling used by this qualification.
+  """
+  root = Path(root).resolve(strict=True)
+  directory = root
+  for component in ACTION_DIRECTORY.split('/'):
+    directory /= component
+    info = directory.lstat()
+    require(stat.S_ISDIR(info.st_mode) and info.st_uid == os.geteuid()
+            and info.st_gid == os.getegid() and not info.st_mode & 0o022, 'Unowned policy catalog source')
+  paths = sorted(directory.glob('*.policy'))
+  require(len(paths) == ACTION_CATALOG_COUNT and len(paths) <= 128, 'Policy catalog file count differs')
+  catalog, contents, total = {}, {}, 0
+  for path in paths:
+    info = path.lstat()
+    require(stat.S_ISREG(info.st_mode) and info.st_uid == os.geteuid() and info.st_gid == os.getegid()
+            and not info.st_mode & 0o022 and info.st_size <= 1024**2, 'Unsafe policy catalog source')
+    data = path.read_bytes(); total += len(data)
+    require(len(data) == info.st_size and total <= 2 * 1024**2, 'Excessive policy catalog bytes')
+    name = str(path.relative_to(root))
+    catalog[name] = hashlib.sha256(data).hexdigest(); contents[name] = data
+  encoded = json.dumps(catalog, sort_keys=True, separators=(',', ':')).encode()
+  require(hashlib.sha256(encoded).hexdigest() == ACTION_CATALOG_SHA256, 'Policy catalog source differs')
+  graph = {}
+  for data in contents.values():
+    for node in ET.fromstring(data).findall('action'):
+      action = node.attrib.get('id')
+      require(isinstance(action, str) and re.fullmatch('[A-Za-z0-9_.-]{1,256}', action)
+              and action not in graph and len(graph) < 1024, 'Duplicate or malformed policy action')
+      annotations = [value for value in node.findall('annotate')
+                     if value.attrib.get('key') == 'org.freedesktop.policykit.imply']
+      require(len(annotations) <= 1, 'Ambiguous policy implication')
+      implied = (annotations[0].text or '').split() if annotations else []
+      require(all(re.fullmatch('[A-Za-z0-9_.-]{1,256}', item) for item in implied)
+              and (not annotations or implied) and len(implied) == len(set(implied)),
+              'Malformed policy implication')
+      graph[action] = set(implied)
+  seed = set(LOGIN1_DENIED + SYSTEMD1_DENIED)
+  expected = set(DENIED_ACTIONS)
+  require(expected.issubset(graph), 'Required power policy action is absent')
+  closure = set(seed)
+  while True:
+    expanded = closure | {action for action, targets in graph.items() if targets & closure}
+    if expanded == closure: break
+    closure = expanded
+  require(closure == expected, 'Unreviewed incoming power policy implication')
+  return catalog
+
+
 def power_policy(root):
   primary = {}
   for name, expected in PRIMARY_SHA256.items():
@@ -74,7 +138,8 @@ def power_policy(root):
     require(not path.is_symlink() and path.is_file() and digest(path) == expected,
             'Power policy primary source differs: ' + name)
     primary[name] = path.read_bytes()
-  for name, denied in [(LOGIN1_POLICY, LOGIN1_DENIED), (SYSTEMD1_POLICY, SYSTEMD1_DENIED)]:
+  for name, denied in [(LOGIN1_POLICY, LOGIN1_DENIED), (SYSTEMD1_POLICY, SYSTEMD1_DENIED),
+                       (PORTABLE1_POLICY, PORTABLE1_DENIED)]:
     actions = [node.attrib['id'] for node in ET.fromstring(primary[name]).findall('action')]
     require(len(actions) == len(set(actions)) and set(denied).issubset(actions),
             'Installed privileged action catalog differs')
@@ -83,19 +148,20 @@ def power_policy(root):
   require(all(key + '=' in logind for key in LOGIND_IGNORE_KEYS) and
           'CtrlAltDelBurstAction=' in manager and '"none"' in manager,
           'Installed systemd power configuration keys differ')
+  catalog = action_catalog(root)
   # A literal action switch and user guard avoid granting anything to root or
   # to another subject. Unrelated actions fall through to the installed policy.
   rule = ('// Bounded qualification only; root recovery uses its owned syscall path.\n'
           'polkit.addRule(function(action, subject) {\n'
           '  if (subject.user !== "shieldqual") { return; }\n'
           '  switch (action.id) {\n')
-  rule += ''.join('    case ' + json.dumps(action) + ':\n' for action in LOGIN1_DENIED + SYSTEMD1_DENIED)
+  rule += ''.join('    case ' + json.dumps(action) + ':\n' for action in DENIED_ACTIONS)
   rule += ('      return polkit.Result.NO;\n'
            '    default: return;\n'
            '  }\n'
            '});\n')
-  return {POLKIT_PATH: rule, LOGIND_PATH: '[Login]\n' +
-          ''.join(key + '=ignore\n' for key in LOGIND_IGNORE_KEYS)}
+  return ({POLKIT_PATH: rule, LOGIND_PATH: '[Login]\n' +
+           ''.join(key + '=ignore\n' for key in LOGIND_IGNORE_KEYS)}, catalog)
 
 
 def account_plan():
@@ -114,7 +180,7 @@ def admitted_text(root, manifest, name):
 
 def render(root, manifest):
   validate_manifest(manifest)
-  power_files = power_policy(root)
+  power_files, catalog = power_policy(root)
   source = admitted_text(root, manifest, 'usr/share/omarchy/config/hypr/hyprland.lua')
   autostart = admitted_text(root, manifest, 'usr/share/omarchy/default/hypr/autostart.lua')
   session = admitted_text(root, manifest, 'usr/share/omarchy/default/wayland-sessions/omarchy.desktop')
@@ -271,7 +337,7 @@ fi
       'systemd-hibernate.service': 'sleep and wake remain separately unqualified',
       'systemd-hybrid-sleep.service': 'sleep and wake remain separately unqualified',
       'systemd-suspend-then-hibernate.service': 'sleep and wake remain separately unqualified'},
-    'user_power_policy': {'subject_user': USER, 'denied_actions': list(LOGIN1_DENIED + SYSTEMD1_DENIED),
+    'user_power_policy': {'subject_user': USER, 'denied_actions': list(DENIED_ACTIONS),
       'unrelated_subjects_and_actions': 'fall through', 'logind_ignored_keys': list(LOGIND_IGNORE_KEYS),
       'ctrl_alt_del_burst_action': 'none', 'native_effective_policy_verified': False},
     'guardian_required_before_desktop': True, 'boot_ready': False, 'physical_qualified': False,
@@ -279,6 +345,9 @@ fi
       [('usr/share/omarchy/config/hypr/hyprland.lua', source),
        ('usr/share/omarchy/default/hypr/autostart.lua', autostart),
        ('usr/share/omarchy/default/wayland-sessions/omarchy.desktop', session)]},
-    'power_policy_primary_sources': dict(PRIMARY_SHA256)}
+    'power_policy_primary_sources': dict(PRIMARY_SHA256),
+    'power_policy_action_catalog': catalog,
+    'power_policy_action_catalog_sha256': ACTION_CATALOG_SHA256,
+    'incoming_power_implication_closure_verified': True}
   home_files[f'{USER}/.local/state/omarchy/shield-qualification.json'] = json.dumps(policy, indent=2) + '\n'
   return {'root': root_files, 'home': home_files, 'policy': policy}

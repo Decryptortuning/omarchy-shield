@@ -12,8 +12,10 @@ PORT = Path(__file__).resolve().parent.parent
 REPO = PORT.parent.parent
 sys.path.insert(0, str(PORT / 'tools'))
 import qualification_profile as POLICY
+import qualification_recovery as RECOVERY
 from qualification_profile import UID, render
 from usb_root_profile import file_identity
+REVIEWED_CATALOG = (POLICY.ACTION_CATALOG_COUNT, POLICY.ACTION_CATALOG_SHA256)
 
 SPEC = importlib.util.spec_from_file_location('qualification_usb_fixture', PORT / 'tests/test_usb_root_profile.py')
 FIXTURE = importlib.util.module_from_spec(SPEC)
@@ -43,6 +45,9 @@ class QualificationProfileTests(unittest.TestCase):
         for name in POLICY.LOGIN1_DENIED + ('org.freedesktop.login1.inhibit-delay-sleep',)) + '</policyconfig>').encode(),
       POLICY.SYSTEMD1_POLICY: ('<policyconfig>' + ''.join('<action id="' + name + '"/>'
         for name in POLICY.SYSTEMD1_DENIED + ('org.freedesktop.systemd1.reply-password',)) + '</policyconfig>').encode(),
+      POLICY.PORTABLE1_POLICY: b'<policyconfig><action id="org.freedesktop.portable1.attach-images">'
+        b'<annotate key="org.freedesktop.policykit.imply">org.freedesktop.systemd1.reload-daemon</annotate>'
+        b'</action></policyconfig>',
       POLICY.LOGIND_MAN: gzip.compress(' '.join(name + '=' for name in POLICY.LOGIND_IGNORE_KEYS).encode(), mtime=0),
       POLICY.MANAGER_MAN: gzip.compress(b'CtrlAltDelBurstAction= "none"', mtime=0),
     }
@@ -55,6 +60,14 @@ class QualificationProfileTests(unittest.TestCase):
     admission = patch.object(POLICY, 'PRIMARY_SHA256', self.primary_hashes)
     admission.start()
     self.addCleanup(admission.stop)
+    for name, value in [('ACTION_CATALOG_COUNT', 3), ('ACTION_CATALOG_SHA256', self.catalog_digest())]:
+      admission = patch.object(POLICY, name, value); admission.start(); self.addCleanup(admission.stop)
+
+  def catalog_digest(self):
+    paths = sorted((self.root / POLICY.ACTION_DIRECTORY).glob('*.policy'))
+    values = {str(path.relative_to(self.root)): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths}
+    import json
+    return hashlib.sha256(json.dumps(values, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
 
   def test_mounts_select_only_new_candidate_subvolumes(self):
     profile = render(self.root, self.manifest)
@@ -102,14 +115,44 @@ class QualificationProfileTests(unittest.TestCase):
       'set-reboot-to-boot-loader-menu', 'set-reboot-to-boot-loader-entry'])
     expected.update('org.freedesktop.systemd1.' + name for name in [
       'manage-units', 'manage-unit-files', 'set-environment', 'reload-daemon'])
+    expected.add('org.freedesktop.portable1.attach-images')
     rule = profile['root'][POLICY.POLKIT_PATH]
     actual = re.findall(r'^    case "([^"]+)":$', rule, re.MULTILINE)
-    self.assertEqual(len(actual), 24)
+    self.assertEqual(len(actual), 25)
     self.assertEqual(set(actual), expected)
     self.assertEqual(set(profile['policy']['user_power_policy']['denied_actions']), expected)
     self.assertEqual(rule.count('return polkit.Result.NO;'), 1)
     self.assertNotIn('hybrid-sleep', rule)
     self.assertNotIn('suspend-then-hibernate', rule)
+
+  def test_renderer_and_receiver_pin_the_same_complete_catalog(self):
+    self.assertEqual(REVIEWED_CATALOG, (RECOVERY.ACTION_CATALOG_COUNT, RECOVERY.ACTION_CATALOG_SHA256))
+    profile = render(self.root, self.manifest)['policy']
+    self.assertEqual(len(profile['power_policy_action_catalog']), 3)
+    self.assertEqual(profile['power_policy_action_catalog_sha256'], self.catalog_digest())
+    self.assertTrue(profile['incoming_power_implication_closure_verified'])
+
+  def test_extra_catalog_file_cannot_bypass_review(self):
+    (self.root / POLICY.ACTION_DIRECTORY / 'extra.policy').write_text('<policyconfig/>')
+    with self.assertRaisesRegex(ValueError, 'catalog file count differs'): render(self.root, self.manifest)
+
+  def test_refreshed_catalog_digest_does_not_authorize_a_new_implication_route(self):
+    extra = self.root / POLICY.ACTION_DIRECTORY / 'extra.policy'
+    extra.write_text('<policyconfig><action id="org.fixture.extra">'
+      '<annotate key="org.freedesktop.policykit.imply">org.freedesktop.systemd1.reload-daemon</annotate>'
+      '</action></policyconfig>')
+    with patch.object(POLICY, 'ACTION_CATALOG_COUNT', 4), patch.object(POLICY, 'ACTION_CATALOG_SHA256', self.catalog_digest()):
+      with self.assertRaisesRegex(ValueError, 'Unreviewed incoming'): render(self.root, self.manifest)
+
+  def test_duplicate_actions_after_catalog_digest_refresh_are_rejected(self):
+    extra = self.root / POLICY.ACTION_DIRECTORY / 'extra.policy'
+    extra.write_text('<policyconfig><action id="org.freedesktop.login1.reboot"/></policyconfig>')
+    with patch.object(POLICY, 'ACTION_CATALOG_COUNT', 4), patch.object(POLICY, 'ACTION_CATALOG_SHA256', self.catalog_digest()):
+      with self.assertRaisesRegex(ValueError, 'Duplicate or malformed'): render(self.root, self.manifest)
+
+  def test_catalog_directory_must_not_be_writable_by_another_subject(self):
+    directory = self.root / POLICY.ACTION_DIRECTORY; directory.chmod(0o777)
+    with self.assertRaisesRegex(ValueError, 'Unowned policy catalog'): render(self.root, self.manifest)
 
   def test_root_other_users_and_unrelated_actions_fall_through(self):
     rule = render(self.root, self.manifest)['root'][POLICY.POLKIT_PATH]
