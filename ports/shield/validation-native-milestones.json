@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "qualification_date_UTC": "2026-10-17",
+  "target": {
+    "board": "Darcy A04",
+    "SoC": "original Tegra210 A02",
+    "generation_2019_B01_qualification": false
+  },
+  "scope": "Owned-device bounded diagnostics and passive boot-context qualification. This is not a complete hardware-parity or unattended-desktop release.",
+  "source_delivery": "The tested Image171, expanded DT and probe/control payloads have private pinned build/review receipts. Their complete integration into the published kernel/package/boot recipes is pending; existing public build recipes do not reproduce all these later probes.",
+  "milestones": {
+    "native73_display": {
+      "MC_reset_ownership_corrected": true,
+      "underflow_samples": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "screenshot_viewed": true,
+      "physical_HDMI_owner_observation_pending": true
+    },
+    "native75_watchdog": {
+      "fed_phase_seconds": 539.999720159,
+      "successful_pings": 19,
+      "sustained_feed_qualified": true,
+      "same_fd_held_after_withholding": true,
+      "hardware_expiry_qualified": true,
+      "reset_cause": "TEGRA_WATCHDOG",
+      "reset_raw": 1,
+      "authenticated_recovery_returned": true
+    },
+    "native78_emmc_readonly": {
+      "qualified": true,
+      "negotiated_clock_Hz": 35840000,
+      "bus_width_bits": 8,
+      "signal_voltage_V": 1.8,
+      "timing": "MMC high-speed; fast modes disabled",
+      "user_partitions_readonly": 33,
+      "critical_boot_partition_whole_hashes_verified": true,
+      "CAC_UUID_verified": true,
+      "no_filesystem_or_media_writes": true
+    },
+    "native79_canary": {
+      "qualified": false,
+      "status": "Terminal incomplete failure; incorrect CAC root-inode ownership guard, corrected in fresh native80. RW mount observed; no success claim or replay."
+    },
+    "native80_CAC_and_desktop": {
+      "qualified": true,
+      "clean_unmount_sequence": [
+        "exclusive owned file creation",
+        "file and directory fsync",
+        "atomic no-replace rename",
+        "clean unmount",
+        "RO remount and SHA256 readback",
+        "verified owned-entry removal and fsync",
+        "final RO remount verifies absence",
+        "parent and all user partitions restored read-only"
+      ],
+      "underflow_samples": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "Omarchy_session_result": 0,
+      "automatic_authenticated_recovery_without_fastboot_fallback": true,
+      "observed_MMC_or_filesystem_faults": [],
+      "CAC_filesystem_writes": true,
+      "boot_partition_writes": false,
+      "sudden_powerloss_or_journal_replay_qualified": false
+    },
+    "passive_init_context": {
+      "qualified": true,
+      "normal_boot_partition_updated_and_read_back": true,
+      "recovery_partition_preserved": true,
+      "parent_pid": 1,
+      "SELinux_domain": "u:r:recovery:s0",
+      "global_SELinux_enforcing": true,
+      "effective_capabilities": [
+        "SYS_ADMIN",
+        "SYS_BOOT",
+        "SYSLOG"
+      ],
+      "init_service_exit0_observed": true,
+      "RAM_report_only": true,
+      "autonomous_modern_launch_qualified": false
+    }
+  },
+  "private_receipt_sha256": {
+    "display": "5d68552ada3deed92b08c2b4703f4b2914f780f39237e7815baeedbf1544bfa4",
+    "watchdog": "bb973d717e3e1b0842b605607c38071857f2dce6ff88c54f28e7b2f9fce2be1d",
+    "emmc_readonly": "e28e3b5562c652b2ed3f3edbf5db213f4494688f31ce965dbb7eafa1a443bfa7",
+    "CAC": "4e976de2769b0d58083f24b10f08e1e761d51a085051603784ad34990897bcaf",
+    "boot_context": "c4914d4da4ad6169d3323d6352db81eed3a8868992517679d8afd9b01ac4cd55"
+  },
+  "remaining": [
+    "Coherent persistent USB root with current kernel/modules/Mesa and normal owner session",
+    "Durable enable/candidate/attempt/nonce state and matched modern health clearing",
+    "Normal PID1 sole watchdog ownership and shutdown/kexec lifecycle",
+    "Automatic fan cooling map and policy; bounded tests used maximum fan",
+    "Wi-Fi/Bluetooth board-specific firmware, shared power/reset and functional tests",
+    "Actual Ethernet board identity and functional qualification",
+    "HDMI/USB/Bluetooth audio, ELD/routing and passthrough",
+    "Host1x NVDEC/NVENC/VIC firmware execution and application integration",
+    "Vulkan; current Mesa probe package excludes Vulkan and NVK default SoC gate remains",
+    "All-core CPU, RAM pressure, DVFS/EMC, idle and sustained performance",
+    "Suspend/resume, wake, USB mixed devices and role switching",
+    "Display modes/hotplug/color/HDR/protection and repeated transitions"
+  ]
+}

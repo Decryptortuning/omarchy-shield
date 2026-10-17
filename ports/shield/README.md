@@ -63,6 +63,8 @@ The source branch reports `4.0.0.alpha`. The latest paired runtime/settings pack
 
 ## Qualification
 
+[Latest bounded physical milestones](DARCY.md) record hardware-rendered Omarchy, corrected display MC reset ownership, watchdog expiry, read-only eMMC, clean-unmount CAC durability and a passive init-owned boot-context probe. [The machine-readable receipt](validation-native-milestones.json) distinguishes these results from unattended boot and full hardware parity; complete integration of those later private candidates into the public build recipes remains pending.
+
 The acceptance matrix covers CPU/RAM, eMMC, both USB ports and role switching, SSD, Ethernet, Wi-Fi, Bluetooth/remote/microphone, HDMI/audio/CEC, GPU rendering/Vulkan, video decode/encode/VIC, cooling, clocks/power, suspend/wake and independent boot/recovery. Hardware-rendered Hyprland is required; a software renderer is not a GPU pass. HDR, Dolby, protected playback and NVIDIA AI upscaling need separate vendor/userspace/licensing feasibility work.
 
 The source currently has focused automated coverage for platform detection, package composition, manifests, repository templates and lifecycle boundaries. Desktop and hardware qualification requires the real Shield; the matrix stays untested until evidence is available.
