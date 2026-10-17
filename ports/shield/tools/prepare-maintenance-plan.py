@@ -18,7 +18,11 @@ def main():
   require(root != Path('/') and (root / 'var/lib/shield-linux/sources.lock.json').is_file(), 'Use the pinned original USB reference')
   manifest = json.loads(args.payload_manifest.read_text())
   critical = ['etc/fstab', 'etc/pacman.conf', 'usr/bin/pacman', 'usr/lib/libc.so.6',
-              'usr/lib/omarchy/shield/kernel/Image', 'var/lib/shield-linux/package-build.json']
+              'usr/lib/omarchy/shield/kernel/Image', 'var/lib/shield-linux/package-build.json',
+              'usr/bin/pacman-key', 'usr/bin/gpg', 'usr/bin/gpgconf',
+              'usr/share/pacman/keyrings/archlinuxarm.gpg',
+              'usr/share/pacman/keyrings/archlinuxarm-trusted',
+              'usr/share/pacman/keyrings/archlinuxarm-revoked']
   plan = {'format_version': 1, 'candidate_id': manifest['candidate_id'],
           'filesystem_uuid': manifest['filesystem_uuid'], 'original_subvolumes': {'root': '@', 'home': '@home', 'log': '@log'},
           'minimum_free_bytes': 3 * 1024**3, 'base_database': database_profile(root),

@@ -73,6 +73,7 @@ def prepare(inventory_path, expected_sha256, output):
   require(not output.exists() and not output.is_symlink(), 'Output must be a new directory')
   output.mkdir(mode=0o700)
   archive = output / 'toolroot.tar.gz'
+  normalized_modes = {}
   with archive.open('xb') as raw:
     with gzip.GzipFile(fileobj=raw, filename='', mode='wb', mtime=0, compresslevel=9) as compressed:
       with tarfile.open(fileobj=compressed, mode='w|', format=tarfile.USTAR_FORMAT) as tar:
@@ -86,12 +87,18 @@ def prepare(inventory_path, expected_sha256, output):
             entry.type = tarfile.SYMTYPE
             entry.linkname = item['target']
           else:
+            # The maintenance runtime is root-only. Admit the original package
+            # metadata above, but do not grant set-ID authority in this RAM root.
+            entry.mode &= ~0o6000
+            if entry.mode != item['mode']:
+              normalized_modes[name] = {'source': item['mode'], 'runtime': entry.mode}
             entry.size = len(data)
           tar.addfile(entry, io.BytesIO(data) if entry.isfile() else None)
   receipt = {'format_version': 1, 'inventory_sha256': expected_sha256,
     'source_root': str(root), 'builder_sha256': digest(__file__), 'modules': modules,
     'paths': len(selected), 'regular_bytes': sum(len(data) for item, data in selected.values()),
     'archive_bytes': archive.stat().st_size, 'archive_sha256': digest(archive),
+    'root_only_mode_normalizations': normalized_modes,
     'arm_execution_verified': False, 'complete_initramfs_fit_verified': False,
     'device_operations': False, 'boot_ready': False}
   with (output / 'receipt.json').open('x') as stream:
