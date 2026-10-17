@@ -20,6 +20,8 @@ Sudo authentication policy remains unchanged. The VM separately proves the root 
 
 ## Planned native preparation phases
 
+The [fresh maintenance account witness](../validation-maintenance-accounts.json) now proves that the matched six-package update preserves the independently pinned original accounts on its owned VM disk, including a clean unmount and read-only readback. The original host-image account evidence and the tested desktop layer's account postimages are separately retained. A physical maintenance run must still admit the actual USB files, verify its own final postimages and seal them together with clean release and observed authenticated recovery; the VM receipt cannot substitute for that physical evidence.
+
 The native controller and broker remain implementation work. Separate bounded boots keep package data and the complete home/runtime layer within the reviewed memory window:
 
 1. Maintenance A creates new candidate snapshots and applies the signed matched packages. A successful package receipt still requires clean USB release and observed authenticated recovery before advancing.

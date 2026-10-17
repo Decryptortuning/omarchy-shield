@@ -17,6 +17,7 @@ from usb_root_profile import digest, require, verify_root
 
 DEADLINE = time.monotonic() + 720
 ENV = {'PATH': '/usr/bin:/bin:/usr/sbin:/sbin', 'LC_ALL': 'C', 'HOME': '/root'}
+from maintenance_accounts import account_preimages
 
 
 def budget(seconds):
@@ -82,6 +83,7 @@ def main():
   require(digest(inputs / 'manifest.json') == identity['manifest_sha256'], 'VM manifest differs')
   require(digest(inputs / 'plan.json') == identity['plan_sha256'], 'VM plan differs')
   validate_plan(plan, manifest)
+  require(plan['base_image_sha256'] == identity['base_image_sha256'], 'Account plan/image differs')
   device = Path('/dev/vda')
   require(stat.S_ISBLK(device.stat().st_mode), 'Owned virtio test disk absent')
   require(Path('/sys/class/block/vda/size').read_text().strip() == str(identity['image_bytes'] // 512), 'VM disk size differs')
@@ -97,6 +99,9 @@ def main():
   execute(['/usr/bin/mount', '-t', 'btrfs', '-o', 'ro,rescue=nologreplay,subvolid=5', str(device), str(top)])
   verify_top_mount(top, readonly=True)
   base_unchanged(top, plan)
+  # Mandatory for this fresh VM cohort; old plans without account pins fail
+  # before any RW mount, snapshot, ALPM command or transaction journal.
+  original_accounts = account_preimages(top / '@', plan['base_account_preimages'])
   default = default_subvolume(execute(['/usr/bin/btrfs', 'subvolume', 'get-default', str(top)]))
   execute(['/usr/bin/umount', str(top)])
   require(not disk_mounts(), 'Read-only admission mount remains')
@@ -105,6 +110,9 @@ def main():
   result = update_candidate(plan, manifest, inputs / 'packages', top,
                             guard_check=budget, execute=execute)
   require(result['state'] == 'VERIFIED' and not result['boot_ready'], 'Unexpected core result')
+  candidate_accounts = account_preimages(top / manifest['subvolumes']['root'],
+                                        plan['base_account_preimages'])
+  require(candidate_accounts == original_accounts, 'Package phase changed account databases')
   execute(['/usr/bin/btrfs', 'filesystem', 'sync', str(top)])
   execute(['/usr/bin/umount', str(top)])
   require(not disk_mounts(), 'Transaction mount remains')
@@ -112,6 +120,10 @@ def main():
   verify_top_mount(top, readonly=True)
   verify_root(manifest, top / manifest['subvolumes']['root'])
   base_unchanged(top, plan)
+  require(account_preimages(top / '@', plan['base_account_preimages']) == original_accounts
+          and account_preimages(top / manifest['subvolumes']['root'],
+                                plan['base_account_preimages']) == candidate_accounts,
+          'Account readback changed across clean unmount')
   require(default_subvolume(execute(['/usr/bin/btrfs', 'subvolume', 'get-default', str(top)])) == default,
           'Original default changed')
   journal = json.loads((top / '.shield-qualification' / manifest['candidate_id'] / 'state.json').read_text())
@@ -122,6 +134,9 @@ def main():
     'manifest_sha256': identity['manifest_sha256'], 'plan_sha256': identity['plan_sha256'],
     'actual_btrfs_alpm_transaction': True, 'clean_unmount_and_readonly_readback': True,
     'original_root_profile_and_default_preserved': True,
+    'original_account_preimages_verified_before_RW_and_after_clean_unmount': True,
+    'package_candidate_account_postimages_equal_original': True,
+    'candidate_account_postimages': candidate_accounts,
     'physical_device_or_watchdog_qualified': False, 'boot_ready': False}
   print('SHIELD_MAINTENANCE_VM_RESULT ' + json.dumps(receipt, sort_keys=True), flush=True)
 

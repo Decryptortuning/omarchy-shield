@@ -26,6 +26,8 @@ def main():
   require(receipt['scope'] == 'owned QEMU disk derivative only' and not receipt['executed'], 'Wrong VM candidate')
   require(digest(Path(__file__).with_name('maintenance-vm-guest.py')) == receipt['guest_sha256'], 'Guest source differs')
   require(digest(Path(__file__).with_name('prepare-maintenance-vm.py')) == receipt['builder_sha256'], 'Builder source differs')
+  require(digest(Path(__file__).with_name('maintenance_accounts.py')) == receipt['account_helper_sha256'],
+          'Account admission source differs')
   for filename, key in [('Image', 'kernel_sha256'), ('initramfs.cpio.gz', 'initramfs_sha256'),
                         ('test-disk.qcow2', 'initial_overlay_sha256')]:
     require(digest(real_file(candidate / filename)) == receipt[key], 'VM artifact differs: ' + filename)
@@ -61,6 +63,9 @@ def main():
     except subprocess.TimeoutExpired:
       error = 'outer-qemu-timeout'
   baseline_unchanged = digest(base) == receipt['base_image_sha256']
+  # Seal the owned endpoint after QEMU has exited, including failed attempts.
+  # This does not make a failed image eligible for replay or native use.
+  final_owned_disk_sha256 = digest(real_file(disk))
   log = (output / 'console.log').read_text(errors='replace')
   prefix = 'SHIELD_MAINTENANCE_VM_RESULT '
   results = [json.loads(line.strip()[len(prefix):]) for line in log.splitlines() if line.strip().startswith(prefix)]
@@ -70,6 +75,7 @@ def main():
     'base_image_sha256': receipt['base_image_sha256'], 'baseline_unchanged': baseline_unchanged,
     'guest_results': results, 'console_sha256': digest(output / 'console.log'),
     'candidate_receipt_sha256': digest(candidate / 'receipt.json'), 'runner_sha256': digest(__file__),
+    'final_owned_disk_sha256': final_owned_disk_sha256,
     'hardware_or_performance_qualified': False, 'boot_ready': False}
   with (output / 'result.json').open('x') as stream:
     json.dump(result, stream, indent=2)

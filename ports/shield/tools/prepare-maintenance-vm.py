@@ -42,6 +42,8 @@ def main():
   manifest_path = regular(args.payload / 'manifest.json')
   manifest = json.loads(manifest_path.read_text())
   validate_plan(plan, manifest)
+  require(plan['base_image_sha256'] == args.base_image_sha256,
+          'Account plan and original image differ')
   admit_payload(manifest, args.payload / 'packages')
   toolroot_receipt = json.loads(regular(args.toolroot / 'receipt.json').read_text())
   toolroot_archive = regular(args.toolroot / 'toolroot.tar.gz')
@@ -96,6 +98,8 @@ def main():
   add('opt/maintenance-input/vm-identity.json', stat.S_IFREG | 0o600, json.dumps(identity).encode())
   guest = Path(__file__).with_name('maintenance-vm-guest.py')
   add('opt/maintenance-vm.py', stat.S_IFREG | 0o600, guest.read_bytes())
+  accounts = Path(__file__).with_name('maintenance_accounts.py')
+  add('usr/lib/shield-maintenance/maintenance_accounts.py', stat.S_IFREG | 0o644, accounts.read_bytes())
   init = b'''#!/bin/sh
 PATH=/usr/bin:/bin:/usr/sbin:/sbin
 export PATH
@@ -134,6 +138,7 @@ while :; do sleep 1; done
     'toolroot_archive_sha256': toolroot_receipt['archive_sha256'],
     'manifest_sha256': identity['manifest_sha256'], 'plan_sha256': identity['plan_sha256'],
     'guest_sha256': digest(guest), 'builder_sha256': digest(__file__),
+    'account_helper_sha256': digest(accounts),
     'initramfs_sha256': digest(output / 'initramfs.cpio.gz'), 'initramfs_bytes': len(ramdisk),
     'initial_overlay_sha256': digest(output / 'test-disk.qcow2'),
     'cpio_paths': len(entries), 'executed': False, 'physical_qualified': False, 'boot_ready': False}
