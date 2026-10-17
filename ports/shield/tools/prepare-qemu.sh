@@ -2,6 +2,8 @@
 # Create a disposable VM filesystem; never accept a physical block device.
 set -euo pipefail
 port=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+# shellcheck source=ports/shield/tools/qemu-guest-profile.sh
+source "$port/tools/qemu-guest-profile.sh"
 build_root=$(realpath -- "${1:?Pass the native Linux build directory}")
 rootfs=$build_root/rootfs
 guest=$build_root/qemu-rootfs
@@ -10,6 +12,7 @@ kernel=${SHIELD_DIST_DIR:-$port/build/kernel}
 (( EUID == 0 )) || { echo 'Run as WSL root' >&2; exit 1; }
 [[ $build_root != / && ! -L $build_root ]]
 [[ -f $rootfs/var/lib/shield-linux/sources.lock.json ]]
+shield_qemu_validate_source "$rootfs"
 cmp -s "$kernel/Image" "$rootfs/usr/lib/omarchy/shield/kernel/Image" || { echo 'VM kernel differs from the installed linux-shield package' >&2; exit 1; }
 cmp -s "$kernel/kernel-release.txt" "$rootfs/usr/lib/omarchy/shield/kernel/kernel-release.txt" || exit 1
 [[ ! -e $guest && ! -e $image ]] || { echo 'Preserve or remove the previous owned QEMU build first' >&2; exit 1; }
@@ -24,8 +27,8 @@ install -m 0755 "$port/tools/qemu-usb-test.sh" "$guest/var/lib/shield-linux/qemu
 install -m 0644 "$port/diagnostic/usb-gadget.sh" "$guest/var/lib/shield-linux/usb-gadget.sh"
 # Lock inherited development accounts; the test user has no password.
 mknod -m 0666 "$guest/dev/null" c 1 3
-usermod --root "$guest" --lock root
-usermod --root "$guest" --lock alarm
+shield_qemu_lock_accounts "$guest"
+shield_qemu_write_mounts "$rootfs" "$guest"
 useradd --root "$guest" --create-home --shell /bin/bash qemutest
 rm -f "$guest/etc/machine-id" "$guest/var/lib/dbus/machine-id"
 touch "$guest/etc/machine-id"
