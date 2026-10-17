@@ -2,6 +2,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import shlex
 import stat
 import subprocess
 import sys
@@ -120,6 +121,84 @@ class KernelModulePackageTests(unittest.TestCase):
       self.assertTrue((installed.parent / 'outside-link').is_symlink())
       self.assertEqual(os.readlink(installed.parent / 'outside-link'), str(outside))
       self.assertEqual(stat.S_IMODE(outside.stat().st_mode), 0o700)
+
+
+@unittest.skipUnless(os.geteuid() == 0, 'Disposable UID/GID migration fixtures require root')
+class KernelModuleUpgradeTests(unittest.TestCase):
+  def script(self, root):
+    source = (PORT / 'linux-shield/linux-shield.install').read_text()
+    fixed_path = '/usr/lib/modules/7.1.0-shield-bringup'
+    self.assertEqual(source.count(fixed_path), 1)
+    # Rebase only the fixed pathname in a test copy; production has no override.
+    return source.replace(fixed_path, shlex.quote(str(root)))
+
+  def run_script(self, root, entrypoint, success=True):
+    result = subprocess.run(['bash', '-eu', '-c', self.script(root) + '\n' + entrypoint],
+      capture_output=True, env={'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LC_ALL': 'C'})
+    self.assertEqual(result.returncode == 0, success, result.stderr.decode(errors='replace'))
+
+  def test_install_and_upgrade_repair_only_real_module_directories(self):
+    for entrypoint in ['post_install', 'post_upgrade']:
+      with self.subTest(entrypoint=entrypoint), tempfile.TemporaryDirectory(prefix='shield-module-owner-') as temporary:
+        base = Path(temporary)
+        root = base / 'modules'
+        nested = root / 'kernel/drivers'
+        nested.mkdir(parents=True)
+        directories = [root, root / 'kernel', nested]
+        for directory in directories:
+          os.chown(directory, 1000, 1000)
+          directory.chmod(0o700)
+        module = nested / 'example.ko'
+        module.write_bytes(b'unchanged module bytes\n')
+        os.chown(module, 0, 0)
+        module.chmod(0o644)
+        outside = base / 'outside'
+        outside.mkdir(mode=0o700)
+        outside.chmod(0o700)
+        os.chown(outside, 1000, 1000)
+        link = root / 'outside-link'
+        link.symlink_to(outside, target_is_directory=True)
+        self.run_script(root, entrypoint)
+        for directory in directories:
+          info = directory.lstat()
+          self.assertEqual((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)), (0, 0, 0o755))
+        self.assertEqual(module.read_bytes(), b'unchanged module bytes\n')
+        info = module.lstat()
+        self.assertEqual((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)), (0, 0, 0o644))
+        self.assertTrue(link.is_symlink())
+        self.assertEqual(os.readlink(link), str(outside))
+        info = outside.lstat()
+        self.assertEqual((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)), (1000, 1000, 0o700))
+
+  def test_symlink_module_root_is_refused_without_touching_target(self):
+    with tempfile.TemporaryDirectory(prefix='shield-module-root-link-') as temporary:
+      base = Path(temporary)
+      outside = base / 'outside'
+      outside.mkdir(mode=0o700)
+      outside.chmod(0o700)
+      os.chown(outside, 1000, 1000)
+      root = base / 'modules'
+      root.symlink_to(outside, target_is_directory=True)
+      self.run_script(root, 'post_upgrade', success=False)
+      info = outside.lstat()
+      self.assertEqual((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)), (1000, 1000, 0o700))
+
+  def test_symlink_ancestor_is_refused_before_directory_owner_changes(self):
+    with tempfile.TemporaryDirectory(prefix='shield-module-parent-link-') as temporary:
+      base = Path(temporary)
+      parent = base / 'real-parent'
+      root = parent / 'modules'
+      root.mkdir(parents=True)
+      for directory in [parent, root]:
+        directory.chmod(0o700)
+        os.chown(directory, 1000, 1000)
+      alias = base / 'alias'
+      alias.symlink_to(parent, target_is_directory=True)
+      self.run_script(alias / 'modules', 'post_upgrade', success=False)
+      for directory in [parent, root]:
+        info = directory.lstat()
+        self.assertEqual((info.st_uid, info.st_gid, stat.S_IMODE(info.st_mode)), (1000, 1000, 0o700))
+      self.assertTrue(alias.is_symlink())
 
 
 if __name__ == '__main__': unittest.main()

@@ -3,17 +3,18 @@
 # This package never writes a boot partition.
 pkgname=linux-shield
 pkgver=7.1.0
-pkgrel=10
+pkgrel=11
 pkgdesc='Experimental Shield Tegra kernel components; boot image installation is separate'
 arch=('aarch64')
 license=('GPL-2.0-only')
-depends=('kmod')
+depends=('kmod' 'coreutils' 'findutils')
 makedepends=('python' 'dtc')
 provides=("linux=$pkgver" "linux-aarch64=$pkgver")
 conflicts=('linux-aarch64')
 options=('!strip' '!debug')
-source=()
-sha256sums=()
+install=linux-shield.install
+source=('linux-shield.install')
+sha256sums=('fbb0dad9e93902b2d8b644ee3eaa8507fde055183f9e595384710243b6c5b897')
 
 prepare() {
   [[ -n ${SHIELD_KERNEL_DIR:-} && -d $SHIELD_KERNEL_DIR ]] || {

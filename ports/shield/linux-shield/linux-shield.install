@@ -1,0 +1,21 @@
+_normalize_shield_module_directories() {
+  _shield_module_tree=/usr/lib/modules/7.1.0-shield-bringup
+  _shield_parent=$_shield_module_tree
+  while [ "$_shield_parent" != / ]; do
+    [ -d "$_shield_parent" ] && [ ! -L "$_shield_parent" ] || return 1
+    _shield_parent=${_shield_parent%/*}
+    [ -n "$_shield_parent" ] || _shield_parent=/
+  done
+  # ALPM preserves existing directory owners during an upgrade. Earlier build
+  # roots retained the build UID here; repair only this package's real dirs.
+  find -P "$_shield_module_tree" -xdev -type d -exec chown 0:0 -- {} + || return 1
+  find -P "$_shield_module_tree" -xdev -type d -exec chmod 0755 -- {} +
+}
+
+post_install() {
+  _normalize_shield_module_directories
+}
+
+post_upgrade() {
+  _normalize_shield_module_directories
+}
