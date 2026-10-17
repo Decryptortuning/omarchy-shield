@@ -1,0 +1,6 @@
+# A04-only inherited timer7/WDT0; normal PID1 ownership is separately qualified.
+# Native probes override the core open timeout to 240 seconds on their command line.
+CONFIG_WATCHDOG=y
+CONFIG_WATCHDOG_HANDLE_BOOT_ENABLED=y
+CONFIG_WATCHDOG_OPEN_TIMEOUT=600
+CONFIG_TEGRA_WATCHDOG=y

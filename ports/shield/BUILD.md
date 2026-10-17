@@ -10,6 +10,12 @@ Clone the `ack-tegra` repository beside this checkout using the URL/branch in [k
 
 ## Kernel and diagnostic boot
 
+The next A04 candidate carries the tested display/MC-reset, inherited-watchdog and fixed 1.8V SDHCI code as 15 ordered patches. Its full-board DT remains distinct from the restricted native probe DT: it does not opt into fixed-rate display PTSA, and inherited fast eMMC, radios, cooling and DVFS still require qualification. The A04-only watchdog fragment enables early timer7/WDT0 adoption with a 600-second core open timeout; bounded native probes use a 240-second command-line override. This does not establish normal PID1 ownership or a guaranteed 240-second boot-to-reset interval. A08/B01 do not inherit that A04-specific fragment.
+
+Use a fresh source/build cache when changing the ordered patch set. The builder records exact configuration-fragment hashes and the resolved kernel configuration in `config-fragments.json`, includes it in `SHA256SUMS`, and runs 19 actual-source SDHCI voltage/timing boundary cases alongside the USB regressions. These are candidate checks, not a claim that the new complete package or full-board DT has already passed.
+
+Kernel admission now compares the compiled bundle against the exact source commit selected for package staging: complete lock, ordered applied patches, source input hashes, configuration-fragment provenance, actual config and overlay/result identity. The package recipe repeats this check with `OMARCHY_SRC` set to that source export. A checksum-consistent older bundle is refused before staging a build into the root filesystem or copying package inputs. Commit the reviewed candidate before using `stage-packages.py --commit`; uncommitted working-tree recipes are not the selected export.
+
 Run from the fork's repository root:
 
 ```sh
@@ -49,7 +55,9 @@ sudo bash ports/shield/chroot.sh "$build_root/rootfs" \
   /bin/bash /var/lib/shield-linux/build-target-packages.sh
 ```
 
-The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. Current paired runtime/settings recipes use release `99.6`; the previous integration build used `99.4`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes all three acceptance matrices and the guarded collector.
+The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. The ARM kernel recipe declares `python` and `dtc` (which provides `fdtget`) as build dependencies. The pinned package audit includes `dtc` as a build input so bootstrap supplies it before the `--nodeps` package build; host intent tests also require the documented device-tree-compiler tools.
+
+The candidate staging recipes use paired runtime/settings release `99.7`; the installed USB root remains on `99.6`, and the earlier integration build used `99.4`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes all three acceptance matrices and the guarded collector.
 
 The chroot uses private mount/PID namespaces, temporary device nodes and Cortex-A57 user emulation. It serializes its temporary binfmt registration, exposes no host block devices or sysfs tree, and starts no host daemons. Pacman signature validation stays enabled. Its sandbox exception applies to this emulated build command because Landlock is unavailable through QEMU user emulation; the installed configuration keeps normal sandbox settings. Fork packages are ignored by repository upgrades until a tested Shield release/update path exists.
 

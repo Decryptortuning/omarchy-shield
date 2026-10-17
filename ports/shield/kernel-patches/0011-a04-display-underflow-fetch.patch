@@ -1,0 +1,425 @@
+--- a/drivers/gpu/drm/tegra/dc.c
++++ b/drivers/gpu/drm/tegra/dc.c
+@@ -35,6 +35,20 @@
+ #include "gem.h"
+ #include "hub.h"
+ #include "plane.h"
++
++#define TEGRA_DC_WINDOW_UF (WIN_A_UF_INT | WIN_B_UF_INT | WIN_C_UF_INT)
++
++static void tegra_dc_underflow_stop(struct tegra_dc *dc);
++static void tegra_dc_ack_irq(struct tegra_dc *dc, u32 status);
++
++static void tegra_dc_set_irq_mask(struct tegra_dc *dc, u32 value)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&dc->irq_lock, flags);
++	tegra_dc_writel(dc, value, DC_CMD_INT_MASK);
++	spin_unlock_irqrestore(&dc->irq_lock, flags);
++}
+ 
+ static const u16 default_srgb_lut[] = {
+ 	0x6000, 0x60CE, 0x619D, 0x626C, 0x632D, 0x63D4, 0x6469, 0x64F0, 0x656B, 0x65DF, 0x664A,
+@@ -627,6 +641,21 @@
+ 	}
+ 
+ 	tegra_plane_writel(plane, value, DC_WIN_WIN_OPTIONS);
++
++	/* Pending-bank observation only: never change STATE_ACCESS or selectors. */
++	if (dc->soc->clear_underflow_counters && plane->index == 0) {
++		static atomic_t samples = ATOMIC_INIT(0);
++
++		if (atomic_inc_return(&samples) <= 4)
++			dev_info(dc->dev,
++				 "SHIELD_FETCH base=%llx format=%u bpp=%u stride=%u tiling=%u access=%08x header=%08x low=%08x high=%08x cde=%08x cde_cg=%08x\n",
++				 (unsigned long long)window->base[0], window->format,
++				 window->bits_per_pixel, window->stride[0], window->tiling.mode,
++				 tegra_dc_readl(dc, DC_CMD_STATE_ACCESS),
++				 tegra_dc_readl(dc, DC_CMD_DISPLAY_WINDOW_HEADER),
++				 tegra_dc_readl(dc, 0xbc0), tegra_dc_readl(dc, 0xbcd),
++				 tegra_dc_readl(dc, 0xbef), tegra_dc_readl(dc, 0xbf7));
++	}
+ 
+ 	if (dc->soc->has_legacy_blending)
+ 		tegra_plane_setup_blending_legacy(plane);
+@@ -1761,6 +1790,18 @@
+ 			   offset, tegra_dc_readl(dc, offset));
+ 	}
+ 
++	if (dc->soc->clear_underflow_counters) {
++		static const unsigned int a_regs[] = {
++			0xb80, 0xb83, 0xb85, 0xb86, 0xb89, 0xb8a,
++			0xbc0, 0xbc6, 0xbc8, 0xbcb, 0xbcd, 0xbef, 0xbf7,
++		};
++
++		/* Direct A aliases; retain the caller's active/pending bank selection. */
++		for (i = 0; i < ARRAY_SIZE(a_regs); i++)
++			seq_printf(s, "SHIELD_A_REG %#05x %08x\n", a_regs[i],
++				   tegra_dc_readl(dc, a_regs[i]));
++	}
++
+ unlock:
+ 	drm_modeset_unlock(&dc->base.mutex);
+ 	return err;
+@@ -1811,6 +1852,15 @@
+ 	seq_printf(s, "vblank total: %lu\n", dc->stats.vblank_total);
+ 	seq_printf(s, "underflow total: %lu\n", dc->stats.underflow_total);
+ 	seq_printf(s, "overflow total: %lu\n", dc->stats.overflow_total);
++	seq_printf(s, "irq total: %lu zero: %lu first: %#x last: %#x\n",
++		   dc->stats.irq_total, dc->stats.irq_zero,
++		   dc->stats.irq_first_status, dc->stats.irq_last_status);
++	seq_printf(s, "uf episodes: %lu deferred: %lu\n",
++		   dc->stats.uf_episodes, dc->stats.uf_deferred);
++	seq_printf(s, "uf A: %lu B: %lu C: %lu head/cursor: %lu\n",
++		   dc->stats.uf_window[0], dc->stats.uf_window[1],
++		   dc->stats.uf_window[2], dc->stats.uf_head);
++
+ 
+ 	return 0;
+ }
+@@ -1881,10 +1931,13 @@
+ {
+ 	struct tegra_dc *dc = to_tegra_dc(crtc);
+ 	u32 value;
+-
++	unsigned long flags;
++
++	spin_lock_irqsave(&dc->irq_lock, flags);
+ 	value = tegra_dc_readl(dc, DC_CMD_INT_MASK);
+ 	value |= VBLANK_INT;
+ 	tegra_dc_writel(dc, value, DC_CMD_INT_MASK);
++	spin_unlock_irqrestore(&dc->irq_lock, flags);
+ 
+ 	return 0;
+ }
+@@ -1893,10 +1946,13 @@
+ {
+ 	struct tegra_dc *dc = to_tegra_dc(crtc);
+ 	u32 value;
+-
++	unsigned long flags;
++
++	spin_lock_irqsave(&dc->irq_lock, flags);
+ 	value = tegra_dc_readl(dc, DC_CMD_INT_MASK);
+ 	value &= ~VBLANK_INT;
+ 	tegra_dc_writel(dc, value, DC_CMD_INT_MASK);
++	spin_unlock_irqrestore(&dc->irq_lock, flags);
+ }
+ 
+ static const struct drm_crtc_funcs tegra_crtc_funcs = {
+@@ -2196,6 +2252,8 @@
+ 	struct tegra_dc *dc = to_tegra_dc(crtc);
+ 	u32 value;
+ 	int err;
++
++	tegra_dc_underflow_stop(dc);
+ 
+ 	if (!tegra_dc_idle(dc)) {
+ 		tegra_dc_stop(dc);
+@@ -2261,6 +2319,7 @@
+ 	struct tegra_dc_state *crtc_state = to_dc_state(crtc->state);
+ 	struct tegra_dc *dc = to_tegra_dc(crtc);
+ 	u32 value;
++	unsigned long flags;
+ 	int err;
+ 
+ 	/* apply PLL changes */
+@@ -2271,6 +2330,16 @@
+ 		dev_err(dc->dev, "failed to resume: %d\n", err);
+ 		return;
+ 	}
++
++	spin_lock_irqsave(&dc->irq_lock, flags);
++	dc->underflow_pending = 0;
++	if (dc->soc->clear_underflow_counters) {
++		value = tegra_dc_readl(dc, DC_CMD_INT_MASK);
++		tegra_dc_writel(dc, value & ~TEGRA_DC_WINDOW_UF, DC_CMD_INT_MASK);
++		tegra_dc_ack_irq(dc, TEGRA_DC_WINDOW_UF);
++	}
++	dc->underflow_active = dc->soc->clear_underflow_counters;
++	spin_unlock_irqrestore(&dc->irq_lock, flags);
+ 
+ 	/* initialize display controller */
+ 	if (dc->syncpt) {
+@@ -2305,7 +2374,7 @@
+ 		tegra_dc_writel(dc, value, DC_CMD_INT_ENABLE);
+ 
+ 		value = HEAD_UF_INT | REG_TMOUT_INT | FRAME_END_INT;
+-		tegra_dc_writel(dc, value, DC_CMD_INT_MASK);
++		tegra_dc_set_irq_mask(dc, value);
+ 
+ 		tegra_dc_writel(dc, READ_MUX, DC_CMD_STATE_ACCESS);
+ 	} else {
+@@ -2332,7 +2401,7 @@
+ 
+ 		value = WIN_A_UF_INT | WIN_B_UF_INT | WIN_C_UF_INT |
+ 			WIN_A_OF_INT | WIN_B_OF_INT | WIN_C_OF_INT;
+-		tegra_dc_writel(dc, value, DC_CMD_INT_MASK);
++		tegra_dc_set_irq_mask(dc, value);
+ 	}
+ 
+ 	if (dc->soc->supports_background_color)
+@@ -2629,13 +2698,138 @@
+ 	.atomic_disable = tegra_crtc_atomic_disable,
+ };
+ 
++/* Tegra210's downstream driver resets the affected window's underflow
++ * counter before clearing its interrupt status. Keep other generations and
++ * all enables and vblank handling unchanged. This helper does not modify
++ * masks; the deferred IRQ path manages temporary source masking.
++ */
++static void tegra_dc_ack_irq(struct tegra_dc *dc, u32 status)
++{
++	if (dc->soc->clear_underflow_counters) {
++		if (status & WIN_A_UF_INT)
++			tegra_dc_writel(dc, 0, DC_WINBUF_AD_UFLOW_STATUS);
++		if (status & WIN_B_UF_INT)
++			tegra_dc_writel(dc, 0, DC_WINBUF_BD_UFLOW_STATUS);
++		if (status & WIN_C_UF_INT)
++			tegra_dc_writel(dc, 0, DC_WINBUF_CD_UFLOW_STATUS);
++	}
++
++	tegra_dc_writel(dc, status, DC_CMD_INT_STATUS);
++}
++
++/* Caller holds irq_lock. Preserve completion IRQs while the level-triggered
++ * window fault is processed after a bounded delay, as in NVIDIA's T21x driver.
++ */
++static u32 tegra_dc_defer_underflow(struct tegra_dc *dc, u32 status)
++{
++	u32 underflow, mask;
++
++	if (!dc->soc->clear_underflow_counters || !dc->underflow_active)
++		return status;
++
++	mask = tegra_dc_readl(dc, DC_CMD_INT_MASK);
++	underflow = status & mask & TEGRA_DC_WINDOW_UF;
++	if (underflow) {
++		tegra_dc_writel(dc, mask & ~underflow, DC_CMD_INT_MASK);
++		dc->underflow_pending |= underflow;
++		dc->stats.uf_episodes++;
++		schedule_delayed_work(&dc->underflow_work, msecs_to_jiffies(1));
++	}
++
++	/* The worker acknowledges the saved underflow after clearing counters. */
++	return status & ~TEGRA_DC_WINDOW_UF;
++}
++
++static void tegra_dc_underflow_work(struct work_struct *work)
++{
++	struct tegra_dc *dc = container_of(to_delayed_work(work),
++					 struct tegra_dc, underflow_work);
++	unsigned long flags;
++	u32 pending, mask;
++
++	spin_lock_irqsave(&dc->irq_lock, flags);
++	if (!dc->underflow_active)
++		goto unlock;
++
++	pending = dc->underflow_pending;
++	dc->underflow_pending = 0;
++	if (pending) {
++		tegra_dc_ack_irq(dc, pending);
++		mask = tegra_dc_readl(dc, DC_CMD_INT_MASK);
++		tegra_dc_writel(dc, mask | pending, DC_CMD_INT_MASK);
++		dc->stats.uf_deferred++;
++	}
++unlock:
++	spin_unlock_irqrestore(&dc->irq_lock, flags);
++}
++
++static void tegra_dc_underflow_stop(struct tegra_dc *dc)
++{
++	unsigned long flags;
++	u32 mask;
++
++	if (!dc->soc->clear_underflow_counters)
++		return;
++
++	spin_lock_irqsave(&dc->irq_lock, flags);
++	/* Inactive callers may already have their clocks and power disabled. */
++	if (dc->underflow_active) {
++		dc->underflow_active = false;
++		mask = tegra_dc_readl(dc, DC_CMD_INT_MASK);
++		tegra_dc_writel(dc, mask & ~TEGRA_DC_WINDOW_UF, DC_CMD_INT_MASK);
++	}
++	dc->underflow_pending = 0;
++	spin_unlock_irqrestore(&dc->irq_lock, flags);
++	/* No IRQ can queue another worker after active was cleared under lock. */
++	cancel_delayed_work_sync(&dc->underflow_work);
++}
++
+ static irqreturn_t tegra_dc_irq(int irq, void *data)
+ {
+ 	struct tegra_dc *dc = data;
+-	unsigned long status;
+-
++	unsigned long status, flags;
++	bool trace;
++	u32 trace_mask = 0, trace_enable = 0, trace_after = 0;
++	u32 trace_a = 0, trace_b = 0, trace_c = 0;
++
++	spin_lock_irqsave(&dc->irq_lock, flags);
+ 	status = tegra_dc_readl(dc, DC_CMD_INT_STATUS);
+-	tegra_dc_writel(dc, status, DC_CMD_INT_STATUS);
++	if (!dc->stats.irq_total)
++		dc->stats.irq_first_status = status;
++	dc->stats.irq_last_status = status;
++	dc->stats.irq_total++;
++	if (!status)
++		dc->stats.irq_zero++;
++	if (status & WIN_A_UF_INT)
++		dc->stats.uf_window[0]++;
++	if (status & WIN_B_UF_INT)
++		dc->stats.uf_window[1]++;
++	if (status & WIN_C_UF_INT)
++		dc->stats.uf_window[2]++;
++	if (status & HEAD_UF_INT)
++		dc->stats.uf_head++;
++	trace = dc->soc->clear_underflow_counters &&
++		(dc->stats.irq_total == 1 ||
++		 (dc->stats.underflow_total < 4 &&
++		  (status & (WIN_A_UF_INT | WIN_B_UF_INT | WIN_C_UF_INT | HEAD_UF_INT))));
++	if (trace) {
++		trace_mask = tegra_dc_readl(dc, DC_CMD_INT_MASK);
++		trace_enable = tegra_dc_readl(dc, DC_CMD_INT_ENABLE);
++		trace_a = tegra_dc_readl(dc, DC_WINBUF_AD_UFLOW_STATUS);
++		trace_b = tegra_dc_readl(dc, DC_WINBUF_BD_UFLOW_STATUS);
++		trace_c = tegra_dc_readl(dc, DC_WINBUF_CD_UFLOW_STATUS);
++	}
++	tegra_dc_ack_irq(dc, tegra_dc_defer_underflow(dc, status));
++	if (trace)
++		trace_after = tegra_dc_readl(dc, DC_CMD_INT_STATUS);
++	spin_unlock_irqrestore(&dc->irq_lock, flags);
++
++	if (trace) {
++		dev_info(dc->dev,
++			 "SHIELD_DC_IRQ status=%08lx mask=%08x enable=%08x uf_A=%08x uf_B=%08x uf_C=%08x\n",
++			 status, trace_mask, trace_enable, trace_a, trace_b, trace_c);
++		dev_info(dc->dev, "SHIELD_DC_IRQ after_ack=%08x\n", trace_after);
++	}
+ 
+ 	if (status & FRAME_END_INT) {
+ 		/*
+@@ -2834,6 +3028,8 @@
+ 	struct tegra_dc *dc = host1x_client_to_dc(client);
+ 	int err;
+ 
++	tegra_dc_underflow_stop(dc);
++
+ 	if (!tegra_dc_has_window_groups(dc))
+ 		return 0;
+ 
+@@ -2869,6 +3065,8 @@
+ 	struct tegra_dc *dc = host1x_client_to_dc(client);
+ 	struct device *dev = client->dev;
+ 	int err;
++
++	tegra_dc_underflow_stop(dc);
+ 
+ 	err = reset_control_assert(dc->rst);
+ 	if (err < 0) {
+@@ -3029,6 +3227,7 @@
+ };
+ 
+ static const struct tegra_dc_soc_info tegra210_dc_soc_info = {
++	.clear_underflow_counters = true,
+ 	.supports_background_color = true,
+ 	.supports_interlacing = true,
+ 	.supports_cursor = true,
+@@ -3287,6 +3486,8 @@
+ 
+ 	dc->soc = of_device_get_match_data(&pdev->dev);
+ 
++	spin_lock_init(&dc->irq_lock);
++	INIT_DELAYED_WORK(&dc->underflow_work, tegra_dc_underflow_work);
+ 	INIT_LIST_HEAD(&dc->list);
+ 	dc->dev = &pdev->dev;
+ 
+--- a/drivers/gpu/drm/tegra/dc.h
++++ b/drivers/gpu/drm/tegra/dc.h
+@@ -8,6 +8,8 @@
+ #define TEGRA_DC_H 1
+ 
+ #include <linux/host1x.h>
++#include <linux/spinlock.h>
++#include <linux/workqueue.h>
+ 
+ #include <drm/drm_crtc.h>
+ 
+@@ -45,6 +47,14 @@
+ 	unsigned long vblank_total;
+ 	unsigned long underflow_total;
+ 	unsigned long overflow_total;
++	unsigned long irq_total;
++	unsigned long irq_zero;
++	unsigned long uf_window[3];
++	unsigned long uf_head;
++	unsigned long uf_deferred;
++	unsigned long uf_episodes;
++	u32 irq_first_status;
++	u32 irq_last_status;
+ };
+ 
+ struct tegra_windowgroup_soc {
+@@ -77,6 +87,7 @@
+ 	bool has_win_c_without_vert_filter;
+ 	bool plane_tiled_memory_bandwidth_x2;
+ 	bool has_pll_d2_out0;
++	bool clear_underflow_counters;
+ };
+ 
+ struct tegra_dc {
+@@ -94,6 +105,11 @@
+ 	int irq;
+ 
+ 	struct tegra_output *rgb;
++
++	spinlock_t irq_lock;
++	struct delayed_work underflow_work;
++	u32 underflow_pending;
++	bool underflow_active;
+ 
+ 	struct tegra_dc_stats stats;
+ 	struct list_head list;
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -407,12 +407,29 @@
+     defined(CONFIG_ARCH_TEGRA_124_SOC) || \
+     defined(CONFIG_ARCH_TEGRA_132_SOC) || \
+     defined(CONFIG_ARCH_TEGRA_210_SOC)
++static void tegra_mc_probe_display_config(struct tegra_mc *mc, const char *phase)
++{
++	static const unsigned int offsets[] = {
++		0x90, 0x2e8, 0x2ec, 0x41c, 0x420, 0x424, 0x690,
++	};
++	unsigned int i;
++
++	if (!of_device_is_compatible(mc->dev->of_node, "nvidia,tegra210-mc"))
++		return;
++	dev_info(mc->dev, "SHIELD_MC_CONFIG phase=%s mc_rate=%lu\n",
++		 phase, clk_get_rate(mc->clk));
++	for (i = 0; i < ARRAY_SIZE(offsets); i++)
++		dev_info(mc->dev, "SHIELD_MC_REG phase=%s offset=%#x value=%08x\n",
++			 phase, offsets[i], mc_readl(mc, offsets[i]));
++}
++
+ static void tegra_mc_setup_latency_allowance(struct tegra_mc *mc)
+ {
+ 	unsigned long long tick;
+ 	unsigned int i;
+ 	u32 value;
+ 
++	tegra_mc_probe_display_config(mc, "before-defaults");
+ 	/* compute the number of MC clock cycles per tick */
+ 	tick = (unsigned long long)mc->tick * clk_get_rate(mc->clk);
+ 	do_div(tick, NSEC_PER_SEC);
+@@ -435,6 +452,7 @@
+ 
+ 	/* latch new values */
+ 	mc_writel(mc, MC_TIMING_UPDATE, MC_TIMING_CONTROL);
++	tegra_mc_probe_display_config(mc, "after-defaults");
+ }
+ 
+ static int load_one_timing(struct tegra_mc *mc,

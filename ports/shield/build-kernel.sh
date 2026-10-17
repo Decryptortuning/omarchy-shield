@@ -29,15 +29,18 @@ fi
 readarray -t locked < <(python3 - "$lock_file" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1]))
+extra = d['kernel'].get('additional_config_fragments', [])
+assert isinstance(extra, list) and all(isinstance(x, str) and x and '\n' not in x for x in extra)
 for value in (d['kernel']['repository'], d['kernel']['commit'], d['kernel']['device_tree'],
               d['busybox']['version'], d['busybox']['url'], d['busybox']['sha256'],
               d['kernel'].get('source_archive', {}).get('url', ''),
               d['kernel'].get('source_archive', {}).get('sha256', ''),
-              d['kernel'].get('config_fragment', ''), d['kernel'].get('variant', '')):
+              d['kernel'].get('config_fragment', ''), d['kernel'].get('variant', ''),
+              json.dumps(d['kernel'].get('additional_config_fragments', []))):
     print(value)
 PY
 )
-[[ ${#locked[@]} == 10 ]] || { echo 'Invalid source lock' >&2; exit 1; }
+[[ ${#locked[@]} == 11 ]] || { echo 'Invalid source lock' >&2; exit 1; }
 kernel_repo="$clone_root/${locked[0]}"
 kernel_commit=${locked[1]}
 dtb=${locked[2]}
@@ -87,6 +90,8 @@ if [[ $variant == "omarchy-a04" ]]; then
     --kernel-source "$kernel_src" --output "$dist/xusb-supplies-regression.json"
   python3 "$port_dir/tools/check-xusb-otg-vbus.py" \
     --kernel-source "$kernel_src" --output "$dist/xusb-otg-vbus-regression.json"
+  python3 "$port_dir/tools/check-sdhci-fixed-supply.py" \
+    --kernel-source "$kernel_src" --output "$dist/sdhci-fixed-supply-regression.json"
 fi
 
 archive="$build_root/downloads/busybox-$busybox_version.tar.bz2"
@@ -106,6 +111,31 @@ if [[ -n ${locked[8]} ]]; then
   [[ $fragment == "$project_root/"* && -f $fragment ]] || { echo 'Invalid variant fragment' >&2; exit 1; }
   fragments+=("$fragment")
 fi
+mapfile -t extra_fragments < <(python3 - "${locked[10]}" <<'PYEXTRA'
+import json, sys
+entries = json.loads(sys.argv[1])
+assert isinstance(entries, list) and all(isinstance(x, str) and x for x in entries)
+for entry in entries:
+    print(entry)
+PYEXTRA
+)
+for entry in "${extra_fragments[@]}"; do
+  fragment=$(realpath -- "$project_root/$entry")
+  [[ $fragment == "$project_root/"* && -f $fragment ]] || { echo 'Invalid additional fragment' >&2; exit 1; }
+  fragments+=("$fragment")
+done
+# Capture exact fragment bytes before merge; recheck them before publishing output.
+python3 - "$project_root" "$kernel_out/config-inputs.json" "${fragments[@]}" <<'PYCONFIG'
+import hashlib, json, pathlib, sys
+project = pathlib.Path(sys.argv[1]).resolve()
+inputs = []
+for name in sys.argv[3:]:
+    path = pathlib.Path(name).resolve(strict=True)
+    if not path.is_relative_to(project):
+        raise SystemExit('Configuration fragment escapes the project')
+    inputs.append({'path': str(path.relative_to(project)), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+pathlib.Path(sys.argv[2]).write_text(json.dumps(inputs, indent=2) + '\n')
+PYCONFIG
 make -C "$kernel_src" O="$kernel_out" defconfig
 "$kernel_src/scripts/kconfig/merge_config.sh" -m -O "$kernel_out" \
   "$kernel_out/.config" "${fragments[@]}"
@@ -186,6 +216,15 @@ if [[ $variant == "omarchy-a04" ]]; then
     --dtb "$dist/$(basename -- "$dtb")" --output "$dist/xusb-host-reset-contract.json"
 fi
 cp "$kernel_out/.config" "$dist/kernel.config"
+python3 - "$project_root" "$kernel_out/config-inputs.json" "$dist/kernel.config" "$dist/config-fragments.json" <<'PYCONFIG'
+import hashlib, json, pathlib, sys
+project, record, config, destination = map(pathlib.Path, sys.argv[1:])
+inputs = json.loads(record.read_text())
+for item in inputs:
+    if hashlib.sha256((project / item['path']).read_bytes()).hexdigest() != item['sha256']:
+        raise SystemExit('Configuration fragment changed after merge; do not publish this build')
+destination.write_text(json.dumps({'inputs': inputs, 'resolved_config_sha256': hashlib.sha256(config.read_bytes()).hexdigest()}, indent=2) + '\n')
+PYCONFIG
 cp "$busybox_out/.config" "$dist/busybox.config"
 cp "$lock_file" "$dist/sources.lock.json"
 python3 - "$project_root" "$lock_file" "$dist/hardware.json" <<'PY'
@@ -211,7 +250,7 @@ fi
 (
   cd "$dist"
   sha256sum Image Image.gz initramfs.cpio.gz "$(basename -- "$dtb")" \
-    kernel.config busybox.config sources.lock.json compiler.txt > SHA256SUMS
+    kernel.config config-fragments.json busybox.config sources.lock.json compiler.txt > SHA256SUMS
   sha256sum ramdisk-profile.json hardware.json >> SHA256SUMS
   if [[ -f source-verification.json ]]; then
     sha256sum source-verification.json >> SHA256SUMS
@@ -220,7 +259,7 @@ fi
     sha256sum applied-patches.json >> SHA256SUMS
   fi
   if [[ $variant == "omarchy-a04" ]]; then
-    sha256sum xusb-supplies-regression.json xusb-otg-vbus-regression.json \
+    sha256sum xusb-supplies-regression.json xusb-otg-vbus-regression.json sdhci-fixed-supply-regression.json \
       vbus-gpio-contract.json xusb-host-reset-contract.json >> SHA256SUMS
   fi
   if [[ -f device-tree-overlays.json ]]; then

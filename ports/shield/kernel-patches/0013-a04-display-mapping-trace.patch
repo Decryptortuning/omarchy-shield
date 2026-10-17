@@ -1,0 +1,99 @@
+--- a/drivers/gpu/drm/tegra/plane.c
++++ b/drivers/gpu/drm/tegra/plane.c
+@@ -136,6 +136,52 @@
+ 	.atomic_destroy_state = tegra_plane_atomic_destroy_state,
+ 	.format_mod_supported = tegra_plane_format_mod_supported,
+ };
++
++static void tegra_dc_probe_mapping(struct tegra_dc *dc,
++				   struct tegra_plane_state *state,
++				   struct tegra_bo *bo,
++				   struct host1x_bo_mapping *map)
++{
++	static atomic_t samples = ATOMIC_INIT(0);
++	struct drm_framebuffer *fb = state->base.fb;
++	struct iommu_domain *domain;
++	phys_addr_t first_pa = 0, last_pa = 0;
++	u64 first, last, address;
++	unsigned int pages = 0, holes = 0;
++
++	/* Read-only, bounded diagnostic for the exact current scanout. The BO
++	 * remains pinned while its software page tables are inspected here.
++	 */
++	if (!dc->mc || !dc->soc->clear_underflow_counters ||
++	    to_tegra_plane(state->base.plane)->index != 0 ||
++	    fb->width != 1280 || fb->height != 720 || fb->pitches[0] != 5120 ||
++	    fb->format->num_planes != 1 || fb->format->cpp[0] != 4 ||
++	    atomic_inc_return(&samples) > 32)
++		return;
++
++	if ((u64)state->iova[0] > 0xffffffffULL)
++		return;
++	first = (u64)state->iova[0] + fb->offsets[0];
++	if (first > 0xffffffffULL - 3686400 + 1)
++		return;
++	last = first + 3686400 - 1;
++	domain = iommu_get_domain_for_dev(dc->dev);
++	if (domain && dc->client.group) {
++		first_pa = iommu_iova_to_phys(domain, first);
++		last_pa = iommu_iova_to_phys(domain, last);
++		for (address = first & PAGE_MASK; address <= last; address += PAGE_SIZE) {
++			pages++;
++			if (!iommu_iova_to_phys(domain, address))
++				holes++;
++		}
++	}
++	dev_info(dc->dev,
++		 "SHIELD_DC_MAPPING domain=%p type=%#x explicit=%u iova=%#llx-%#llx bo_iova=%pad bo_size=%zu mapped=%zu dma=%pad chunks=%u pages=%u holes=%u phys=%pa-%pa modifier=%#llx\n",
++		 domain, domain ? domain->type : 0, !!dc->client.group,
++		 first, last, &bo->iova, bo->gem.size, bo->size,
++		 &map->phys, map->chunks, pages, holes, &first_pa, &last_pa,
++		 fb->modifier);
++}
+ 
+ static int tegra_dc_pin(struct tegra_dc *dc, struct tegra_plane_state *state)
+ {
+@@ -170,6 +216,8 @@
+ 		}
+ 
+ 		state->map[i] = map;
++		if (i == 0)
++			tegra_dc_probe_mapping(dc, state, bo, map);
+ 	}
+ 
+ 	return 0;
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -513,6 +513,16 @@
+ 	value = SMMU_PTB_DATA_VALUE(as->pd_dma, as->attr);
+ 	smmu_writel(smmu, value, SMMU_PTB_DATA);
+ 	smmu_flush(smmu);
++	if (gpub_quarantine_active) {
++		static atomic_t samples = ATOMIC_INIT(0);
++
++		if (atomic_inc_return(&samples) <= 16)
++			dev_info(smmu->dev,
++			 "SHIELD_PTB domain=%p asid=%u pd_dma=%pad expected=%08x selected=%08x observed=%08x\n",
++			 &as->domain, as->id, &as->pd_dma, value,
++			 smmu_readl(smmu, SMMU_PTB_ASID),
++			 smmu_readl(smmu, SMMU_PTB_DATA));
++	}
+ 
+ 	as->smmu = smmu;
+ 	as->use_count++;
+@@ -570,6 +580,15 @@
+ 
+ 	if (index == 0)
+ 		return -ENODEV;
++
++	if (gpub_quarantine_active &&
++	    (!strcmp(dev_name(dev), "54200000.dc") ||
++	     !strcmp(dev_name(dev), "54240000.dc")))
++		dev_info(smmu->dev,
++			 "SHIELD_DC_DOMAIN device=%s domain=%p asid=%u pd_dma=%pad dc=%08x dcb=%08x clients0=%08x config=%08x\n",
++			 dev_name(dev), domain, as->id, &as->pd_dma,
++			 smmu_readl(smmu, 0x240), smmu_readl(smmu, 0x244),
++			 smmu_readl(smmu, 0x228), smmu_readl(smmu, SMMU_CONFIG));
+ 
+ 	return 0;
+ 

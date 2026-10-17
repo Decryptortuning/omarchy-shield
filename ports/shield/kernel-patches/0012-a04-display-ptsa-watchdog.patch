@@ -1,0 +1,532 @@
+--- a/drivers/gpu/drm/tegra/dc.c
++++ b/drivers/gpu/drm/tegra/dc.c
+@@ -19,6 +19,7 @@
+ #include <linux/reset.h>
+ 
+ #include <soc/tegra/common.h>
++#include <soc/tegra/mc.h>
+ #include <soc/tegra/pmc.h>
+ 
+ #include <drm/drm_atomic.h>
+@@ -1541,6 +1542,10 @@
+ 	copy->pclk = state->pclk;
+ 	copy->div = state->div;
+ 	copy->planes = state->planes;
++	copy->peak_display_bandwidth = state->peak_display_bandwidth;
++	copy->display_vblank_count = 0;
++	copy->display_vblank_valid = false;
++	copy->display_stop_confirmed = false;
+ 
+ 	return &copy->base;
+ }
+@@ -2149,6 +2154,46 @@
+ 	return -ETIMEDOUT;
+ }
+ 
++void tegra_crtc_mark_display_frame(struct drm_crtc *crtc,
++				  struct drm_atomic_state *state)
++{
++	struct tegra_dc_state *new;
++
++	new = to_dc_state(drm_atomic_get_new_crtc_state(state, crtc));
++	new->display_vblank_count = drm_crtc_vblank_count(crtc);
++	new->display_vblank_valid = !state->legacy_cursor_update;
++}
++
++void tegra_crtc_update_display_bandwidth(struct drm_crtc *crtc,
++					struct drm_atomic_state *state, bool prepare)
++{
++	const struct tegra_dc_state *old, *new;
++	struct tegra_dc *dc = to_tegra_dc(crtc);
++	u32 peak;
++	int err;
++
++	if (!dc->mc)
++		return;
++
++	old = to_dc_state(drm_atomic_get_old_crtc_state(state, crtc));
++	new = to_dc_state(drm_atomic_get_new_crtc_state(state, crtc));
++	if (!prepare) {
++		if (new->base.active &&
++		    (!new->display_vblank_valid ||
++		     new->display_vblank_count == drm_crtc_vblank_count(crtc)))
++			return;
++		if (!new->base.active && !new->display_stop_confirmed)
++			return;
++	}
++	peak = prepare ? max(old->peak_display_bandwidth,
++			     new->peak_display_bandwidth) :
++			 new->peak_display_bandwidth;
++
++	err = tegra_mc_set_display_bandwidth(dc->mc, dc->pipe, peak, prepare);
++	if (err)
++		dev_err_ratelimited(dc->dev, "display bandwidth update failed: %d\n", err);
++}
++
+ static void
+ tegra_crtc_update_memory_bandwidth(struct drm_crtc *crtc,
+ 				   struct drm_atomic_state *state,
+@@ -2303,6 +2348,8 @@
+ 	err = host1x_client_suspend(&dc->client);
+ 	if (err < 0)
+ 		dev_err(dc->dev, "failed to suspend: %d\n", err);
++	else
++		to_dc_state(drm_atomic_get_new_crtc_state(state, crtc))->display_stop_confirmed = true;
+ 
+ 	if (dc->has_opp_table) {
+ 		err = dev_pm_genpd_set_performance_state(dc->dev, 0);
+@@ -2670,11 +2717,32 @@
+ static int tegra_crtc_atomic_check(struct drm_crtc *crtc,
+ 				   struct drm_atomic_state *state)
+ {
++	struct drm_crtc_state *new = drm_atomic_get_new_crtc_state(state, crtc);
++	struct tegra_dc_state *dc_state = to_dc_state(new);
++	const struct drm_plane_state *plane_state;
++	struct drm_plane *plane;
+ 	int err;
+ 
+ 	err = tegra_crtc_calculate_memory_bandwidth(crtc, state);
+ 	if (err)
+ 		return err;
++
++	/* Immutable transaction snapshot. Each plane's total already includes
++	 * overlapping windows, so take the maximum rather than summing totals.
++	 */
++	dc_state->peak_display_bandwidth = 0;
++	dc_state->display_vblank_valid = false;
++	dc_state->display_stop_confirmed = false;
++	if (new->active) {
++		drm_atomic_crtc_state_for_each_plane_state(plane, plane_state, new) {
++			const struct tegra_plane_state *p;
++
++			p = to_const_tegra_plane_state(plane_state);
++			dc_state->peak_display_bandwidth =
++				max(dc_state->peak_display_bandwidth,
++				    p->total_peak_memory_bandwidth);
++		}
++	}
+ 
+ 	return 0;
+ }
+@@ -3495,6 +3563,14 @@
+ 	if (err < 0)
+ 		return err;
+ 
++	if (of_device_is_compatible(dc->dev->of_node, "nvidia,tegra210-dc") &&
++	    of_find_property(dc->dev->of_node, "nvidia,memory-controller", NULL)) {
++		dc->mc = devm_tegra_memory_controller_get(dc->dev);
++		if (IS_ERR(dc->mc))
++			return dev_err_probe(dc->dev, PTR_ERR(dc->mc),
++					     "failed to get display bandwidth provider\n");
++	}
++
+ 	err = tegra_dc_couple(dc);
+ 	if (err < 0)
+ 		return err;
+--- a/drivers/gpu/drm/tegra/dc.h
++++ b/drivers/gpu/drm/tegra/dc.h
+@@ -27,6 +27,10 @@
+ 	unsigned int div;
+ 
+ 	u32 planes;
++	u32 peak_display_bandwidth;
++	u64 display_vblank_count;
++	bool display_vblank_valid;
++	bool display_stop_confirmed;
+ };
+ 
+ static inline struct tegra_dc_state *to_dc_state(struct drm_crtc_state *state)
+@@ -122,6 +126,7 @@
+ 
+ 	u64 *cmu_output_lut;
+ 	dma_addr_t cmu_output_lut_phys;
++	struct tegra_mc *mc;
+ };
+ 
+ static inline struct tegra_dc *
+@@ -185,6 +190,10 @@
+ 			       unsigned int div);
+ void tegra_crtc_atomic_post_commit(struct drm_crtc *crtc,
+ 				   struct drm_atomic_state *state);
++void tegra_crtc_update_display_bandwidth(struct drm_crtc *crtc,
++					struct drm_atomic_state *state, bool prepare);
++void tegra_crtc_mark_display_frame(struct drm_crtc *crtc,
++				  struct drm_atomic_state *state);
+ 
+ /* from rgb.c */
+ int tegra_dc_rgb_probe(struct tegra_dc *dc);
+--- a/drivers/gpu/drm/tegra/drm.c
++++ b/drivers/gpu/drm/tegra/drm.c
+@@ -76,6 +76,13 @@
+ {
+ 	struct drm_device *drm = old_state->dev;
+ 	struct tegra_drm *tegra = drm->dev_private;
++	struct drm_crtc_state *old_crtc_state __maybe_unused;
++	struct drm_crtc *crtc;
++	bool display_ptsa = false;
++	unsigned int i;
++
++	for_each_old_crtc_in_state(old_state, crtc, old_crtc_state, i)
++		display_ptsa |= to_tegra_dc(crtc)->mc != NULL;
+ 
+ 	if (tegra->hub) {
+ 		bool fence_cookie = dma_fence_begin_signalling();
+@@ -87,6 +94,24 @@
+ 		drm_atomic_helper_commit_hw_done(old_state);
+ 		dma_fence_end_signalling(fence_cookie);
+ 		drm_atomic_helper_wait_for_vblanks(drm, old_state);
++		drm_atomic_helper_cleanup_planes(drm, old_state);
++	} else if (display_ptsa) {
++		drm_atomic_helper_commit_modeset_disables(drm, old_state);
++		for_each_old_crtc_in_state(old_state, crtc, old_crtc_state, i)
++			tegra_crtc_update_display_bandwidth(crtc, old_state, true);
++		drm_atomic_helper_commit_modeset_enables(drm, old_state);
++		drm_atomic_helper_commit_planes(drm, old_state,
++						DRM_PLANE_COMMIT_ACTIVE_ONLY);
++		for_each_old_crtc_in_state(old_state, crtc, old_crtc_state, i)
++			tegra_crtc_mark_display_frame(crtc, old_state);
++		drm_atomic_helper_fake_vblank(old_state);
++		drm_atomic_helper_wait_for_vblanks(drm, old_state);
++		for_each_old_crtc_in_state(old_state, crtc, old_crtc_state, i)
++			tegra_crtc_update_display_bandwidth(crtc, old_state, false);
++		/* A following commit may prepare once hw_done is signalled. Finish
++		 * this reservation first, so an old reduction cannot overwrite it.
++		 */
++		drm_atomic_helper_commit_hw_done(old_state);
+ 		drm_atomic_helper_cleanup_planes(drm, old_state);
+ 	} else {
+ 		drm_atomic_helper_commit_tail_rpm(old_state);
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -127,6 +127,16 @@
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(tegra_mc_probe_device);
++
++int tegra_mc_set_display_bandwidth(struct tegra_mc *mc, unsigned int head,
++				 u32 peak_kbps, bool prepare)
++{
++	if (!mc->soc->set_display_bandwidth)
++		return -EOPNOTSUPP;
++
++	return mc->soc->set_display_bandwidth(mc, head, peak_kbps, prepare);
++}
++EXPORT_SYMBOL_GPL(tegra_mc_set_display_bandwidth);
+ 
+ int tegra_mc_get_carveout_info(struct tegra_mc *mc, unsigned int id,
+                                phys_addr_t *base, u64 *size)
+--- a/drivers/memory/tegra/tegra210.c
++++ b/drivers/memory/tegra/tegra210.c
+@@ -5,6 +5,8 @@
+ 
+ #include <linux/of.h>
+ #include <linux/device.h>
++#include <linux/clk.h>
++#include <linux/math64.h>
+ 
+ #include <dt-bindings/memory/tegra210-mc.h>
+ 
+@@ -1291,6 +1293,100 @@
+ 	return 0;
+ }
+ 
++/* Fixed-clock LPDDR4 calibration recovered from the stock Shield 4.9.141
++ * driver.  The raw head demand is deliberately separate from ICC's fourfold
++ * ISO reservation.  Keep the vendor's intermediate truncation and DDA /4.
++ */
++static u32 tegra210_display_ptsa_rate(u32 peak_kbps)
++{
++	u64 fraction_fp, fraction_fpa;
++	u32 mbps;
++
++	if (!peak_kbps)
++		return 0;
++
++	mbps = peak_kbps / 1000 + 1;
++	fraction_fp = div_u64((u64)mbps * 176 * 1100, 4000000);
++	fraction_fpa = div_u64(fraction_fp * 10, 4);
++	return min_t(u64, DIV_ROUND_UP_ULL(fraction_fpa * 4096, 10000), 0xfff);
++}
++
++static bool tegra210_ptsa_hiso(struct tegra_mc *mc, unsigned int rate_reg)
++{
++	return (mc_readl(mc, rate_reg + 4) & 0x3f) == 0x3b &&
++		(mc_readl(mc, rate_reg + 8) & 0x3f) == 0x1f;
++}
++
++static int tegra210_mc_set_display_bandwidth(struct tegra_mc *mc,
++					    unsigned int head, u32 peak_kbps,
++					    bool prepare)
++{
++	u32 dis[2], ve, ve2, isp, ring, cpu_read, cpu_write;
++	unsigned long flags;
++
++	/* This first implementation qualifies only the measured LPDDR4 clock
++	 * profile.  Do not silently apply its calibration to another board or
++	 * after enabling EMC DVFS.
++	 */
++	if (!of_property_read_bool(mc->dev->of_node,
++				   "nvidia,display-ptsa-lpddr4") ||
++	    clk_get_rate(mc->clk) != 400000000 ||
++	    mc_readl(mc, 0x960) != 0x1203)
++		return -EOPNOTSUPP;
++	if (head > 1 || peak_kbps >= 4095000)
++		return -ERANGE;
++
++	spin_lock_irqsave(&mc->lock, flags);
++	/* A failed vblank confirmation retains the previous reservation.  The
++	 * next preparation must retain it too, until a confirmed frame finishes.
++	 */
++	if (prepare)
++		peak_kbps = max(peak_kbps, mc->display_peak_kbps[head]);
++	if (mc->display_ptsa_initialized &&
++	    mc->display_peak_kbps[head] == peak_kbps) {
++		spin_unlock_irqrestore(&mc->lock, flags);
++		return 0;
++	}
++
++	dis[0] = tegra210_display_ptsa_rate(head == 0 ? peak_kbps :
++					 mc->display_peak_kbps[0]);
++	dis[1] = tegra210_display_ptsa_rate(head == 1 ? peak_kbps :
++					 mc->display_peak_kbps[1]);
++	/* The stock display updater reserves the non-HISO VE baseline of 11
++	 * in RING1 even with cameras unused; it does not write camera registers.
++	 * Preserve current camera HISO allocations and current CPU rates.
++	 */
++	ve = tegra210_ptsa_hiso(mc, 0x434) ? mc_readl(mc, 0x434) & 0xfff : 11;
++	ve2 = tegra210_ptsa_hiso(mc, 0x494) ? mc_readl(mc, 0x494) & 0xfff : 0;
++	isp = tegra210_ptsa_hiso(mc, 0x4a0) ? mc_readl(mc, 0x4a0) & 0xfff : 0;
++	cpu_read = mc_readl(mc, 0x44c) & 0xfff;
++	cpu_write = mc_readl(mc, 0x50c) & 0xfff;
++	ring = max_t(u32, (dis[0] + dis[1] + ve + ve2 + isp) / 2 +
++			 cpu_read + cpu_write, 1);
++	if (ring > 0xfff) {
++		spin_unlock_irqrestore(&mc->lock, flags);
++		return -ERANGE;
++	}
++
++	/* Stock sequence: shared feeder first, followed by both display heads. */
++	mc_writel(mc, 0x3b, 0x480);
++	mc_writel(mc, 0x1f, 0x484);
++	mc_writel(mc, ring, 0x47c);
++	mc_writel(mc, 0x3b, 0x420);
++	mc_writel(mc, 0x1f, 0x424);
++	mc_writel(mc, dis[0], 0x41c);
++	mc_writel(mc, 0x3b, 0x42c);
++	mc_writel(mc, 0x1f, 0x430);
++	mc_writel(mc, dis[1], 0x428);
++	mc->display_peak_kbps[head] = peak_kbps;
++	mc->display_ptsa_initialized = true;
++	spin_unlock_irqrestore(&mc->lock, flags);
++
++	dev_info(mc->dev, "display PTSA head=%u peak=%ukB/s DIS=%u/%u RING1=%u\n",
++		 head, peak_kbps, dis[0], dis[1], ring);
++	return 0;
++}
++
+ static int tegra210_mc_icc_aggregate(struct icc_node *node, u32 tag, u32 avg_bw,
+ 				     u32 peak_bw, u32 *agg_avg, u32 *agg_peak)
+ {
+@@ -1381,4 +1477,5 @@
+ 	.num_interrupts = ARRAY_SIZE(tegra30_mc_irq_handlers),
+ 	.mc_addr_hi_mask = 0x3,
+ 	.mc_err_status_type_mask = (0x7 << 28),
++	.set_display_bandwidth = tegra210_mc_set_display_bandwidth,
+ };
+--- a/drivers/watchdog/tegra_wdt.c
++++ b/drivers/watchdog/tegra_wdt.c
+@@ -8,6 +8,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/of.h>
++#include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/watchdog.h>
+ 
+@@ -60,6 +61,61 @@
+ 	struct watchdog_device	wdd;
+ 	void __iomem		*wdt_regs;
+ 	void __iomem		*tmr_regs;
++	bool			adopt_only;
++	unsigned int		adoption_pings;
++};
++
++/* Preserve the qualified T210 boot-kernel watchdog across kexec.  Its timer7
++ * expires every 60 seconds and WDT0 resets on the fourth expiration.  Until
++ * retiming is qualified, accept only this exact active configuration.
++ */
++#define T210_WDT_CFG			0x8017
++#define T210_WDT_TIMER_BASE		0x70
++#define T210_WDT_TIMER_PTV		(TIMER_EN | TIMER_PERIODIC | 60000000U)
++#define T210_WDT_TIMEOUT			240
++#define WDT_STS_ACTIVE			BIT(0)
++
++static bool tegra210_wdt_can_adopt(u32 cfg, u32 status, u32 ptv)
++{
++	return cfg == T210_WDT_CFG && (status & WDT_STS_ACTIVE) &&
++		ptv == T210_WDT_TIMER_PTV;
++}
++
++static int tegra210_wdt_ping(struct watchdog_device *wdd)
++{
++	struct tegra_wdt *wdt = watchdog_get_drvdata(wdd);
++	u32 cfg, status, ptv, pcr;
++
++	cfg = readl(wdt->wdt_regs + WDT_CFG);
++	status = readl(wdt->wdt_regs + WDT_STS);
++	ptv = readl(wdt->tmr_regs + TIMER_PTV);
++	if (!tegra210_wdt_can_adopt(cfg, status, ptv)) {
++		dev_err_ratelimited(wdd->parent,
++			"inherited watchdog changed: cfg=%08x sts=%08x ptv=%08x\n",
++			cfg, status, ptv);
++		return -EIO;
++	}
++
++	/* Never unlock, disable, retime or select another timer. */
++	pcr = readl(wdt->tmr_regs + 4);
++	writel(WDT_CMD_START_COUNTER, wdt->wdt_regs + WDT_CMD);
++	if (wdt->adoption_pings++ < 4)
++		dev_info(wdd->parent,
++			"adoption ping: cfg=%08x ptv=%08x sts=%08x/%08x pcr=%08x/%08x\n",
++			cfg, ptv, status, readl(wdt->wdt_regs + WDT_STS),
++			pcr, readl(wdt->tmr_regs + 4));
++	return 0;
++}
++
++static const struct watchdog_info tegra210_wdt_info = {
++	.options = WDIOF_KEEPALIVEPING,
++	.identity = "Tegra210 inherited watchdog",
++};
++
++static const struct watchdog_ops tegra210_wdt_ops = {
++	.owner = THIS_MODULE,
++	.start = tegra210_wdt_ping,
++	.ping = tegra210_wdt_ping,
+ };
+ 
+ #define WDT_HEARTBEAT 120
+@@ -203,6 +259,7 @@
+ 	/* Initialize struct tegra_wdt. */
+ 	wdt->wdt_regs = regs + WDT_BASE;
+ 	wdt->tmr_regs = regs + WDT_TIMER_BASE;
++	wdt->adopt_only = of_device_get_match_data(dev) == &tegra210_wdt_ops;
+ 
+ 	/* Initialize struct watchdog_device. */
+ 	wdd = &wdt->wdd;
+@@ -217,15 +274,39 @@
+ 
+ 	watchdog_set_nowayout(wdd, nowayout);
+ 
+-	watchdog_stop_on_unregister(wdd);
++	if (wdt->adopt_only) {
++		u32 cfg, status, ptv;
++
++		wdt->tmr_regs = regs + T210_WDT_TIMER_BASE;
++		cfg = readl(wdt->wdt_regs + WDT_CFG);
++		status = readl(wdt->wdt_regs + WDT_STS);
++		ptv = readl(wdt->tmr_regs + TIMER_PTV);
++		if (!tegra210_wdt_can_adopt(cfg, status, ptv))
++			return dev_err_probe(dev, -ENODEV,
++				"unrecognized inherited watchdog cfg=%08x sts=%08x ptv=%08x\n",
++				cfg, status, ptv);
++
++		wdd->info = &tegra210_wdt_info;
++		wdd->ops = &tegra210_wdt_ops;
++		wdd->timeout = T210_WDT_TIMEOUT;
++		wdd->min_timeout = T210_WDT_TIMEOUT;
++		wdd->max_timeout = T210_WDT_TIMEOUT;
++		wdd->max_hw_heartbeat_ms = T210_WDT_TIMEOUT * 1000;
++		watchdog_set_nowayout(wdd, true);
++		set_bit(WDOG_HW_RUNNING, &wdd->status);
++		dev_info(dev, "adopting active timer7/WDT0: cfg=%08x sts=%08x ptv=%08x timeout=%us\n",
++			 cfg, status, ptv, wdd->timeout);
++	} else {
++		watchdog_stop_on_unregister(wdd);
++	}
+ 	ret = devm_watchdog_register_device(dev, wdd);
+ 	if (ret)
+ 		return ret;
+ 
+ 	platform_set_drvdata(pdev, wdt);
+ 
+-	dev_info(dev, "initialized (heartbeat = %d sec, nowayout = %d)\n",
+-		 heartbeat, nowayout);
++	dev_info(dev, "initialized (heartbeat = %u sec, nowayout = %d)\n",
++		 wdd->timeout, test_bit(WDOG_NO_WAY_OUT, &wdd->status));
+ 
+ 	return 0;
+ }
+@@ -233,6 +314,9 @@
+ static int tegra_wdt_suspend(struct device *dev)
+ {
+ 	struct tegra_wdt *wdt = dev_get_drvdata(dev);
++
++	if (wdt->adopt_only)
++		return -EBUSY;
+ 
+ 	if (watchdog_active(&wdt->wdd))
+ 		tegra_wdt_stop(&wdt->wdd);
+@@ -244,6 +328,9 @@
+ {
+ 	struct tegra_wdt *wdt = dev_get_drvdata(dev);
+ 
++	if (wdt->adopt_only)
++		return 0;
++
+ 	if (watchdog_active(&wdt->wdd))
+ 		tegra_wdt_start(&wdt->wdd);
+ 
+@@ -251,7 +338,8 @@
+ }
+ 
+ static const struct of_device_id tegra_wdt_of_match[] = {
+-	{ .compatible = "nvidia,tegra30-timer", },
++	{ .compatible = "nvidia,tegra30-timer", .data = &tegra_wdt_ops },
++	{ .compatible = "nvidia,tegra210-timer", .data = &tegra210_wdt_ops },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, tegra_wdt_of_match);
+--- a/include/soc/tegra/mc.h
++++ b/include/soc/tegra/mc.h
+@@ -225,6 +225,8 @@
+ 	unsigned int mc_err_status_type_mask;
+ 	const struct tegra_mc_intmask *intmasks;
+ 	unsigned int num_intmasks;
++	int (*set_display_bandwidth)(struct tegra_mc *mc, unsigned int head,
++				     u32 peak_kbps, bool prepare);
+ };
+ 
+ struct tegra_mc {
+@@ -253,6 +255,9 @@
+ 	struct {
+ 		struct dentry *root;
+ 	} debugfs;
++
++	u32 display_peak_kbps[2];
++	bool display_ptsa_initialized;
+ };
+ 
+ int tegra_mc_write_emem_configuration(struct tegra_mc *mc, unsigned long rate);
+@@ -261,6 +266,8 @@
+ #ifdef CONFIG_TEGRA_MC
+ struct tegra_mc *devm_tegra_memory_controller_get(struct device *dev);
+ int tegra_mc_probe_device(struct tegra_mc *mc, struct device *dev);
++int tegra_mc_set_display_bandwidth(struct tegra_mc *mc, unsigned int head,
++				 u32 peak_kbps, bool prepare);
+ int tegra_mc_get_carveout_info(struct tegra_mc *mc, unsigned int id,
+                                phys_addr_t *base, u64 *size);
+ #else
+@@ -277,6 +284,13 @@
+ }
+ 
+ static inline int
++tegra_mc_set_display_bandwidth(struct tegra_mc *mc, unsigned int head,
++			       u32 peak_kbps, bool prepare)
++{
++	return -ENODEV;
++}
++
++static inline int
+ tegra_mc_get_carveout_info(struct tegra_mc *mc, unsigned int id,
+                            phys_addr_t *base, u64 *size)
+ {

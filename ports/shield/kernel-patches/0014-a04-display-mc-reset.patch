@@ -1,0 +1,156 @@
+--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-dc.yaml
++++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-dc.yaml
+@@ -46,12 +46,16 @@
+       - const: parent # optional
+ 
+   resets:
++    minItems: 1
+     items:
+       - description: module reset
++      - description: memory controller client reset
+ 
+   reset-names:
++    minItems: 1
+     items:
+       - const: dc
++      - const: mc
+ 
+   interconnect-names: true
+   interconnects: true
+@@ -80,6 +84,18 @@
+     type: object
+ 
+ allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: nvidia,tegra210-dc
++    else:
++      properties:
++        resets:
++          maxItems: 1
++        reset-names:
++          maxItems: 1
++
+   - if:
+       properties:
+         compatible:
+--- a/drivers/gpu/drm/tegra/dc.c
++++ b/drivers/gpu/drm/tegra/dc.c
+@@ -3128,15 +3128,44 @@
+ 	return 0;
+ }
+ 
++/* The MC client remains blocked while the display partition is powered off.
++ * Keep this reset separate from CAR: power-up must release CAR before MC.
++ */
++static int tegra_dc_assert_resets(struct tegra_dc *dc)
++{
++	int err, rollback;
++
++	err = reset_control_assert(dc->rst_mc);
++	if (err < 0)
++		goto unblock_mc;
++
++	err = reset_control_assert(dc->rst);
++	if (!err)
++		return 0;
++
++unblock_mc:
++	/* A failed MC drain can already have blocked new requests. */
++	rollback = reset_control_deassert(dc->rst_mc);
++	if (rollback < 0) {
++		dc->reset_fault = true;
++		dev_err(dc->dev, "failed to unblock MC after reset error: %d\n",
++			rollback);
++	}
++	return err;
++}
++
+ static int tegra_dc_runtime_suspend(struct host1x_client *client)
+ {
+ 	struct tegra_dc *dc = host1x_client_to_dc(client);
+ 	struct device *dev = client->dev;
+ 	int err;
+ 
++	if (dc->reset_fault)
++		return -EIO;
++
+ 	tegra_dc_underflow_stop(dc);
+ 
+-	err = reset_control_assert(dc->rst);
++	err = tegra_dc_assert_resets(dc);
+ 	if (err < 0) {
+ 		dev_err(dev, "failed to assert reset: %d\n", err);
+ 		return err;
+@@ -3155,7 +3184,10 @@
+ {
+ 	struct tegra_dc *dc = host1x_client_to_dc(client);
+ 	struct device *dev = client->dev;
+-	int err;
++	int err, rollback;
++
++	if (dc->reset_fault)
++		return -EIO;
+ 
+ 	err = pm_runtime_resume_and_get(dev);
+ 	if (err < 0) {
+@@ -3184,8 +3216,32 @@
+ 		}
+ 	}
+ 
++	/* Stock clears the per-head MC flush only after CAR reset release. */
++	err = reset_control_deassert(dc->rst_mc);
++	if (err < 0) {
++		dev_err(dev, "failed to release MC client reset: %d\n", err);
++		goto assert_reset;
++	}
++
++	if (dc->rst_mc)
++		dev_info(dev, "SHIELD_MC_RESET resumed client_status=%d\n",
++			 reset_control_status(dc->rst_mc));
++
+ 	return 0;
+ 
++assert_reset:
++	rollback = tegra_dc_assert_resets(dc);
++	if (rollback < 0) {
++		/* Retain power/clock/PM ownership if DMA cannot be drained.
++		 * Reject future transitions rather than acquiring a second ref.
++		 */
++		dc->reset_fault = true;
++		dev_err(dev, "MC reset rollback failed; keeping partition powered: %d\n",
++			rollback);
++		return err;
++	}
++	if (dc->soc->has_powergate)
++		tegra_powergate_power_off(dc->powergate);
+ disable_clk:
+ 	clk_disable_unprepare(dc->clk);
+ put_rpm:
+@@ -3587,7 +3643,12 @@
+ 		return PTR_ERR(dc->rst);
+ 	}
+ 
+-	/* assert reset and disable clock */
++	dc->rst_mc = devm_reset_control_get_optional_exclusive(dc->dev, "mc");
++	if (IS_ERR(dc->rst_mc))
++		return dev_err_probe(dc->dev, PTR_ERR(dc->rst_mc),
++				     "failed to get MC client reset\n");
++
++	/* Existing probe takeover; MC transition is owned by runtime PM. */
+ 	err = clk_prepare_enable(dc->clk);
+ 	if (err < 0)
+ 		return err;
+--- a/drivers/gpu/drm/tegra/dc.h
++++ b/drivers/gpu/drm/tegra/dc.h
+@@ -105,6 +105,8 @@
+ 
+ 	struct clk *clk;
+ 	struct reset_control *rst;
++	struct reset_control *rst_mc;
++	bool reset_fault;
+ 	void __iomem *regs;
+ 	int irq;
+ 

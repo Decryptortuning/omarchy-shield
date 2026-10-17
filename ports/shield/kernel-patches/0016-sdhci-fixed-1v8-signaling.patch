@@ -1,0 +1,18 @@
+--- a/drivers/mmc/host/sdhci.c
++++ b/drivers/mmc/host/sdhci.c
+@@ -4738,7 +4738,14 @@
+ 	if ((mmc->caps & (MMC_CAP_UHS_SDR12 | MMC_CAP_UHS_SDR25 |
+ 			  MMC_CAP_UHS_SDR50 | MMC_CAP_UHS_SDR104 |
+ 			  MMC_CAP_UHS_DDR50 | MMC_CAP_1_8V_DDR)) ||
+-	    (mmc->caps2 & (MMC_CAP2_HS200_1_8V_SDR | MMC_CAP2_HS400_1_8V)))
++	    (mmc->caps2 & (MMC_CAP2_HS200_1_8V_SDR | MMC_CAP2_HS400_1_8V)) ||
++	    /* A fixed 1.8V bus also needs valid signalling in legacy/HS mode. */
++	    (!(host->quirks2 & SDHCI_QUIRK2_NO_1_8_V) &&
++	     !IS_ERR(mmc->supply.vqmmc) &&
++	     regulator_is_supported_voltage(mmc->supply.vqmmc,
++					    1700000, 1950000) == 1 &&
++	     regulator_is_supported_voltage(mmc->supply.vqmmc,
++					    2700000, 3600000) == 0))
+ 		host->flags |= SDHCI_SIGNALING_180;
+ 
+ 	if (mmc->caps2 & MMC_CAP2_HSX00_1_2V)
