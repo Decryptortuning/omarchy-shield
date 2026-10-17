@@ -1,0 +1,81 @@
+{
+  "format_version": 1,
+  "scope": "Host-only matched root preparation and source-bound static AArch64 artifact build",
+  "passed": true,
+  "boot_ready": false,
+  "physical_USB_changed": false,
+  "shield_boot_partitions_changed": false,
+  "enabled_guardian_executed": false,
+  "native_systemd_qualified": false,
+  "hardware_performance_parity_qualified": false,
+  "source_hashes": {
+    "guardian/guardian.h": "ed9fbd2953d36a47a36ae4b80734cce87903fc6319f78b30cc5db7d3b5823c1f",
+    "guardian/main.c": "3f81927c6c2e930f4d7de32873fcc10ac18f9a545cd4e982631ab8cac6ef7312",
+    "guardian/profile.h": "bcd75507bd2f533f720cf79b33811a42ee960223775ae6a41d92fd2f782e7b2b",
+    "guardian/sampler.c": "a25a914ed93bfbe9428b655a4d955913f61df40ce34f417fd7ad0a9340ceba8d",
+    "guardian/state.c": "330408766baaf7a4e756246d2098473e3a181106df761378a08d7ce1e323898e",
+    "qualification/restart-recovery.c": "829308bbbfd1c8e501d4b372b7994346097a814452b2515544854449a50c3c24",
+    "tools/guardian_binding.py": "170c16da8a617aa081a1a816db67eecf0cd95930f1ba120886193b1d7b58282b",
+    "tools/guardian_client.py": "780e20a73efd11dcf893bafd233b53e1ec19a7188a8e866d9a32a189046aac22",
+    "tools/prepare-guardian.py": "9b35f18db54511e0555bb234be0d853520be1a8eb5158faab480f6989098619b",
+    "tools/prepare-qualification-overlay.py": "aac342dfc5104dc6af5556f755eac493d04263204ca9a915d0154af9b4c5eb92",
+    "tools/prepare-qualification-root.py": "466ec2669dbd13ae36c7303cc12bd46c8b581e0aa3e4c72c2b884dde3da19895",
+    "tools/qualification_profile.py": "dbe0372bd6c71ecb189d2627399b28ccc244335afa09e3365661687c8bddbfea",
+    "tools/qualification_recovery.py": "4388f71ffbb745e037bb1691d372f8a2d794fa7bcd54b40de706a95c1e7c06d7",
+    "tools/usb_root_profile.py": "9761c73ae979ccdb587f6a2d535a6b6464f886fe7d25fec7510d6c3dbd58b96b"
+  },
+  "tests": {
+    "normal_suite": {
+      "total": 138,
+      "passed": 127,
+      "root_only_skipped": 11
+    },
+    "unchanged_root_profile_transaction_suite_carried_from189": {
+      "total": 37,
+      "passed": 37
+    },
+    "unchanged_guardian_C_Python_pure_wire_disabled_ARM_from189": "passed"
+  },
+  "prepared_root": {
+    "reference_verified_before_after": true,
+    "source_accounts_unchanged": true,
+    "reference_modified": false,
+    "copied_root_only": true,
+    "matched_payload_verified_after_configuration": true,
+    "network_isolated_account_theme_commands": true,
+    "account_UID": 1001,
+    "account_administrative": false,
+    "root_build_and_user_passwords_locked": true,
+    "build_login_disabled": true,
+    "sudo_policy_denied": true,
+    "native_sudo_execution_verified": false,
+    "theme_seeded": "tokyo-night",
+    "root_overlay_files": 9,
+    "home_overlay_files": 4,
+    "verified_home_entries": 10332,
+    "applied_service_masks": 12,
+    "normal_first_run_marked_complete": false,
+    "guardian_installed": false,
+    "root_selected": false
+  },
+  "artifact_build": {
+    "architecture": "AArch64",
+    "static": true,
+    "role": "early systemd",
+    "guardian_bytes": 778064,
+    "recovery_helper_bytes": 634896,
+    "shared_source_inputs": 14,
+    "runtime_file_inputs": 7,
+    "installed": false
+  },
+  "retained_failed_attempt": "189 false-negative sudo-list predicate; copied root/account verified, stopped before overlay/theme/masks, never reused",
+  "known_application_gap": "Matched skeleton contains x86-64 Mason shfmt cache; package-level ARM correction and application qualification remain open",
+  "remaining": [
+    "Reviewed artifact installer and actual systemd unit graph",
+    "Full-system VM and native setuid/session qualification",
+    "Authenticated native control, current recovery/internal-storage guards and loaded memory/root handoff",
+    "Physical USB update and independent clean readback/recovery receipt",
+    "Native full systemd desktop, hardware matrix and sustained performance",
+    "Durable autonomous boot and failure recovery"
+  ]
+}
