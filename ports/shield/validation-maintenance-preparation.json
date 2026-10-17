@@ -1,0 +1,46 @@
+{
+  "format_version": 1,
+  "scope": "Host preparation of the matched USB maintenance transaction and ARM toolroot",
+  "physical_usb_changed": false,
+  "boot_partitions_changed": false,
+  "full_systemd_shield_boot_qualified": false,
+  "boot_ready": false,
+  "transaction_core": {
+    "normal_suite": {"tests": 103, "passed": 94, "root_only_skipped": 9},
+    "separate_root_flow_suite": {"tests": 13, "passed": 13},
+    "commands_fenced": ["btrfs", "mount", "umount", "chroot", "pacman", "filesystem sync"],
+    "real_operations_in_fixtures": ["owned directory copies", "journal fsync and rename"],
+    "coverage": ["candidate snapshots", "single package transaction", "replay refusal", "package failure", "unmount failure", "final sync failure", "original root mismatch", "capacity refusal", "symlink mountpoint refusal", "unowned mountpoint refusal"],
+    "retained_failed_attempt": "The first root flow run found misuse of the package-path validator for virtual mountpoints. A separately reviewed fixed mountpoint validator resolved it before the passing run.",
+    "real_btrfs_alpm_integration_qualified": false,
+    "independent_clean_unmount_receipt_required": true
+  },
+  "arm_toolroot": {
+    "paths": 774,
+    "regular_bytes": 86787140,
+    "compressed_bytes": 31274810,
+    "archive_sha256": "32c19cc505b9402f25d7bd271ea2fcb8d9e55afd7f6b2b65d928a65794ff3efa",
+    "qemu_chroot_smoke": "passed",
+    "python": "3.14.8",
+    "btrfs_progs": "7.1",
+    "bsdtar": "3.8.9",
+    "smoke_checks": ["isolated Python startup", "maintenance module imports", "native extension imports", "hashing", "compression roundtrips", "Btrfs version", "bsdtar version"],
+    "python_arm_subprocess_execution_qualified": false,
+    "complete_initramfs_memory_placement_qualified": false,
+    "hardware_qualified": false
+  },
+  "remaining_before_physical_update": [
+    "Combined maintenance initramfs and exact current recovery controller",
+    "Finite independent watchdog, fan and temperature guard",
+    "Bounded command supervision and interrupted-attempt policy",
+    "Stable device, clean Btrfs state and exclusive private mount admission",
+    "Real Btrfs and ALPM integration test",
+    "Independent clean-unmount and host receipt"
+  ],
+  "remaining_before_desktop_boot": [
+    "Candidate-specific filesystem mounts and user/session provisioning",
+    "Actual initramfs to systemd handoff",
+    "Ready guard before desktop and bounded recovery cleanup",
+    "Native hardware and performance qualification"
+  ]
+}
