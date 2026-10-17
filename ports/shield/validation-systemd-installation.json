@@ -1,12 +1,14 @@
 {
   "format_version": 1,
-  "scope": "Host-only matched root, bounded power policy and exact guardian artifact installation",
+  "scope": "Host-only matched preparation and exact artifact installation, followed by separate software-only ARM VM qualification",
   "passed": true,
   "boot_ready": false,
   "physical_USB_changed": false,
   "shield_boot_partitions_changed": false,
-  "full_system_VM_executed": false,
-  "enabled_native_guardian_executed": false,
+  "full_system_VM_executed": true,
+  "enabled_guardian_executed_during_host_installation": false,
+  "exact_enabled_guardian_virtual_refusal_executed": true,
+  "enabled_guardian_admitted_on_native_hardware": false,
   "native_effective_power_policy_verified": false,
   "native_setuid_verified": false,
   "native_systemd_desktop_qualified": false,
@@ -23,30 +25,28 @@
     "tools/prepare-guardian.py": "9b35f18db54511e0555bb234be0d853520be1a8eb5158faab480f6989098619b",
     "tools/prepare-qualification-overlay.py": "aac342dfc5104dc6af5556f755eac493d04263204ca9a915d0154af9b4c5eb92",
     "tools/prepare-qualification-root.py": "466ec2669dbd13ae36c7303cc12bd46c8b581e0aa3e4c72c2b884dde3da19895",
-    "tools/qualification_profile.py": "1ff7654518871631cfb7bc14afd3bd4350ec7badfdd79d8ebd449edf25a7c4c1",
-    "tools/qualification_recovery.py": "989642696e2015c4d65b62796cd3a55ecf82616f09e6e07a33995d285663c6cc",
+    "tools/qualification_profile.py": "99a9714c16fe5aeb1cec7c976a8e6810f3d2d3565a74903c167c93535762400e",
+    "tools/qualification_recovery.py": "db91343b54d50934998b2fa642c9138878f9b72b61de0a4e6a435446af5ea952",
     "tools/usb_root_profile.py": "9761c73ae979ccdb587f6a2d535a6b6464f886fe7d25fec7510d6c3dbd58b96b"
   },
   "installer_sha256": "8d3a5d09fd2054eee3e5ec24d1e15c36360c58680d719b094a17885b00da7c07",
   "tests": {
     "normal_suite": {
-      "total": 150,
-      "passed": 139,
+      "total": 186,
+      "passed": 175,
       "root_only_skipped": 11
     },
-    "new_power_policy_structural_source_binding_cases": 7,
-    "new_ELF_admission_cases": 5,
-    "unchanged_root_transaction_profile_cases_from189": 37,
-    "unchanged_guardian_C_wire_disabled_ARM_from189": "passed"
+    "fenced_root_transaction_profile_cases_passed": 37
   },
   "fresh_prepared_root": {
-    "source_reference_verified_before_after": true,
+    "source_reference_verified_before_and_after": true,
     "source_accounts_unchanged": true,
     "nonadministrative_locked_account_UID": 1001,
     "theme": "tokyo-night",
     "network_isolated_preparation": true,
     "root_overlay_files": 11,
     "home_overlay_files": 4,
+    "complete_home_entries": 10332,
     "service_masks": 13,
     "matched_payload_reverified_after_configuration": true,
     "normal_first_run_completed": false
@@ -54,13 +54,19 @@
   "bounded_power_policy": {
     "subject_user": "shieldqual",
     "explicit_login1_actions_denied": 20,
-    "explicit_systemd_global_management_actions_denied": 4,
+    "explicit_systemd_global_actions_denied": 4,
+    "explicit_portable_image_implication_action_denied": 1,
+    "complete_installed_action_catalog_files": 32,
+    "reviewed_incoming_implication_closure_actions": 25,
+    "action_catalog_sha256": "0c9357c7c277481b377f4fb33cf1601b89d2f264a5bb47ffb80bcba0bceb7838",
     "other_subjects_and_actions": "fall through",
     "logind_key_and_idle_ignore_settings": 13,
     "CtrlAltDelBurstAction": "none",
     "ctrl_alt_del_target_masked": true,
-    "primary_XML_and_manual_inputs_bound": 4,
-    "effective_policy_remains_unverified": true
+    "primary_XML_and_manual_inputs_bound": 5,
+    "sudo_authentication_policy_changed": false,
+    "effective_policy_verified_in_ARM_VM": true,
+    "native_effective_policy_unverified": true
   },
   "host_installation": {
     "new_derivative_only": true,
@@ -69,19 +75,15 @@
     "static_AArch64_headers_verified": true,
     "matched_payload_reverified_after_installation": true,
     "account_database_hashes_preserved": true,
-    "home_and_generated_policy_verified": true,
+    "home_and_policy_verified": true,
     "source_root_verified_again": true,
-    "default_boot_selection_unchanged": true,
-    "enabled_entrypoints_executed": false
+    "default_boot_selection_unchanged": true
   },
-  "known_application_gap": "Matched skeleton still contains x86-64 Mason shfmt cache; ARM editor tooling remains unqualified",
+  "known_application_gap": "Matched skeleton retains an x86-64 Mason shfmt cache; ARM editor tooling remains unqualified",
   "remaining": [
-    "Source-bound full-system ARM VM and real manager/startup-policy checks",
-    "Production native graph must reject virt without fake readiness",
-    "Actual PAM/logind active local session, user bus, setuid and power-denial tests",
-    "Virtual compositor test requires a working software renderer; current Nouveau/Tegra payload cannot be presumed to provide one",
-    "Authenticated physical controller, recovery/internal-storage guards and loaded root/memory handoff",
-    "Physical USB update, clean readback, observed recovery and native desktop/hardware qualification",
-    "Durable autonomous boot and full feature/performance parity"
+    "Authenticated current-contract native maintenance broker and root handoff",
+    "Actual physical USB preimages, phased materialization and observed recovery",
+    "Native full-systemd Omarchy graphics/session/hardware qualification",
+    "Durable unattended boot and full hardware/performance parity"
   ]
 }

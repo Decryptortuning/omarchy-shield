@@ -6,6 +6,7 @@ watchdog fd; this process never opens, feeds, closes or retimes that watchdog.
 import array
 import ctypes
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -24,6 +25,10 @@ sys.path.insert(0, '/usr/lib/omarchy/shield/qualification')
 from guardian_binding import INSTALL, PROFILE, load_runtime, owned_file
 from guardian_client import GuardianClient, MAGIC, REQUEST, SECOND, STATUS, VERSION
 from usb_root_profile import digest, require, safe_relative
+
+ACTION_DIRECTORY = Path('/usr/share/polkit-1/actions')
+ACTION_CATALOG_COUNT = 32
+ACTION_CATALOG_SHA256 = '0c9357c7c277481b377f4fb33cf1601b89d2f264a5bb47ffb80bcba0bceb7838'
 
 DIRECTORY = Path('/run/shield-recovery')
 ENDPOINT = DIRECTORY / 'request.sock'
@@ -169,12 +174,36 @@ def startup_policy(profile):
   primary = policy['power_policy_primary_sources']
   require(set(primary) == {'usr/share/polkit-1/actions/org.freedesktop.login1.policy',
           'usr/share/polkit-1/actions/org.freedesktop.systemd1.policy',
+          'usr/share/polkit-1/actions/org.freedesktop.portable1.policy',
           'usr/share/man/man5/logind.conf.5.gz', 'usr/share/man/man5/systemd-system.conf.5.gz'},
           'Power policy primary closure differs')
   for relative, expected in primary.items():
     path = owned_file(Path('/') / relative)
     require(not path.stat().st_mode & 0o022 and digest(path) == expected,
             'Installed base power policy source differs')
+  require(policy['power_policy_action_catalog_sha256'] == ACTION_CATALOG_SHA256
+          and policy['incoming_power_implication_closure_verified'] is True,
+          'Unreviewed power implication closure')
+  expected_catalog = policy['power_policy_action_catalog']
+  require(type(expected_catalog) is dict and len(expected_catalog) == ACTION_CATALOG_COUNT and hashlib.sha256(
+      json.dumps(expected_catalog, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+      == ACTION_CATALOG_SHA256, 'Bound power action catalog differs')
+  directory = Path('/')
+  for component in str(ACTION_DIRECTORY).strip('/').split('/'):
+    directory /= component
+    info = directory.lstat()
+    require(stat.S_ISDIR(info.st_mode) and info.st_uid == info.st_gid == 0
+            and not info.st_mode & 0o022, 'Unowned policy catalog ancestor')
+  paths = sorted(directory.glob('*.policy'))
+  require(len(paths) == ACTION_CATALOG_COUNT, 'Installed policy catalog file count differs')
+  actual_catalog, total = {}, 0
+  for path in paths:
+    owned_file(path)
+    info = path.stat(); total += info.st_size
+    require(not info.st_mode & 0o022 and info.st_size <= 1024**2 and total <= 2 * 1024**2,
+            'Unsafe installed policy catalog file')
+    actual_catalog[str(path).lstrip('/')] = digest(path)
+  require(actual_catalog == expected_catalog, 'Installed power action catalog differs')
   require(policy['payload_candidate_id'] == profile['filesystem']['candidate_id']
           and policy['guardian_required_before_desktop'] is True
           and policy['account']['uid'] == 1001 and policy['account']['administrative'] is False,
