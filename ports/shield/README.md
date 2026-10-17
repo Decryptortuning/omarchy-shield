@@ -1,5 +1,7 @@
 # NVIDIA Shield TV port
 
+[Clean systemd qualification preparation](validation-systemd-preparation.json) now passes on a separate host root: the matched payload, locked desktop account, headless theme, service masks and bound static ARM guardian/recovery artifacts are prepared. The [qualification contract](qualification/README.md) describes the remaining installation, boot handoff and next-run acceptance work. The physical USB and boot partitions are unchanged; native systemd and hardware parity remain unqualified.
+
 [The matched runtime qualification](validation-runtime-closure.json) records the maintained kernel, full Mesa and paired desktop packages installed together in an isolated ARM root: 72 port tests, exact graphics/kernel/1,561-module payload checks, ARM loader/dependency checks and full-root QEMU acceptance passed. The physical USB root remains unchanged; this software result does not establish permanent boot or additional hardware parity.
 
 This experimental Omarchy port targets the owner's connected `darcy` / original Tegra210 A02 Shield with its bootloader-selected **A04** board definition. The earlier `mdarcy` / Tegra210B01 candidate remains a separate profile. Full hardware support remains the acceptance goal in [hardware-darcy.json](hardware-darcy.json) and [hardware.json](hardware.json).

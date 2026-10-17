@@ -1,0 +1,26 @@
+# Full-systemd qualification preparation
+
+The current qualification sources prepare a separate matched ARM root and bind a finite guardian/recovery pair. They do not select a boot root, install an enabled guardian on the Shield, or qualify hardware. The existing secure recovery control and physical USB remain separate until a reviewed controller performs that cutover.
+
+`prepare-qualification-overlay.py` renders the normal Omarchy UWSM session, temporary account policy, candidate-only root/home/log mounts and systemd units. `prepare-qualification-root.py` requires a pinned payload/overlay, verifies the reference, copies it to a new private host directory, excludes build/private state, creates the locked nonadministrative `shieldqual` account, runs the installed headless Tokyo Night theme leaf in a network-isolated ARM chroot, applies service masks and rechecks the full matched package payload. A partial output is retained and cannot be reused. Online onboarding and normal first-run completion remain pending.
+
+`prepare-guardian.py` builds static AArch64 guardian/recovery artifacts without installing or executing them. Its shared exact source closure, kernel/config/DT inputs, root identity, overlay, helper and role form one sealed candidate. The generated C profile embeds that identity; the public default profile remains disabled. The runtime receiver checks the profile, artifact sidecar and installed helper/Python identities together.
+
+Recovery must admit the actual USB Btrfs root/home/log after local mounts, verify startup masks and PID1 watchdog ownership, then announce readiness. Only then may the guardian acquire its sole watchdog descriptor and announce its first validated keepalive. The desktop follows that readiness through PAM/logind/UWSM. The guardian opens before boottime120 seconds, permits work only before540 seconds and never feeds beyond its cleanup cutoff or600 seconds. These are feeding deadlines; they are not a claim that hardware reset occurs at600 seconds.
+
+The receiver never opens or feeds the watchdog. Its one cleanup attempt stops the temporary user, synchronizes the filesystem, unmounts home/log, verifies remaining Btrfs mounts read-only, verifies USB partition/whole-device read-only state, then requests guarded recovery within the existing deadline. It does not claim to unmount the root or guarantee power-loss durability. Blocking kernel I/O and recovery failures remain visible; no plain/global reboot fallback or automatic effect replay is provided.
+
+## Next native run acceptance order
+
+The next controller and collection bundle must implement and review this order before release. These are planned checks, not implemented collector results:
+
+1. Admit current LNX/SOS recovery hashes, exact kernel/config/restricted DT, matching installed modules, USB identity and candidate root. Preserve the original default root and rescue snapshots. Keep eMMC writes and unrelated storage outside this run.
+2. Prove systemd PID1, required root/home/log mounts, manager watchdog settings, guardian readiness and sensor/fan health before starting a desktop or workload. Establish authenticated host collection before effects; insufficient reserve or missing control ends work.
+3. Prove the normal user session, shell/bar IPC, terminal, hardware Nouveau renderer and physical display mode. Capture screenshots, compositor logs, all underflow counters, kernel faults and actual application results. A device node or screenshot alone is insufficient.
+4. Qualify a small designated USB scratch file with write/fsync/readback/hash/removal; inventory eMMC read-only. Capture USB device/gadget state, CPU topology/online state, memory/zram and thermal readings. Admit each bounded workload against the guardian's remaining reserve.
+5. For enabled and wired hardware, test available Ethernet link/traffic and audio routing/playback. Inventory Wi-Fi/Bluetooth/video/Vulkan firmware, drivers and userspace separately. Disabled DT nodes, unavailable peers or absent firmware remain blocked tests, not passes. Pairing, network credentials or physical observations require the actual setup.
+6. Stop workloads before the finite work cutoff. Prove owned cleanup/read-only state, observed secure recovery return and host receipt collection. Compare recovery hashes and distinguish a requested reboot from an observed reboot. Preserve failed or uncertain outcomes without replay.
+
+Broader modes/hotplug, all-core load, DVFS, automatic cooling, radio coexistence, codec acceleration, suspend/wake and unattended permanent launch remain separate acceptance work. A bounded systemd desktop run is a prerequisite to that matrix, not full parity.
+
+The current matched skeleton also contains an x86-64 Mason `shfmt` cache. Its ELF architecture was checked in the retained host copy. That editor-tooling gap needs a package-level ARM correction; it is not silently removed or counted as working by root preparation.

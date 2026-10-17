@@ -170,7 +170,8 @@ bool sg_platform_admit(unsigned *device_major, unsigned *device_minor)
       !marker(line, "tegra_smmu.reset_inherited=", "1") ||
       !marker(line, "tegra_smmu.quarantine_gpub_inherited=", "1") ||
       !marker(line, "watchdog.open_timeout=", "240") ||
-      !marker(line, "watchdog.stop_on_reboot=", "0"))
+      !marker(line, "watchdog.stop_on_reboot=", "0") ||
+      !marker(line, "shield.guardian=", SG_PROFILE_CANDIDATE))
     return false;
   static const char levels[] = {0,0,0,0, 0,0,0,127, 0,0,0,(char)191, 0,0,0,(char)255};
   char pwms[20], pwm_handle[8];

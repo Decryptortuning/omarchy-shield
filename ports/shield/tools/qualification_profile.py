@@ -80,6 +80,7 @@ KillMode=control-group
     'etc/systemd/system/shield-qualification-desktop.service': f'''[Unit]
 Description=Bounded SHIELD Omarchy PAM and UWSM desktop
 Requires=shield-guardian.service systemd-logind.service systemd-user-sessions.service
+BindsTo=shield-guardian.service
 After=shield-guardian.service systemd-logind.service systemd-user-sessions.service
 Conflicts=getty@tty1.service sddm.service
 Before=shield-qualification.target
@@ -97,6 +98,58 @@ TTYVTDisallocate=yes
 SendSIGHUP=yes
 KillMode=control-group
 TimeoutStopSec=5s
+''',
+    'etc/systemd/system/shield-guardian.service': '''[Unit]
+Description=Finite SHIELD watchdog and cooling guardian
+DefaultDependencies=no
+Requires=shield-qualification-recovery.service
+After=systemd-udev-trigger.service shield-qualification-recovery.service
+Before=shield-qualification-desktop.service
+IgnoreOnIsolate=yes
+RefuseManualStop=yes
+AssertFileNotEmpty=/usr/lib/omarchy/shield/qualification/profile.json
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/lib/omarchy/shield/qualification/shield-guardian --run
+RuntimeDirectory=shield-guardian
+RuntimeDirectoryMode=0700
+Restart=no
+TimeoutStartSec=infinity
+TimeoutStopSec=infinity
+SendSIGKILL=no
+KillMode=process
+OOMScoreAdjust=-1000
+''',
+    'etc/systemd/system/shield-qualification-recovery.service': '''[Unit]
+Description=Owned SHIELD qualification cleanup and recovery receiver
+DefaultDependencies=no
+Requires=local-fs.target
+After=local-fs.target systemd-udev-trigger.service
+Before=shield-guardian.service
+IgnoreOnIsolate=yes
+RefuseManualStop=yes
+AssertFileNotEmpty=/usr/lib/omarchy/shield/qualification/profile.json
+
+[Service]
+Type=notify
+NotifyAccess=main
+ExecStart=/usr/bin/python3 -I -B /usr/lib/omarchy/shield/qualification/qualification_recovery.py
+RuntimeDirectory=shield-recovery
+RuntimeDirectoryMode=0700
+Restart=no
+TimeoutStartSec=infinity
+TimeoutStopSec=infinity
+SendSIGKILL=no
+KillMode=process
+OOMScoreAdjust=-900
+''',
+    'etc/systemd/system/shield-qualification.target': '''[Unit]
+Description=Bounded native SHIELD Omarchy qualification
+Requires=basic.target shield-qualification-recovery.service shield-guardian.service shield-qualification-desktop.service
+After=basic.target shield-guardian.service shield-qualification-desktop.service
+AllowIsolate=yes
 ''',
   }
   home_files = {
@@ -121,7 +174,14 @@ fi
       'getty@tty1.service': 'qualification owns tty1',
       'omarchy-provision-hardware.service': 'deferred hardware leaves require separate admission',
       'power-profiles-daemon.service': 'DVFS and power policy remain unqualified',
-      'udisks2.service': 'filesystem admission belongs to the qualification owner'},
+      'udisks2.service': 'filesystem admission belongs to the qualification owner',
+      'ssh.service': 'qualification has no remote login enrollment',
+      'sshd.service': 'qualification has no remote login enrollment',
+      'sleep.target': 'sleep and wake remain separately unqualified',
+      'systemd-suspend.service': 'sleep and wake remain separately unqualified',
+      'systemd-hibernate.service': 'sleep and wake remain separately unqualified',
+      'systemd-hybrid-sleep.service': 'sleep and wake remain separately unqualified',
+      'systemd-suspend-then-hibernate.service': 'sleep and wake remain separately unqualified'},
     'guardian_required_before_desktop': True, 'boot_ready': False, 'physical_qualified': False,
     'source_files': {name: hashlib.sha256(value.encode()).hexdigest() for name, value in
       [('usr/share/omarchy/config/hypr/hyprland.lua', source),
