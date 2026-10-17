@@ -75,7 +75,7 @@
       },
       {
         "path": "ports/shield/kernel-patches/0014-a04-display-mc-reset.patch",
-        "sha256": "2d4f0c890be8894ea0df71e238f69349edb1b4a716d1a9751ed2a219e163da6a",
+        "sha256": "3319ac661b09467d68bf9e8037326560c72c18534a937230c28bbd13360c52b5",
         "reason": "Give each display head optional MC-drain ownership beside CAR reset, including rollback. Native73 corrected inherited MC flush and sampled zero underflows; default full-board DT requires separate qualification."
       },
       {
