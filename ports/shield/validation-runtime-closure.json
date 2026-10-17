@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "date_UTC": "2026-10-17",
+  "source_commit": "1e3b3f415a71a679db2c2cf2b85f0ed8f46d56b5",
+  "kernel_candidate_receipt": "validation-kernel-candidate.json",
+  "kernel_release": "7.1.0-shield-bringup",
+  "Image_sha256": "e6b49a014b90ca443b024cc576e82d71a3330bd404c2b919c77c633eed28f721",
+  "focused_port_tests_passed": 72,
+  "Bash_syntax_ShellCheck_and_diff_pass": true,
+  "staging_and_package_prepare_share_complete_Mesa_intent_validator": true,
+  "final_archive_admission": "All five archive names, full epoch/version/release, AArch64 architecture and recipe hashes match staged source intent before one ALPM transaction.",
+  "installer_negative_cases_no_ALPM_call": [
+    "older same-name Mesa",
+    "older paired settings",
+    "wrong architecture",
+    "different archive recipe",
+    "changed staged recipe",
+    "duplicate archive",
+    "missing archive"
+  ],
+  "installed_packages": {
+    "mesa": {
+      "name": "mesa",
+      "version": "1:26.2.4-99.1",
+      "architecture": "aarch64",
+      "recipe_sha256": "b9e0e693108e1ae0ea4597fb66d3122744fe273dd67edb359c3154008d3d2478"
+    },
+    "linux-shield": {
+      "name": "linux-shield",
+      "version": "7.1.0-8",
+      "architecture": "aarch64",
+      "recipe_sha256": "d901dd6979c78af687e10dfbf54cdbbe58147586e8b19800f28dea33c34e6821"
+    },
+    "omarchy": {
+      "name": "omarchy",
+      "version": "4.0.0.alpha-99.7",
+      "architecture": "aarch64",
+      "recipe_sha256": "75aeb8203c0df5130b252b96520c91765694c3e12a4db7e4c73afa455a97e430"
+    },
+    "omarchy-settings": {
+      "name": "omarchy-settings",
+      "version": "4.0.0.alpha-99.7",
+      "architecture": "aarch64",
+      "recipe_sha256": "68582f92cd4df9d492c20c8d36d300b16b39d793da2a2cf5b9b308851d6f517b"
+    },
+    "omarchy-shield": {
+      "name": "omarchy-shield",
+      "version": "0.1.0-6",
+      "architecture": "aarch64",
+      "recipe_sha256": "49f9b3cc0791c0e6f64221596f63d2aace49226439ce5db64f3cdab53e8b82ff"
+    }
+  },
+  "archives": [
+    {
+      "name": "mesa-1:26.2.4-99.1-aarch64.pkg.tar.xz",
+      "bytes": 4627972,
+      "sha256": "db15c93b353fc24b62e4e64a8f97eb7698bb8c3e97797b4229c8127ef029023c"
+    },
+    {
+      "name": "linux-shield-7.1.0-8-aarch64.pkg.tar.xz",
+      "bytes": 42238372,
+      "sha256": "c1ff6b6ad2411cd4ae7efd464f667f01f432a881edfe389ed15f54b8953509b2"
+    },
+    {
+      "name": "omarchy-4.0.0.alpha-99.7-aarch64.pkg.tar.xz",
+      "bytes": 163231576,
+      "sha256": "0386429f54ca0b148e909e1ee89ec3533b9a6934dada5a10dce592f11ad901f0"
+    },
+    {
+      "name": "omarchy-settings-4.0.0.alpha-99.7-aarch64.pkg.tar.xz",
+      "bytes": 1370996,
+      "sha256": "f29fc56abad5b17910e0646fc94e02c0a6d34f3a70e45b6b1a37c1351b55a3e0"
+    },
+    {
+      "name": "omarchy-shield-0.1.0-6-aarch64.pkg.tar.xz",
+      "bytes": 15464,
+      "sha256": "d64ff0fc221e2157ab26c290d3d9de0d70733959c7e9afaa0fcde1aaed96e082"
+    }
+  ],
+  "isolated_five_package_build_install_pass": true,
+  "ALPM_database_and_package_file_checks_pass": true,
+  "six_Mesa_ARM_dynamic_loader_closures_pass": true,
+  "Mesa_payload_entries_exact_with_modes_symlinks_root_ownership": 25,
+  "embedded_Mesa_manifest_exact": true,
+  "all_selected_installed_kernel_inputs_exact": true,
+  "modules_exact_against_selected_frozen_archive": 1561,
+  "full_root_QEMU": {
+    "pass": true,
+    "QEMU_version": "QEMU emulator version 8.2.2 (Debian 1:8.2.2+ds-0ubuntu1.18)",
+    "network": "disconnected",
+    "disk": "disposable ext4 guest copy and QEMU snapshot writes; physical Btrfs fstab retained in source",
+    "test_account": "guest only; inherited development accounts locked",
+    "checks": [
+      "CHECK: custom ARM kernel and systemd PID 1",
+      "CHECK: pressure stall reporting and Omarchy memory-pressure service",
+      "CHECK: Omarchy zstd compressed swap is active",
+      "CHECK: installed package database and complete requested package set",
+      "CHECK: QEMU hardware remains plain aarch64, never a physical Shield pass",
+      "CHECK: matching driver metadata and dependency resolution",
+      "CHECK: virtual USB CDC ACM enumeration and bidirectional serial data",
+      "CHECK: desktop, audio, network and peripheral userspace binaries",
+      "CHECK: user defaults and installed Omarchy session assets",
+      "CHECK: encrypted loop storage, Btrfs and Snapper snapshot data",
+      "CHECK: installed Omarchy Hyprland configuration"
+    ],
+    "automatic_clean_shutdown": true,
+    "full_log_sha256": "372a3e7d1828509c6e2f68b4d7e184ea1f8d34136279abd9251dc600bb5f6fa4"
+  },
+  "retained_warnings": {
+    "dependency_checks_skipped_during_package_build": "Final single ALPM transaction and installed database/dependency checks passed.",
+    "stale_settings_backup_entries": [
+      "etc/udev/rules.d/99-omarchy-power-profile.rules",
+      "etc/udev/rules.d/99-omarchy-wifi-powersave.rules",
+      "etc/systemd/zram-generator.conf"
+    ],
+    "settings_followup": "Current NetworkManager Wi-Fi config and vendor zram drop-in are present. Correct the old backup metadata and add backup protection for the new NetworkManager config before owner-edit-preserving release.",
+    "guest_account_preparation": "Host shadow tools reported unrecognized target FAIL_DELAY three times; exit0 and guest account/source boundaries independently verified.",
+    "QEMU_virtual_flash_suspend_messages_on_shutdown": 2
+  },
+  "owner_reference_root_critical_hashes_unchanged": true,
+  "owner_USB_updated": false,
+  "physical_Shield_execution_of_this_root_and_kernel_bundle": false,
+  "normal_PID1_hardware_watchdog_automatic_cooling_durable_boot_health_qualified": false,
+  "permanent_desktop_or_full_hardware_parity_claim": false,
+  "scope": "Coherent maintained software root, installed payload closure and virtual-userspace qualification. Native80 remains the separate physical bounded desktop evidence. Next is an actual restricted hardware root/PID1 transition with bounded recovery.",
+  "private_installed_payload_receipt_sha256": "a396eaa7ef0e6b7a99dc4bef89d8362ecdfa927cc32117bbf6b21d009941ff70",
+  "private_VM_receipt_sha256": "afaad4685407978a452c415b0c136d9a90122d12ca65f83e2c34184f4abfbeae"
+}
