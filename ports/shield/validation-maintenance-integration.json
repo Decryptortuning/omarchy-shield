@@ -1,0 +1,68 @@
+{
+  "format_version": 1,
+  "scope": "Actual ARM QEMU virt maintenance transaction on a new owned COW disk",
+  "passed": true,
+  "physical_usb_changed": false,
+  "shield_boot_partitions_changed": false,
+  "native_systemd_desktop_qualified": false,
+  "hardware_or_performance_parity_qualified": false,
+  "boot_ready": false,
+  "kernel_sha256": "e6b49a014b90ca443b024cc576e82d71a3330bd404c2b919c77c633eed28f721",
+  "source": {
+    "transaction_sha256": "f211017594562784df4318b8d1e747ed85f3ac1198c7cefa1f9557d1793b40f6",
+    "vm_builder_sha256": "288da39e9f6fcff383c2b446e25822c849b96703c95151556c2bd823af6e9221",
+    "vm_guest_sha256": "7f298f169b37820c209b0271ed2caeab5a2d4158961d0ca0df3f41fb65659458",
+    "vm_runner_sha256": "be08713ccdbed008154db0388fd120e5b698246857106f711db4b32153584963"
+  },
+  "tests": {
+    "normal_suite": {"total": 109, "passed": 98, "root_only_skipped": 11},
+    "separate_root_focused_suite": {"total": 19, "passed": 19},
+    "vm_guest_exit": 0,
+    "qemu_exit": 0,
+    "host_runner_exit": 0,
+    "guest_shutdown_uptime_seconds": 147.363621
+  },
+  "actual_guest_checks": [
+    "QEMU-only identity and command-line admission",
+    "Single-device Btrfs geometry, filesystem identity and empty log-root check",
+    "Read-only no-log-replay original-root admission",
+    "Fresh root, home and log snapshots",
+    "Candidate self-bind and six child bindings",
+    "Bash process-substitution roundtrip through canonical dev/fd",
+    "Candidate-local Arch Linux ARM keyring initialization and population",
+    "Signed dtc dependency authenticated without weakening package signature policy",
+    "One six-package ALPM transaction with disk-space checking enabled",
+    "Eight post-transaction hooks and successful ALPM database check",
+    "Exact installed reference profile: package semantics, selected payload metadata, modules, loader state and obsolete-path absence",
+    "Pinned original-root metadata/bootstrap state and default selection preserved",
+    "Candidate keyring-agent shutdown and seven nested unmounts",
+    "Filesystem sync and clean top-level unmount",
+    "Checked read-only remount, full profile and journal readback",
+    "Final unmount with no remaining Btrfs mounts"
+  ],
+  "reference_profile": {
+    "installed_package_records": 891,
+    "payload_entries": 5229,
+    "matching_kernel_modules": 1561,
+    "explicit_obsolete_path_absences": 93
+  },
+  "whole_host_baseline_image_sha256_unchanged": true,
+  "failed_attempts_preserved": [
+    "Missing initialized candidate keyring",
+    "Missing chroot root mount for ALPM disk-space enumeration",
+    "Generation-counter string comparison falsely reported default selection change; missing dev/fd aliases also corrected"
+  ],
+  "remaining_before_physical_execution": [
+    "Source-bound finite watchdog, max-fan and sensor guardian",
+    "Current internal-storage read-only and recovery identity guards",
+    "Physical USB admission, exclusive mount ownership and interrupted-attempt interlock",
+    "Bounded physical executor, authenticated control and independent clean-unmount host receipt",
+    "Complete physical initramfs and loaded-segment qualification"
+  ],
+  "remaining_before_desktop_parity": [
+    "Candidate root mounts, usable user/session and systemd handoff",
+    "Native full-system boot and recovery lifecycle",
+    "Board hardware functionality and sustained performance qualification",
+    "Durable autonomous boot and failure recovery"
+  ]
+}

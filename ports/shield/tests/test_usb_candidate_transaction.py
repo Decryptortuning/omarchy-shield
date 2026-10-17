@@ -60,6 +60,29 @@ class PlanTests(PlanFixture, unittest.TestCase):
       TRANSACTION.validate_plan(self.plan, self.manifest)
 
 
+class DefaultSubvolumeTests(unittest.TestCase):
+  def test_source_generation_can_advance_without_changing_selection(self):
+    before = 'ID 256 gen 6 top level 5 path @\n'
+    after = 'ID 256 gen 10 top level 5 path @\n'
+    self.assertEqual(TRANSACTION.default_subvolume(before), TRANSACTION.default_subvolume(after))
+
+  def test_changed_id_path_or_parent_is_a_different_selection(self):
+    before = TRANSACTION.default_subvolume('ID 256 gen 6 top level 5 path @\n')
+    for output in ['ID 257 gen 6 top level 5 path @\n',
+                   'ID 256 gen 6 top level 5 path @other\n',
+                   'ID 256 gen 6 top level 256 path @\n']:
+      self.assertNotEqual(before, TRANSACTION.default_subvolume(output))
+
+  def test_filesystem_tree_is_explicit(self):
+    self.assertEqual(TRANSACTION.default_subvolume('ID 5 (FS_TREE)\n'),
+                     {'id': 5, 'top_level': None, 'path': None})
+
+  def test_unknown_or_multiple_output_refused(self):
+    for output in ['', 'ID 256\n', 'ID 5 (FS_TREE)\nID 5 (FS_TREE)\n']:
+      with self.assertRaisesRegex(ValueError, 'Unrecognized Btrfs'):
+        TRANSACTION.default_subvolume(output)
+
+
 @unittest.skipUnless(os.geteuid() == 0, 'Run the fenced journal/transaction flow cases as WSL root')
 class RootTransactionTests(PlanFixture, unittest.TestCase):
   def setUp(self):
@@ -111,8 +134,16 @@ class RootTransactionTests(PlanFixture, unittest.TestCase):
     TRANSACTION.base_unchanged(self.top, self.plan)
     snapshots = [cmd for cmd in self.commands if cmd[:3] == ['btrfs', 'subvolume', 'snapshot']]
     self.assertEqual(len(snapshots), 3)
-    self.assertEqual(len([cmd for cmd in self.commands if cmd[0] == 'umount']), 6)
+    self.assertEqual(len([cmd for cmd in self.commands if cmd[0] == 'umount']), 7)
+    bindings = [cmd for cmd in self.commands if cmd[:2] == ['mount', '--bind']]
+    self.assertEqual(bindings[0][2], bindings[0][3])
+    unmounts = [cmd for cmd in self.commands if cmd[0] == 'umount']
+    self.assertEqual(unmounts[-1][1], bindings[0][3])
     self.assertEqual(len([cmd for cmd in self.commands if '-U' in cmd]), 1)
+    self.assertEqual(len([cmd for cmd in self.commands if '/usr/bin/pacman-key' in cmd]), 2)
+    agent_cleanup = next(i for i, cmd in enumerate(self.commands) if '/usr/bin/gpgconf' in cmd)
+    first_unmount = next(i for i, cmd in enumerate(self.commands) if cmd[0] == 'umount')
+    self.assertLess(agent_cleanup, first_unmount)
     self.assertNotIn(['btrfs', 'subvolume', 'set-default'], [cmd[:3] for cmd in self.commands])
 
   def test_second_attempt_refused_without_replaying_effects(self):
@@ -127,15 +158,32 @@ class RootTransactionTests(PlanFixture, unittest.TestCase):
     with self.assertRaises(subprocess.CalledProcessError):
       self.update()
     self.assertEqual(self.state()['state'], 'INCOMPLETE')
-    self.assertEqual(len([cmd for cmd in self.commands if cmd[0] == 'umount']), 6)
+    self.assertEqual(len([cmd for cmd in self.commands if cmd[0] == 'umount']), 7)
     TRANSACTION.base_unchanged(self.top, self.plan)
 
   def test_failed_nested_unmount_never_marks_verified(self):
     self.fail = lambda command: command[0] == 'umount'
-    with self.assertRaisesRegex(ValueError, 'did not all unmount'):
+    with self.assertRaisesRegex(ValueError, 'Owned keyring or mount cleanup failed'):
       self.update()
     self.assertEqual(self.state()['state'], 'INCOMPLETE')
-    self.assertEqual(self.state()['phase'], 'nested-unmount-failed')
+    self.assertEqual(self.state()['phase'], 'owned-cleanup-failed')
+
+  def test_keyring_bootstrap_failure_stops_before_package_install(self):
+    self.fail = lambda command: '/usr/bin/pacman-key' in command
+    with self.assertRaises(subprocess.CalledProcessError):
+      self.update()
+    self.assertFalse(any('-U' in command for command in self.commands))
+    self.assertTrue(any('/usr/bin/gpgconf' in command for command in self.commands))
+    self.assertEqual(len([cmd for cmd in self.commands if cmd[0] == 'umount']), 7)
+    self.assertEqual(self.state()['state'], 'INCOMPLETE')
+
+  def test_failed_keyring_agent_cleanup_never_marks_verified(self):
+    self.fail = lambda command: '/usr/bin/gpgconf' in command
+    with self.assertRaisesRegex(ValueError, 'Owned keyring or mount cleanup failed'):
+      self.update()
+    self.assertEqual(self.state()['state'], 'INCOMPLETE')
+    self.assertEqual(self.state()['phase'], 'owned-cleanup-failed')
+    self.assertEqual(len([cmd for cmd in self.commands if cmd[0] == 'umount']), 7)
 
   def test_failed_final_sync_restores_incomplete_interlock(self):
     syncs = []

@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import stat
 import subprocess
 from usb_root_profile import (admit_payload, database_profile, digest, require,
@@ -99,6 +100,16 @@ def base_unchanged(top, plan):
     require(path.is_file() and not path.is_symlink() and digest(path) == expected, 'Original bootstrap file changed: ' + name)
 
 
+def default_subvolume(output):
+  # Btrfs snapshots can advance the source root's generation without changing
+  # the default selection. Bind the selection identity, not that transaction ID.
+  if output == 'ID 5 (FS_TREE)\n':
+    return {'id': 5, 'top_level': None, 'path': None}
+  match = re.fullmatch(r'ID ([0-9]+) gen ([0-9]+) top level ([0-9]+) path ([^\n]+)\n', output)
+  require(match is not None, 'Unrecognized Btrfs default-subvolume output')
+  return {'id': int(match[1]), 'top_level': int(match[3]), 'path': match[4]}
+
+
 def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
   """Update fresh snapshots; return only after verified nested mount cleanup.
 
@@ -119,7 +130,7 @@ def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
   base_unchanged(top, plan)
   space = os.statvfs(top)
   require(space.f_bavail * space.f_frsize >= plan['minimum_free_bytes'], 'Insufficient filesystem free space')
-  default = execute(['btrfs', 'subvolume', 'get-default', str(top)])
+  default = default_subvolume(execute(['btrfs', 'subvolume', 'get-default', str(top)]))
   for value in plan['original_subvolumes'].values():
     directory(rooted(top, value))
     execute(['btrfs', 'subvolume', 'show', str(top / value)])
@@ -128,11 +139,17 @@ def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
   candidate = top / manifest['subvolumes']['root']
   success = False
   cleanup_errors = []
+  keyring_started = False
   try:
     for purpose, source in plan['original_subvolumes'].items():
       guard_check(150)
       execute(['btrfs', 'subvolume', 'snapshot', str(top / source), str(top / manifest['subvolumes'][purpose])])
       journal.record('INCOMPLETE', phase='snapshot-' + purpose)
+    # Give chroot's mount-table view an actual root mount. Without this bind,
+    # ALPM cannot identify '/' for its normal disk-space checks.
+    directory(candidate)
+    execute(['mount', '--bind', str(candidate), str(candidate)])
+    mounted.append(candidate)
     for source, relative in [(top / manifest['subvolumes']['home'], 'home'),
                              (top / manifest['subvolumes']['log'], 'var/log'),
                              (Path('/dev'), 'dev'), (Path('/proc'), 'proc'),
@@ -141,6 +158,19 @@ def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
       # Nonrecursive bindings deliberately omit the top-level mount under /run.
       execute(['mount', '--bind', str(source), str(destination)])
       mounted.append(destination)
+    guard_check(120)
+    execute(['chroot', str(candidate), '/usr/bin/env', '-i', 'PATH=/usr/bin:/bin',
+             'HOME=/root', 'USER=root', 'LC_ALL=C', '/bin/bash', '-c',
+             'IFS= read -r value < <(/usr/bin/printf "%s\\n" shield-fd-ready) && [[ $value == shield-fd-ready ]]'])
+    # The original image deliberately carries no initialized private keyring.
+    # Bootstrap only this fresh snapshot from its admitted distribution keys;
+    # never copy a host secret key or weaken signed dependency validation.
+    journal.record('INCOMPLETE', phase='candidate-keyring-bootstrap')
+    keyring_started = True
+    for arguments in [['--init'], ['--populate', 'archlinuxarm']]:
+      execute(['chroot', str(candidate), '/usr/bin/env', '-i',
+               'PATH=/usr/bin:/bin', 'HOME=/root', 'USER=root', 'LC_ALL=C',
+               '/usr/bin/pacman-key', '--gpgdir', '/etc/pacman.d/gnupg', *arguments])
     guard_check(120)
     # The payload must be staged in RAM /run by the broker, visible in the bind.
     archives = [str(payload / item['filename']) for item in manifest['packages'].values()]
@@ -153,18 +183,25 @@ def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
     verify_root(manifest, candidate)
     # Bootstrap and the original root must remain unchanged through scriptlets.
     base_unchanged(top, plan)
-    require(execute(['btrfs', 'subvolume', 'get-default', str(top)]) == default, 'Default subvolume changed')
+    require(default_subvolume(execute(['btrfs', 'subvolume', 'get-default', str(top)])) == default,
+            'Default subvolume changed')
     journal.record('INCOMPLETE', phase='installed-payload-verified')
     execute(['btrfs', 'filesystem', 'sync', str(top)])
     success = True
   finally:
+    if keyring_started:
+      try:
+        execute(['chroot', str(candidate), '/usr/bin/gpgconf',
+                 '--homedir', '/etc/pacman.d/gnupg', '--kill', 'all'])
+      except BaseException as error:
+        cleanup_errors.append(type(error).__name__ + ':candidate-keyring-agents')
     for destination in reversed(mounted):
       try:
         execute(['umount', str(destination)])
       except BaseException as error:
         cleanup_errors.append(type(error).__name__ + ':' + str(destination))
     if cleanup_errors:
-      journal.record('INCOMPLETE', phase='nested-unmount-failed', errors=cleanup_errors)
+      journal.record('INCOMPLETE', phase='owned-cleanup-failed', errors=cleanup_errors)
     elif success:
       guard_check(45)
       journal.record('VERIFIED', phase='nested-mounts-relinquished', boot_ready=False)
@@ -173,7 +210,7 @@ def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
       except BaseException:
         journal.record('INCOMPLETE', phase='final-sync-failed')
         raise
-  require(not cleanup_errors, 'Owned nested mounts did not all unmount')
+  require(not cleanup_errors, 'Owned keyring or mount cleanup failed')
   require(success, 'Candidate transaction incomplete')
   return {'candidate_id': manifest['candidate_id'], 'state': 'VERIFIED',
           'top_level_clean_unmount_verified': False, 'boot_ready': False,
