@@ -17,6 +17,14 @@ Native79 remains a failed/incomplete canary attempt: its root-inode guard requir
 
 Automatic fan control is still missing a cooling map in the tested DT; the bounded probes enforce maximum fan and thermal-abort monitoring. The tested Mesa package excludes Vulkan. Audio, radios, Ethernet, host1x video, normal PID1/root lifecycle, DVFS and suspend remain unqualified. No full hardware-parity or permanent-desktop release is claimed.
 
+### Maintained kernel candidate
+
+[The maintained candidate receipt](validation-kernel-candidate.json) records all 15 patches, 44 focused port tests, 1,561 matching ARM64 modules, actual compiled reset contracts, two passing binding meta-schema checks and a QEMU kernel/ramdisk boot. The selected fresh kernel and module set reproduced byte-for-byte across two builds. An additional incremental make advanced the build counter/GNU build ID; that scratch output is retained separately and is not mixed into the selected bundle. Upstream BusyBox compiler warnings remain visible in the receipt. Kernel package 8 and paired runtime/settings release 99.7 staging and full-filesystem VM acceptance are the next steps; this candidate has not run on the Shield.
+
+The last physical native80 screenshot shows the complete bounded desktop session, with the USB root still read-only:
+
+![Bounded native80 Omarchy session on the owned Shield](validation/omarchy-native80.jpg)
+
 ## Target identity and earlier development
 
 The bootloader selects `tegra210-darcy-p2894-0050-a04-00.dtb`, independently identifying its A04 configuration. Owner-approved unlocking completed on October 15 and fastboot now reports `unlocked: Yes`. The diagnostic candidate returned to Android through RAM and recovery-partition entry. Subsequent matching stock recovery restoration succeeded, followed by verified official Lineage recovery entry and a working root ADB shell. Read-only capture obtained the live device tree, memory map, executed command line, thermal/module state and physical boot/recovery/DTB backups. [validation-native-entry.json](validation-native-entry.json) records the measured scope. Physical Linux 7.1 initramfs userspace, bounded maximum-fan monitoring, SuperSpeed USB serial logs and automatic authenticated recovery ADB are now measured in [validation-headless-usb.json](validation-headless-usb.json). Independent Linux boot and full hardware acceptance remain open; later bounded desktop qualification is recorded above.
