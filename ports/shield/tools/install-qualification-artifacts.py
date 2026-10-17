@@ -90,13 +90,14 @@ def prepared_root(directory, receipt_sha, payload, payload_sha):
           and receipt['chroot_helper_sha256'] == PREPARER.CHROOT_SHA256, 'Prepared producer/payload differs')
   for key in ['source_reference_verified_before_and_after', 'source_accounts_unchanged',
       'network_isolated_chroot_commands', 'account_created', 'theme_seeded', 'service_masks_applied',
-      'matched_package_payload_verified_after_configuration', 'sudo_policy_denied']:
+      'matched_package_payload_verified_after_configuration', 'sudo_policy_denied',
+      'runtime_accounts_seeded_from_original', 'original_account_source_verified_before_and_after']:
     require(receipt[key] is True, 'Incomplete prepared root proof')
   for key in ['reference_root_modified', 'native_sudo_execution_verified', 'guardian_installed',
               'root_selected', 'boot_ready', 'native_qualified', 'normal_first_run_complete']:
     require(receipt[key] is False, 'Unexpected prepared root release/state')
   expected_sources = {TOOLS / name for name in ['prepare-qualification-root.py', 'qualification_profile.py',
-    'usb_root_profile.py', 'prepare-qualification-overlay.py']} | {PORT / 'chroot.sh'}
+    'usb_root_profile.py', 'prepare-qualification-overlay.py', 'maintenance_accounts.py']} | {PORT / 'chroot.sh'}
   require(set(receipt['source_hashes']) == {str(path) for path in expected_sources}
           and all(digest(path) == receipt['source_hashes'][str(path)] for path in expected_sources),
           'Prepared source consumers changed')
@@ -119,12 +120,12 @@ def verify_prepared(root, receipt, payload):
   require(receipt['service_masks'] == {name: {'type': 'symlink', 'target': '/dev/null',
           'uid': 0, 'gid': 0, 'reason': reason} for name, reason in rendered['policy']['masked_services'].items()},
           'Prepared mask policy differs from current renderer')
-  account = PREPARER.account_proof(root)
+  baseline = PREPARER.original_baseline_from_record(receipt['original_account_baseline'])
+  account = PREPARER.account_proof(root, baseline)
   require(all(receipt['account'][key] == value for key, value in account.items()), 'Account proof differs')
   accounts = PREPARER.tables(root)['passwd']
   require([name for name, row in accounts.items() if row[2] == '0'] == ['root']
-          and {name for name, row in accounts.items() if 1000 <= int(row[2]) < 60000}
-              == {'portbuild', 'shieldqual'}, 'Unexpected privileged or login identity')
+          and 'portbuild' not in accounts, 'Unexpected privileged or build identity')
   require(PREPARER.home_proof(root) == receipt['home_files'], 'Prepared home changed')
   for name, identity in receipt['applied_files'].items():
     path = rooted(root, name); info = PREPARER.regular(path)

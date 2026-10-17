@@ -52,7 +52,8 @@ def private_directory(path):
 
 
 def record(phase, **fields):
-  data = json.dumps({'phase': phase, 'boot_ready': False, **fields}, sort_keys=True).encode() + b'\n'
+  value = {'phase': phase, 'boot_ready': False, **fields}
+  data = json.dumps(value, sort_keys=True, ensure_ascii=True, allow_nan=False).encode('ascii') + b'\n'
   temporary = DIRECTORY / 'state.tmp'
   fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
   with os.fdopen(fd, 'wb') as stream:
@@ -60,6 +61,44 @@ def record(phase, **fields):
     stream.flush()
     os.fsync(stream.fileno())
   os.replace(temporary, DIRECTORY / 'state.json')
+  return value
+
+
+def bind_native_control(profile):
+  """Admit RAM bootstrap bytes before importing the mandatory native client.
+
+  This is one current native contract, with no optional legacy receiver path.
+  The kernel's unique bundle digest binds the producer's runtime inventory;
+  load(epoch='root') then rechecks the complete context/source/profile closure.
+  """
+  base = Path('/run/shield-native')
+  runtime = base / 'runtime'
+  private_directory(base); private_directory(runtime)
+  raw = owned_file(base / 'boot.json', 0o600).read_bytes()
+  require(0 < len(raw) <= 128 * 1024, 'Native bundle size differs')
+  expected = 'shield.native-bundle=' + hashlib.sha256(raw).hexdigest()
+  assignments = [item for item in Path('/proc/cmdline').read_text().split()
+                 if item.startswith('shield.native-bundle=')]
+  require(assignments == [expected], 'Native control bundle is not kernel-bound')
+  bundle = json.loads(raw)
+  sources = bundle['configuration']['sources']['root']
+  names = set()
+  for name, identity in sources.items():
+    if not name.startswith('run/shield-native/runtime/'):
+      continue
+    safe_relative(name)
+    require(name.count('/') == 3 and name.endswith('.py'), 'Unsafe native bootstrap source')
+    require(type(identity['bytes']) is int and 0 < identity['bytes'] <= 8 * 1024**2,
+            'Native bootstrap source size differs')
+    path = owned_file(Path('/') / name, 0o644)
+    require(path.stat().st_size == identity['bytes'] and digest(path) == identity['sha256'],
+            'Native bootstrap source differs')
+    names.add(path.name)
+  require({'native_cleanup_rpc.py', 'native_boot_context.py', 'native_control_protocol.py',
+           'native_serial_link.py'}.issubset(names), 'Native cleanup import closure absent')
+  sys.path.insert(0, str(runtime))
+  from native_cleanup_rpc import CleanupClient
+  return CleanupClient(profile)
 
 
 def unescape(value):
@@ -411,16 +450,38 @@ def cleanup_deadline(profile, owner_pid, disconnected=False):
   return deadline
 
 
-def cleanup(profile, reason, owner_pid, disconnected=False):
+def cleanup(profile, reason, owner_pid, control, disconnected=False):
   deadline = cleanup_deadline(profile, owner_pid, disconnected)
   record('cleanup-started', candidate=profile['candidate'], reason=reason,
          cleanup_deadline_ns=deadline, readonly_state_verified=False)
   stop_writers(deadline)
   readonly(profile, deadline)
-  record('filesystem-readonly', candidate=profile['candidate'], reason=reason,
-         readonly_state_verified=True, root_unmounted=False, hardware_powerloss_qualified=False)
+  try:
+    cleanup_after_readonly(profile, reason, control, deadline)
+  except BaseException as error:
+    record('cleanup-post-readonly-failed', candidate=profile['candidate'],
+      error=type(error).__name__, readonly_state_verified=True, root_unmounted=False,
+      hardware_powerloss_qualified=False, reboot_observed=False)
+
+
+def cleanup_after_readonly(profile, reason, control, deadline):
+  """All failures here preserve the already completed RO observation."""
+  receipt = record('filesystem-readonly', candidate=profile['candidate'], reason=reason,
+    cleanup_deadline_ns=deadline, readonly_state_verified=True, root_unmounted=False,
+    hardware_powerloss_qualified=False)
+  try:
+    receipt_sha256 = control.fence(receipt, deadline)
+  except (OSError, ValueError, KeyError) as error:
+    # The RO work completed, but its mandatory host retention fence did not.
+    # Preserve that distinction. No restart helper or retry follows failure;
+    # the independent guardian retains its existing finite feeding window.
+    record('cleanup-control-failed', candidate=profile['candidate'],
+      error=type(error).__name__, readonly_state_verified=True, root_unmounted=False,
+      hardware_powerloss_qualified=False, reboot_observed=False)
+    return
   helper = INSTALL / 'shield-restart-recovery'
   require(digest(helper) == profile['recovery_helper']['sha256'], 'Recovery helper changed')
+  control.peer.check()
   require(now() + SECOND // 4 < deadline, 'No existing budget for recovery dispatch')
   timeout = min(2, (deadline - now()) / SECOND - 0.1)
   # A returned/refused restart never becomes a successful reboot receipt. No
@@ -429,10 +490,12 @@ def cleanup(profile, reason, owner_pid, disconnected=False):
     completed = subprocess.run([str(helper)], stdin=subprocess.DEVNULL,
       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout)
     record('restart-returned', candidate=profile['candidate'], helper_exit=completed.returncode,
-           readonly_state_verified=True, root_unmounted=False, reboot_observed=False)
+           readonly_state_verified=True, root_unmounted=False, reboot_observed=False,
+           host_retained_receipt_sha256=receipt_sha256)
   except subprocess.TimeoutExpired:
     record('restart-stalled', candidate=profile['candidate'], readonly_state_verified=True,
-           root_unmounted=False, reboot_observed=False)
+           root_unmounted=False, reboot_observed=False,
+           host_retained_receipt_sha256=receipt_sha256)
 
 
 def main():
@@ -444,7 +507,8 @@ def main():
   require(not ENDPOINT.exists() and not ENDPOINT.is_symlink(), 'Existing receiver never replaced')
   boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
   require(str(uuid.UUID(boot)) == boot, 'Bad boot identity')
-  with socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET | socket.SOCK_CLOEXEC) as listener:
+  with bind_native_control(profile) as control, \
+       socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET | socket.SOCK_CLOEXEC) as listener:
     listener.bind(str(ENDPOINT))
     os.chmod(ENDPOINT, 0o600)
     listener.listen(2)
@@ -463,7 +527,7 @@ def main():
           if not handled:
             handled = True
             try:
-              cleanup(profile, {'event': 'guardian-disconnected'}, pid, disconnected=True)
+              cleanup(profile, {'event': 'guardian-disconnected'}, pid, control, disconnected=True)
             except BaseException as error:
               record('cleanup-failed', error=type(error).__name__, readonly_state_verified=False)
           while True:
@@ -478,7 +542,7 @@ def main():
         if not handled:
           handled = True  # No cleanup replay after any uncertain result.
           try:
-            cleanup(profile, {'operation': operation, 'fault': reason}, pid)
+            cleanup(profile, {'operation': operation, 'fault': reason}, pid, control)
           except BaseException as error:
             record('cleanup-failed', error=type(error).__name__, readonly_state_verified=False)
         # No reply: the guardian treats unexpected incoming bytes as a fault.

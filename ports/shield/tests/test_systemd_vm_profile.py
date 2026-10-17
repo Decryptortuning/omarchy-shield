@@ -213,5 +213,40 @@ class SystemdVmInitramfsTests(unittest.TestCase):
       builder.make_initramfs(root, SystemdVmProfileTests().identity()['filesystem'], b'handoff')
 
 
+class SystemdVmDirectoryTests(unittest.TestCase):
+  def setUp(self):
+    import tempfile
+    self.temporary = tempfile.TemporaryDirectory()
+    self.addCleanup(self.temporary.cleanup)
+    self.root = Path(self.temporary.name)
+    spec = importlib.util.spec_from_file_location('systemd_vm_directory_builder',
+      Path(__file__).resolve().parent.parent / 'tools/prepare-systemd-vm.py')
+    self.builder = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(self.builder)
+
+  def test_guest_directory_modes_survive_private_host_umask(self):
+    import os, stat
+    for mask in [0o077, 0o022]:
+      for mode in [0o700, 0o755]:
+        path = self.root / ('directory-%o-%o' % (mask, mode))
+        previous = os.umask(mask)
+        try:
+          self.assertEqual(self.builder.new_directory(path, mode), path)
+        finally:
+          os.umask(previous)
+        self.assertTrue(path.is_dir())
+        self.assertEqual(stat.S_IMODE(path.stat().st_mode), mode)
+
+  def test_existing_directory_or_alias_is_not_repaired(self):
+    import stat
+    target = self.root / 'existing'
+    target.mkdir(mode=0o700)
+    alias = self.root / 'alias'; alias.symlink_to(target)
+    for path in [target, alias]:
+      with self.assertRaises(FileExistsError): self.builder.new_directory(path, 0o755)
+    self.assertEqual(stat.S_IMODE(target.stat().st_mode), 0o700)
+    self.assertTrue(alias.is_symlink())
+
+
 if __name__ == '__main__':
   unittest.main()

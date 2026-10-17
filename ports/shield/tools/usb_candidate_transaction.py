@@ -9,13 +9,8 @@ import os
 from pathlib import Path
 import re
 import stat
-import subprocess
 from usb_root_profile import (admit_payload, database_profile, digest, require,
                               rooted, validate_manifest, verify_root)
-
-
-def run(command):
-  return subprocess.run(command, check=True, capture_output=True, text=True).stdout
 
 
 def directory(path, mode=None):
@@ -110,7 +105,7 @@ def default_subvolume(output):
   return {'id': int(match[1]), 'top_level': int(match[3]), 'path': match[4]}
 
 
-def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
+def update_candidate(plan, manifest, payload, top, *, guard_check, execute):
   """Update fresh snapshots; return only after verified nested mount cleanup.
 
   The caller retains the top-level mount lease. A VERIFIED transaction is not a
@@ -118,8 +113,8 @@ def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
   unmount the filesystem and independently verify relinquishment.
   """
   require(os.geteuid() == 0, 'Candidate transaction requires root')
+  require(callable(guard_check) and callable(execute), 'Explicit guard and command owner required')
   validate_plan(plan, manifest)
-  admit_payload(manifest, payload)
   top, payload = Path(top).resolve(strict=True), Path(payload).resolve(strict=True)
   directory(top)
   # This must fail before any durable journal/snapshot effect.
@@ -130,6 +125,7 @@ def update_candidate(plan, manifest, payload, top, *, guard_check, execute=run):
   base_unchanged(top, plan)
   space = os.statvfs(top)
   require(space.f_bavail * space.f_frsize >= plan['minimum_free_bytes'], 'Insufficient filesystem free space')
+  admit_payload(manifest, payload, execute=execute)
   default = default_subvolume(execute(['btrfs', 'subvolume', 'get-default', str(top)]))
   for value in plan['original_subvolumes'].values():
     directory(rooted(top, value))

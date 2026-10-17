@@ -8,6 +8,7 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 
 PORT = Path(__file__).resolve().parent.parent
 SPEC = importlib.util.spec_from_file_location('usb_root_profile', PORT / 'tools/usb_root_profile.py')
@@ -62,19 +63,19 @@ class UsbRootProfileTests(unittest.TestCase):
       'bytes': signature.stat().st_size, 'sha256': PROFILE.digest(signature)}
 
   def test_complete_archive_and_installed_root_admitted(self):
-    self.assertTrue(PROFILE.admit_payload(self.manifest, self.payload))
+    self.assertTrue(PROFILE.admit_payload(self.manifest, self.payload, execute=PROFILE.host_metadata_execute))
     self.assertTrue(PROFILE.verify_root(self.manifest, self.root))
 
   def test_altered_archive_refused_before_any_installer(self):
     path = self.payload / 'mesa.pkg.tar.xz'
     path.write_bytes(path.read_bytes() + b'changed')
     with self.assertRaisesRegex(ValueError, 'Changed archive'):
-      PROFILE.admit_payload(self.manifest, self.payload)
+      PROFILE.admit_payload(self.manifest, self.payload, execute=PROFILE.host_metadata_execute)
 
   def test_changed_signature_refused(self):
     (self.payload / 'dtc.pkg.tar.xz.sig').write_bytes(b'changed')
     with self.assertRaisesRegex(ValueError, 'Changed package signature'):
-      PROFILE.admit_payload(self.manifest, self.payload)
+      PROFILE.admit_payload(self.manifest, self.payload, execute=PROFILE.host_metadata_execute)
 
   def test_signature_escape_refused_by_manifest_before_payload_access(self):
     self.manifest['packages']['dtc']['signature']['filename'] = '../outside.sig'
@@ -89,12 +90,12 @@ class UsbRootProfileTests(unittest.TestCase):
   def test_unlisted_archive_refused(self):
     (self.payload / 'extra.pkg.tar.xz').write_bytes(b'extra')
     with self.assertRaisesRegex(ValueError, 'Extra or missing'):
-      PROFILE.admit_payload(self.manifest, self.payload)
+      PROFILE.admit_payload(self.manifest, self.payload, execute=PROFILE.host_metadata_execute)
 
   def test_missing_dtc_dependency_refused(self):
     del self.manifest['packages']['dtc']
     with self.assertRaisesRegex(ValueError, 'Incomplete maintenance'):
-      PROFILE.admit_payload(self.manifest, self.payload)
+      PROFILE.admit_payload(self.manifest, self.payload, execute=PROFILE.host_metadata_execute)
 
   def test_archive_symlink_refused(self):
     path = self.payload / 'mesa.pkg.tar.xz'
@@ -102,7 +103,19 @@ class UsbRootProfileTests(unittest.TestCase):
     path.rename(target)
     path.symlink_to(target)
     with self.assertRaisesRegex(ValueError, 'regular file'):
-      PROFILE.admit_payload(self.manifest, self.payload)
+      PROFILE.admit_payload(self.manifest, self.payload, execute=PROFILE.host_metadata_execute)
+
+  def test_metadata_uses_only_the_explicit_command_owner(self):
+    commands = []
+    def execute(arguments):
+      commands.append(arguments)
+      with tarfile.open(arguments[2], 'r:xz') as archive:
+        return archive.extractfile('.PKGINFO').read().decode('ascii')
+    with patch.object(PROFILE.subprocess, 'run', side_effect=AssertionError('Hidden subprocess')):
+      self.assertTrue(PROFILE.admit_payload(self.manifest, self.payload, execute=execute))
+    self.assertEqual(len(commands), 6)
+    self.assertTrue(all(command[:2] == ['/usr/bin/bsdtar', '-xOf']
+                        and command[-1] == '.PKGINFO' for command in commands))
 
   def test_wrong_candidate_subvolume_refused(self):
     self.manifest['subvolumes']['home'] = '@home'
@@ -121,7 +134,8 @@ class UsbRootProfileTests(unittest.TestCase):
 
   def test_changed_file_mode_refused(self):
     path = self.root / 'usr/share/fixture/mesa'
-    path.chmod(0o600)
+    # Always change the observed mode, including under a private umask077.
+    path.chmod((path.stat().st_mode & 0o777) ^ 0o100)
     with self.assertRaisesRegex(ValueError, 'root differs'):
       PROFILE.verify_root(self.manifest, self.root)
 

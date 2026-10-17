@@ -207,7 +207,17 @@ def validate_manifest(manifest):
   return manifest
 
 
-def admit_payload(manifest, payload):
+def host_metadata_execute(arguments):
+  """Explicit trusted host metadata boundary, never the native worker runner."""
+  require(len(arguments) == 4 and arguments[:2] == ['/usr/bin/bsdtar', '-xOf']
+          and arguments[-1] == '.PKGINFO', 'Only package metadata extraction is owned here')
+  require(not Path('/proc/device-tree/chosen/shield,first-ram-probe').exists(),
+          'Native metadata extraction requires its owned command executor')
+  return subprocess.run(arguments, check=True, capture_output=True, text=True).stdout
+
+
+def admit_payload(manifest, payload, *, execute):
+  require(callable(execute), 'Explicit metadata command owner required')
   validate_manifest(manifest)
   payload = Path(payload).resolve(strict=True)
   files = {path.name for path in payload.iterdir()}
@@ -224,8 +234,8 @@ def admit_payload(manifest, payload):
       sig = payload / signature['filename']
       require(not sig.is_symlink() and sig.is_file() and sig.stat().st_size == signature['bytes'] and
               digest(sig) == signature['sha256'], 'Changed package signature: ' + name)
-    metadata = subprocess.run(['bsdtar', '-xOf', str(path), '.PKGINFO'], check=True,
-                              capture_output=True, text=True).stdout
+    metadata = execute(['/usr/bin/bsdtar', '-xOf', str(path), '.PKGINFO'])
+    require(type(metadata) is str and len(metadata) <= 1024**2, 'Package metadata output differs')
     for key, expected in [('pkgname', name), ('pkgver', item['version']), ('arch', 'aarch64')]:
       values = [line.split(' = ', 1)[1] for line in metadata.splitlines() if line.startswith(key + ' = ')]
       require(values == [expected], 'Package metadata differs: ' + name + '/' + key)

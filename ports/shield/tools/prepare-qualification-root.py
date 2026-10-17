@@ -18,6 +18,8 @@ import subprocess
 import sys
 
 from qualification_profile import GID, HOME, UID, USER, account_plan, render
+from maintenance_accounts import (ACCOUNT_NAMES, account_preimages, original_account_baseline,
+  original_baseline_from_record, validate_accounts)
 from usb_root_profile import digest, require, rooted, safe_relative, verify_root
 
 CHROOT_SHA256 = '1aeb2fd5343bb3ce6b72448913ca3dc1a1e417d5b6b28a8bc5ee4fa6419d9b24'
@@ -166,7 +168,9 @@ def parents(root, relative, uid=0, gid=0):
   return target
 
 
-def atomic_file(root, relative, content, uid, gid):
+def atomic_file(root, relative, content, uid, gid, mode):
+  require(type(mode) is int and 0 <= mode <= 0o777 and not mode & 0o022,
+          'Unsafe prepared file mode')
   target = parents(root, relative, uid, gid)
   temporary = target.with_name('.' + target.name + '.shield-preparing')
   fd = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
@@ -174,7 +178,7 @@ def atomic_file(root, relative, content, uid, gid):
     stream.write(content)
     stream.flush()
     os.fchown(stream.fileno(), uid, gid)
-    os.fchmod(stream.fileno(), 0o644)
+    os.fchmod(stream.fileno(), mode)
     os.fsync(stream.fileno())
   os.replace(temporary, target)
   directory = os.open(target.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
@@ -182,6 +186,28 @@ def atomic_file(root, relative, content, uid, gid):
     os.fsync(directory)
   finally:
     os.close(directory)
+
+
+
+def seed_original_accounts(root, provenance, contents):
+  """Seed only the new, unbooted host copy from actual original-image bytes."""
+  require(type(contents) is dict and set(contents) == ACCOUNT_NAMES,
+          'Four original account byte objects required')
+  for name, data in sorted(contents.items()):
+    identity = provenance['account_preimages'][name]
+    require(type(data) is bytes and len(data) == identity['bytes']
+            and hashlib.sha256(data).hexdigest() == identity['sha256'], 'Original account seed differs')
+    atomic_file(root, name, data, identity['uid'], identity['gid'], identity['mode'])
+  observed = account_preimages(root, provenance['account_preimages'])
+  require(all(observed[name]['xattrs'] == {} and rooted(root, name).read_bytes() == data
+              for name, data in contents.items()), 'Seeded account readback differs')
+  current = tables(root)
+  require(all('portbuild' not in rows and USER not in rows for rows in current.values()),
+          'Original runtime baseline contains a build/qualification account')
+  require([name for name, row in current['passwd'].items() if row[2] == '0'] == ['root']
+          and all(int(row[2]) != UID and int(row[3]) != GID for row in current['passwd'].values())
+          and all(int(row[2]) != GID for row in current['group'].values())
+          and all(name in current['group'] for name in GROUPS), 'Original runtime identities differ')
 
 
 def guest_path(root, absolute):
@@ -327,24 +353,19 @@ def home_proof(root):
   return proof
 
 
-def account_proof(root):
+def account_proof(root, original_accounts):
+  actual = {name: rooted(root, name).read_bytes() for name in ACCOUNT_NAMES}
+  validate_accounts(original_accounts, actual)
   t = tables(root)
   p, g = t['passwd'], t['group']
   require(p[USER][2:] == [str(UID), str(GID), '', HOME, '/bin/bash'], 'Target account differs')
   require(g[USER][2] == str(GID), 'Target primary group differs')
   require({name for name, row in g.items() if USER in row[3].split(',')} == set(GROUPS),
           'Target supplementary membership differs')
-  require(all(p[name][1] == 'x' for name in ['root', 'portbuild', USER]),
-          'Expected shadow-backed password entries')
-  require(all(t['shadow'][name][1].startswith(('!', '*')) for name in ['root', 'portbuild', USER]),
-          'Expected locked passwords')
-  require(p['portbuild'][6] == '/usr/bin/nologin' and t['shadow']['portbuild'][7] == '1',
-          'Build account login is not disabled')
-  require([name for name, row in p.items() if row[2] == str(UID)] == [USER] and
-          [name for name, row in g.items() if row[2] == str(GID)] == [USER], 'Duplicate target IDs')
   return {'name': USER, 'uid': UID, 'gid': GID, 'supplementary_groups': list(GROUPS),
-          'root_password_locked': True, 'build_password_locked': True, 'build_login_disabled': True,
-          'target_password_locked': True, 'administrative': False, 'ssh_keys_created': False}
+          'root_password_locked': True, 'build_account_absent': True,
+          'runtime_account_baseline_admitted': True, 'target_password_locked': True,
+          'administrative': False, 'ssh_keys_created': False}
 
 
 def admit_sudo_diagnostic(kind, returncode, output):
@@ -378,23 +399,30 @@ def admit_sudo_diagnostic(kind, returncode, output):
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  for name in ['rootfs', 'payload-manifest', 'overlay', 'output']:
+  for name in ['rootfs', 'payload-manifest', 'overlay', 'output',
+               'original-account-rootfs', 'original-account-receipt']:
     parser.add_argument('--' + name, type=Path, required=True)
   parser.add_argument('--payload-manifest-sha256', required=True)
   parser.add_argument('--overlay-manifest-sha256', required=True)
+  parser.add_argument('--original-account-receipt-sha256', required=True)
+  parser.add_argument('--original-root-image-sha256', required=True)
   args = parser.parse_args()
   wsl_root()
   source, overlay = real_directory(args.rootfs), real_directory(args.overlay)
+  original_root = real_directory(args.original_account_rootfs)
+  original_receipt = args.original_account_receipt.absolute()
+  original_provenance, original_contents = original_account_baseline(original_root, original_receipt,
+    args.original_account_receipt_sha256, args.original_root_image_sha256)
   forbidden = {Path(p) for p in ['/', '/etc', '/usr', '/var', '/home', '/root', '/boot', '/mnt', '/media', '/run', '/proc', '/sys', '/dev', '/tmp']}
-  require(source not in forbidden, 'Refusing host root or system directory')
+  require(source not in forbidden and original_root not in forbidden, 'Refusing host root or system directory')
   require(args.output.name not in ('', '.', '..') and not args.output.exists() and not args.output.is_symlink(),
           'Output must be new; failed attempts cannot be reused')
   output = args.output.parent.resolve(strict=True) / args.output.name
   payload_path = args.payload_manifest.resolve(strict=True)
-  for path in [source, overlay, payload_path.parent]:
+  for path in [source, overlay, payload_path.parent, original_root, original_receipt.parent]:
     require(not output.is_relative_to(path) and not path.is_relative_to(output), 'Output overlaps an input')
   require(all(path.stat().st_dev == Path('/').stat().st_dev
-              for path in [source, overlay, payload_path, output.parent]),
+              for path in [source, overlay, payload_path, original_root, original_receipt, output.parent]),
           'Use the native WSL host filesystem for all inputs and output')
   manifest = matched_json(payload_path, args.payload_manifest_sha256)
   verify_root(manifest, source)
@@ -406,7 +434,8 @@ def main():
   regular(helper)
   require(digest(helper) == CHROOT_SHA256, 'Chroot consumer changed; review before use')
   source_files = [Path(__file__).resolve(), helper, *[Path(__file__).resolve().parent / name
-                  for name in ['qualification_profile.py', 'usb_root_profile.py', 'prepare-qualification-overlay.py']]]
+                  for name in ['qualification_profile.py', 'usb_root_profile.py', 'prepare-qualification-overlay.py',
+                               'maintenance_accounts.py']]]
   source_hashes = {str(path): digest(path) for path in source_files}
   output.mkdir(mode=0o700)  # Exclusive claim. Never delete or retry this output.
   locked_directory(output)
@@ -469,13 +498,13 @@ def main():
     require(not p.is_symlink() and p.is_dir(), 'Unsafe cloned runtime directory')
     os.chown(p, 0, 0); p.chmod(mode)
   verify_root(manifest, target)  # Prove exclusions did not drop package payload.
-  account_preflight(target)
+  account_preflight(target)  # Build reference admission, before replacing only its account tables.
+  seed_original_accounts(target, original_provenance, original_contents)
   chroot('/usr/bin/usermod', '--password', '!', 'root')
-  chroot('/usr/bin/usermod', '--password', '!', '--shell', '/usr/bin/nologin', '--expiredate', '1970-01-02', 'portbuild')
   chroot('/usr/bin/groupadd', '--gid', str(GID), USER)
   chroot('/usr/bin/useradd', '--uid', str(UID), '--gid', str(GID), '--groups', ','.join(GROUPS),
          '--create-home', '--skel', '/etc/skel', '--shell', '/bin/bash', '--no-log-init', '--password', '!', USER)
-  account = account_proof(target)
+  account = account_proof(target, original_contents)
   chroot('/usr/bin/sudo', '-n', '-l', '-U', USER, sudo_check='listing')
   chroot('/usr/bin/sudo', '-n', '-l', '-U', USER, '--', '/usr/bin/true', sudo_check='true-policy')
   # QEMU-user cannot establish native setuid sudo execution semantics. These
@@ -486,11 +515,11 @@ def main():
     purpose, name = key.split('/', 1)
     relative = name if purpose == 'root' else 'home/' + name
     owner = 0 if purpose == 'root' else UID
-    atomic_file(target, relative, content, owner, owner)
+    atomic_file(target, relative, content, owner, owner, 0o644)
   # No full provision-user, install/user/all, hooks, mise or online first-run.
   chroot('/bin/bash', '-euc', THEME_SCRIPT)
   home = home_proof(target)
-  account_proof(target)
+  account_proof(target, original_contents)
   service_masks = apply_service_masks(target, masks)
   applied = {}
   for key, content in files.items():
@@ -509,6 +538,8 @@ def main():
   verify_root(manifest, source)
   require(all(digest(rooted(source, 'etc/' + name)) == value for name, value in account_identity.items()),
           'Source account databases changed')
+  require(original_baseline_from_record(original_provenance) == original_contents,
+          'Original account source changed during preparation')
   require(all(digest(path) == value for path, value in source_hashes.items()), 'Preparation source moved')
   require(digest(payload_path) == args.payload_manifest_sha256 and
           digest(overlay / 'manifest.json') == args.overlay_manifest_sha256 and
@@ -519,6 +550,8 @@ def main():
     'payload_manifest_sha256': args.payload_manifest_sha256,
     'overlay_manifest_sha256': args.overlay_manifest_sha256,
     'source_reference_verified_before_and_after': True, 'source_accounts_unchanged': True,
+    'original_account_baseline': original_provenance, 'runtime_accounts_seeded_from_original': True,
+    'original_account_source_verified_before_and_after': True,
     'reference_root_modified': False, 'prepared_root_modified': True,
     'copy_exclusions': list(EXCLUDES), 'network_isolated_chroot_commands': True,
     'account': account, 'account_created': True, 'theme': 'tokyo-night', 'theme_seeded': True,
