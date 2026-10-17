@@ -25,6 +25,8 @@ def main():
   audit = json.loads(args.audit.read_text())
   if not audit['all_package_names_available'] or audit['repositories'] != lock['repositories']:
     raise SystemExit('Resolve the complete package set against the current pinned metadata first')
+  if audit.get('build_packages') != lock['build_packages'] or any(name not in audit['resolved'] for name in lock['build_packages']):
+    raise SystemExit('Re-audit every locked build package before configuring the root filesystem')
   sync = rootfs / 'var/lib/pacman/sync'
   sync.mkdir(parents=True, exist_ok=True)
   for repository in lock['repositories']:

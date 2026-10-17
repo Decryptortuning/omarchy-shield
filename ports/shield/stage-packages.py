@@ -11,7 +11,7 @@ import shutil
 import subprocess
 import tarfile
 import tempfile
-from tools.kernel_profile import verify_kernel_profile
+from tools.kernel_profile import verify_kernel_intent
 
 
 def git(repository, *arguments, **options):
@@ -31,7 +31,6 @@ def export(repository, commit, destination, *paths):
 def main():
   port = Path(__file__).resolve().parent
   source = port.parent.parent
-  lock = json.loads((port / 'userspace.lock.json').read_text())
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--rootfs', required=True, type=Path)
   parser.add_argument('--recipes', required=True, type=Path)
@@ -44,23 +43,27 @@ def main():
   if rootfs == Path('/') or not (rootfs / 'var/lib/shield-linux/sources.lock.json').is_file():
     raise SystemExit('Use a separately prepared Shield ARM build filesystem')
   commit = git(source, 'rev-parse', '--verify', f'{args.commit}^{{commit}}', capture_output=True, text=True).stdout.strip()
+  lock = json.loads(git(source, 'show', f'{commit}:ports/shield/userspace.lock.json', capture_output=True, text=True).stdout)
   recipe_commit = lock['packaging']['commit']
   git(recipes, 'cat-file', '-e', f'{recipe_commit}^{{commit}}')
   subprocess.run(['sha256sum', '--check', 'SHA256SUMS'], cwd=kernel, check=True)
-  try:
-    verify_kernel_profile(kernel)
-  except (ValueError, OSError, KeyError) as error:
-    raise SystemExit(str(error)) from error
   build = rootfs / 'build'
   if build.exists():
     raise SystemExit(f'Refusing to replace an existing build: {build}')
-  build.mkdir()
-  exported = build / 'omarchy-src'
-  exported.mkdir()
-  export(source, commit, exported)
-  version = (exported / 'version').read_text().strip()
-  if not (exported / 'install/omarchy-aarch64-shield.packages').is_file():
-    raise SystemExit('The selected source commit does not contain the Shield platform')
+  with tempfile.TemporaryDirectory(prefix='shield-source-admission-') as directory:
+    admitted = Path(directory) / 'omarchy-src'
+    admitted.mkdir()
+    export(source, commit, admitted)
+    try:
+      verify_kernel_intent(kernel, admitted)
+    except (ValueError, OSError, KeyError) as error:
+      raise SystemExit(str(error)) from error
+    version = (admitted / 'version').read_text().strip()
+    if not (admitted / 'install/omarchy-aarch64-shield.packages').is_file():
+      raise SystemExit('The selected source commit does not contain the Shield platform')
+    build.mkdir()
+    exported = build / 'omarchy-src'
+    shutil.copytree(admitted, exported)
   with tempfile.TemporaryDirectory() as temporary:
     staged = Path(temporary)
     export(recipes, recipe_commit, staged, 'pkgbuilds/omarchy', 'pkgbuilds/omarchy-settings')
@@ -68,7 +71,7 @@ def main():
       destination = build / package
       shutil.copytree(staged / 'pkgbuilds' / package, destination)
       recipe = destination / 'PKGBUILD'
-      replacements = {'pkgver': version, 'pkgrel': '99.6', '_commit': repr(commit), '_tag': "''"}
+      replacements = {'pkgver': version, 'pkgrel': '99.7', '_commit': repr(commit), '_tag': "''"}
       lines = []
       for line in recipe.read_text().splitlines():
         key = line.split('=', 1)[0]
@@ -84,7 +87,7 @@ def main():
     shutil.copy2(exported / 'ports/shield' / script, rootfs / 'var/lib/shield-linux' / destination)
   provenance = {
     'omarchy_commit': commit, 'packaging_commit': recipe_commit,
-    'pkgver': version, 'pkgrel': '99.6', 'architecture': 'aarch64',
+    'pkgver': version, 'pkgrel': '99.7', 'architecture': 'aarch64',
     'package_names': ['omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'],
     'kernel_source_commit': json.loads((kernel / 'sources.lock.json').read_text())['kernel']['commit'],
     'board_variant': json.loads((kernel / 'sources.lock.json').read_text())['board_variant'],

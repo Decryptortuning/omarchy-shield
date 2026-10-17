@@ -62,5 +62,8 @@
     "keyring_sha256": "50a08f82ce3cd524a552da4bfa37f3e04b2c9da468e2fce5783474b58a34c518"
   },
   "hardware_tested": false,
-  "ready_to_flash": false
+  "ready_to_flash": false,
+  "build_packages": [
+    "dtc"
+  ]
 }

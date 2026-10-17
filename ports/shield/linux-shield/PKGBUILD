@@ -1,13 +1,14 @@
 # Build inside the ARM filesystem with SHIELD_KERNEL_DIR pointing at the output
-# of ports/shield/build-kernel.sh. This package never writes a boot partition.
+# of ports/shield/build-kernel.sh and OMARCHY_SRC naming the exact source export.
+# This package never writes a boot partition.
 pkgname=linux-shield
 pkgver=7.1.0
-pkgrel=7
+pkgrel=8
 pkgdesc='Experimental Shield Tegra kernel components; boot image installation is separate'
 arch=('aarch64')
 license=('GPL-2.0-only')
 depends=('kmod')
-makedepends=('python')
+makedepends=('python' 'dtc')
 provides=("linux=$pkgver" "linux-aarch64=$pkgver")
 conflicts=('linux-aarch64')
 options=('!strip' '!debug')
@@ -21,21 +22,24 @@ prepare() {
   }
   (cd "$SHIELD_KERNEL_DIR" && sha256sum --check SHA256SUMS) || return 1
   grep -qx 'CONFIG_ARM64=y' "$SHIELD_KERNEL_DIR/kernel.config" || return 1
+  [[ -n ${OMARCHY_SRC:-} && -d $OMARCHY_SRC/ports/shield ]] || {
+    echo 'Set OMARCHY_SRC to the exact intended source export' >&2
+    return 1
+  }
   local dtb
-  dtb=$(python - "$SHIELD_KERNEL_DIR/sources.lock.json" <<'PY'
-import json, pathlib, sys
-lock = json.load(open(sys.argv[1]))
-expected = {'darcy-t210-a04': 'nvidia/tegra210-p2894-0050-a04.dtb',
-            'darcy-t210-a08': 'nvidia/tegra210-p2894-0050-a08.dtb',
-            'mdarcy-t210b01': 'nvidia/tegra210b01-p2894-2551-b00.dtb'}
-assert expected[lock['board_variant']] == lock['kernel']['device_tree']
-print(pathlib.Path(lock['kernel']['device_tree']).name)
-PY
+  dtb=$(python - "$SHIELD_KERNEL_DIR" "$OMARCHY_SRC" <<'PYINTENT'
+import pathlib, sys
+source = pathlib.Path(sys.argv[2]).resolve(strict=True)
+sys.path.insert(0, str(source / 'ports/shield'))
+from tools.kernel_profile import verify_kernel_intent
+_, dtb = verify_kernel_intent(pathlib.Path(sys.argv[1]), source)
+print(dtb.name)
+PYINTENT
   ) || return 1
   mkdir -p "$srcdir/compiled"
   printf '%s\n' "$dtb" > "$srcdir/compiled/dtb-name.txt"
   local file
-  for file in Image Image.gz kernel-modules.tar.zst kernel-release.txt kernel.config \
+  for file in Image Image.gz kernel-modules.tar.zst kernel-release.txt kernel.config config-fragments.json \
     "$dtb" hardware.json sources.lock.json compiler.txt \
     applied-patches.json source-verification.json device-tree-overlays.json SHA256SUMS; do
     cp "$SHIELD_KERNEL_DIR/$file" "$srcdir/compiled/"
@@ -54,7 +58,7 @@ package() {
   printf '%s\n' "$pkgname" > "$pkgdir/usr/lib/modules/$release/pkgbase"
   install -d "$pkgdir/usr/lib/omarchy/shield/kernel"
   local file
-  for file in Image Image.gz kernel-release.txt kernel.config \
+  for file in Image Image.gz kernel-release.txt kernel.config config-fragments.json \
     "$dtb" hardware.json sources.lock.json compiler.txt \
     applied-patches.json source-verification.json device-tree-overlays.json; do
     install -m 0644 "$srcdir/compiled/$file" "$pkgdir/usr/lib/omarchy/shield/kernel/"

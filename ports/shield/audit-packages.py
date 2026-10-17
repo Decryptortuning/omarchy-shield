@@ -85,7 +85,7 @@ def main():
   subprocess.run(['git', '-C', str(source), 'diff', '--quiet', 'HEAD', '--', 'bin/omarchy-pkg-defaults', 'install'], check=True)
   environment = dict(os.environ, OMARCHY_PATH=str(source))
   defaults = subprocess.check_output(['/bin/bash', str(source / 'bin/omarchy-pkg-defaults'), 'aarch64-shield'], env=environment, text=True).splitlines()
-  wanted = list(dict.fromkeys(['base', 'omarchy', 'omarchy-settings', 'pipewire', 'pipewire-alsa', 'pipewire-pulse', *defaults]))
+  wanted = list(dict.fromkeys(['base', *lock['build_packages'], 'omarchy', 'omarchy-settings', 'pipewire', 'pipewire-alsa', 'pipewire-pulse', *defaults]))
   resolved, missing, local = {}, [], []
   for requested in wanted:
     if requested in lock['local_packages']:
@@ -103,6 +103,7 @@ def main():
     'check': 'Package-name/provider availability; version/conflict resolution still requires pacman',
     'repositories': repositories, 'repository_package_count': len(packages),
     'requested_count': len(wanted), 'resolved_count': len(resolved),
+    'build_packages': lock['build_packages'],
     'local_packages': local, 'missing': missing, 'metadata_anomalies': anomalies,
     'resolved': resolved, 'all_package_names_available': not missing,
     'physical_shield_tested': False, 'flashable_image': False,

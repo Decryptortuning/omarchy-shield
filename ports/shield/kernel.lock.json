@@ -57,6 +57,36 @@
         "path": "ports/shield/kernel-patches/0010-a04-gpub-quarantine.patch",
         "sha256": "07b4e1f22e80dcb72414b2af4c3fa3ff29629f195b2bb50041dde6607c28ebbc",
         "reason": "Experimental exactA04stamped GPUBquarantine/PTB0denial/ASIDreservation andNouveauforced-aperture bound; notyetnativequalified."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0011-a04-display-underflow-fetch.patch",
+        "sha256": "6ba77d58d4e72772ec5b5b622f86ddce6d12bdcba72529e467cccf91dfaed4db",
+        "reason": "Carry bounded A04 display fetch/underflow observation and guarded MC bandwidth handling used by later native probes; no broader display qualification."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0012-a04-display-ptsa-watchdog.patch",
+        "sha256": "0b95da05e020c3fd31de078e9d00fc2f65cd808ea2a1d7935740979aed90925d",
+        "reason": "Carry awake LPDDR4 display arbitration and original-T210 inherited timer7/WDT0 adoption. Native75 qualified steady feeding/withheld expiry, not ordinary PID1/shutdown lifecycle; DT and runtime safety profile remain material."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0013-a04-display-mapping-trace.patch",
+        "sha256": "3ef28a72e4ca9da73e6840d009e480f9fc539a9271cbc513e1e91dfd28a44f36",
+        "reason": "Retain the A04-specific mapped display-buffer and SMMU observations used to distinguish scanout ownership from GPU rendering; no new userspace ABI."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0014-a04-display-mc-reset.patch",
+        "sha256": "2d4f0c890be8894ea0df71e238f69349edb1b4a716d1a9751ed2a219e163da6a",
+        "reason": "Give each display head optional MC-drain ownership beside CAR reset, including rollback. Native73 corrected inherited MC flush and sampled zero underflows; default full-board DT requires separate qualification."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0015-a04-display-dt-contract.patch",
+        "sha256": "22a96c665b876085ed232479c6a24849ff96ac239f9d48b890a69fb4bb9d445a",
+        "reason": "Describe both display heads CAR/MC resets and memory-controller link, and document the gated fixed awake LPDDR4 PTSA binding. The default full-board DT does not opt into this unqualified fixed-rate policy; native probes supply their separately qualified restricted DT."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0016-sdhci-fixed-1v8-signaling.patch",
+        "sha256": "967272d5e3bfb2b1b3f58787c2bcca93fc900dbc6fee016059b4faeda15cec2b",
+        "reason": "Recognize a valid fixed 1.8V-only VQMMC supply even when faster timing capabilities are disabled; preserve dual-voltage, no-1.8V and error paths. Native78/80 qualified conservative 8-bit 35.84 MHz operation with restricted probe DT, not default high-speed timing."
       }
     ],
     "variant": "omarchy-a04",
@@ -67,6 +97,9 @@
         "sha256": "9cdd1caf920fb801848e612b122d979a8460cc6bcb3d15a8f0c73245b754de9e",
         "reason": "Enable CEC on the shared P2894 PCC0 pinmux for this original Tegra210 evaluation DT; physical operation remains untested."
       }
+    ],
+    "additional_config_fragments": [
+      "ports/shield/config/a04-watchdog.fragment"
     ]
   },
   "busybox": {

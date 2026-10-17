@@ -1,0 +1,48 @@
+--- a/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a04.dts
++++ b/arch/arm64/boot/dts/nvidia/tegra210-p2894-0050-a04.dts
+@@ -82,3 +82,16 @@
+ 	resets = <&mc TEGRA210_MC_RESET_XUSB_HOST>,
+ 		 <&tegra_car TEGRA210_CLK_XUSB_HOST>;
+ };
++
++/* Each head owns its MC drain separately from the CAR module reset. */
++&{/host1x@50000000/dc@54200000} {
++	resets = <&tegra_car TEGRA210_CLK_DISP1>, <&mc TEGRA210_MC_RESET_DC>;
++	reset-names = "dc", "mc";
++	nvidia,memory-controller = <&mc>;
++};
++
++&{/host1x@50000000/dc@54240000} {
++	resets = <&tegra_car TEGRA210_CLK_DISP2>, <&mc TEGRA210_MC_RESET_DCB>;
++	reset-names = "dc", "mc";
++	nvidia,memory-controller = <&mc>;
++};
+--- a/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-dc.yaml
++++ b/Documentation/devicetree/bindings/display/tegra/nvidia,tegra20-dc.yaml
+@@ -70,6 +70,10 @@
+       - description: phandle to the core power domain
+ 
+   memory-region: true
++
++  nvidia,memory-controller:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: Memory controller providing Tegra210 display bandwidth arbitration.
+ 
+   nvidia,head:
+     $ref: /schemas/types.yaml#/definitions/uint32
+--- a/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra210-mc.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/nvidia,tegra210-mc.yaml
+@@ -49,6 +49,13 @@
+   "#reset-cells":
+     const: 1
+ 
++  nvidia,display-ptsa-lpddr4:
++    type: boolean
++    description: |
++      Use the awake LPDDR4 display arbitration profile with a fixed 400 MHz MC
++      clock and grant decrement 0x1203. Other profiles are rejected by the
++      driver. This does not provide EMC dynamic frequency scaling.
++
+ required:
+   - compatible
+   - reg
