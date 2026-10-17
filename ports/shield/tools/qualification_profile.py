@@ -3,14 +3,99 @@
 This module renders configuration only. It never modifies an installed root,
 creates an account, mounts storage, enables a boot or claims a guardian ready.
 """
+import gzip
 import hashlib
 import json
 from pathlib import Path
-from usb_root_profile import digest, require, validate_manifest
+import xml.etree.ElementTree as ET
+from usb_root_profile import digest, require, rooted, validate_manifest
 
 USER = 'shieldqual'
 UID = GID = 1001
 HOME = '/home/' + USER
+
+
+# Reviewed installed policy/man inputs from the matched reference. A new base
+# policy version requires one coordinated review, not guessed action aliases.
+LOGIN1_POLICY = 'usr/share/polkit-1/actions/org.freedesktop.login1.policy'
+SYSTEMD1_POLICY = 'usr/share/polkit-1/actions/org.freedesktop.systemd1.policy'
+LOGIND_MAN = 'usr/share/man/man5/logind.conf.5.gz'
+MANAGER_MAN = 'usr/share/man/man5/systemd-system.conf.5.gz'
+PRIMARY_SHA256 = {
+  LOGIN1_POLICY: 'b2c416657bac00b38e66d37a3c4a541bdd0000d06aabe0a5f6e94580ea4c7807',
+  SYSTEMD1_POLICY: '05b867df07111f0693828fce4db65e6d14d653244952f7a598f4a4b600164d3b',
+  LOGIND_MAN: 'db2f19443c24d2a7e563e15bdc4a36ef57d1e50b543f7467647f29c7a63a0051',
+  MANAGER_MAN: 'a7b6f501710ecbdd1cb81c5201718f26dabeec30085b2de163f6430ebaa12aed',
+}
+LOGIN1_DENIED = (
+  'org.freedesktop.login1.power-off',
+  'org.freedesktop.login1.power-off-multiple-sessions',
+  'org.freedesktop.login1.power-off-ignore-inhibit',
+  'org.freedesktop.login1.reboot',
+  'org.freedesktop.login1.reboot-multiple-sessions',
+  'org.freedesktop.login1.reboot-ignore-inhibit',
+  'org.freedesktop.login1.halt',
+  'org.freedesktop.login1.halt-multiple-sessions',
+  'org.freedesktop.login1.halt-ignore-inhibit',
+  'org.freedesktop.login1.suspend',
+  'org.freedesktop.login1.suspend-multiple-sessions',
+  'org.freedesktop.login1.suspend-ignore-inhibit',
+  'org.freedesktop.login1.hibernate',
+  'org.freedesktop.login1.hibernate-multiple-sessions',
+  'org.freedesktop.login1.hibernate-ignore-inhibit',
+  'org.freedesktop.login1.manage',
+  'org.freedesktop.login1.set-reboot-parameter',
+  'org.freedesktop.login1.set-reboot-to-firmware-setup',
+  'org.freedesktop.login1.set-reboot-to-boot-loader-menu',
+  'org.freedesktop.login1.set-reboot-to-boot-loader-entry',
+)
+SYSTEMD1_DENIED = (
+  'org.freedesktop.systemd1.manage-units',
+  'org.freedesktop.systemd1.manage-unit-files',
+  'org.freedesktop.systemd1.set-environment',
+  'org.freedesktop.systemd1.reload-daemon',
+)
+LOGIND_IGNORE_KEYS = (
+  'HandlePowerKey', 'HandlePowerKeyLongPress',
+  'HandleRebootKey', 'HandleRebootKeyLongPress',
+  'HandleSuspendKey', 'HandleSuspendKeyLongPress',
+  'HandleHibernateKey', 'HandleHibernateKeyLongPress',
+  'HandleLidSwitch', 'HandleLidSwitchExternalPower', 'HandleLidSwitchDocked',
+  'HandleSecureAttentionKey', 'IdleAction',
+)
+POLKIT_PATH = 'etc/polkit-1/rules.d/00-shield-qualification.rules'
+LOGIND_PATH = 'etc/systemd/logind.conf.d/90-shield-qualification.conf'
+
+
+def power_policy(root):
+  primary = {}
+  for name, expected in PRIMARY_SHA256.items():
+    path = rooted(root, name)
+    require(not path.is_symlink() and path.is_file() and digest(path) == expected,
+            'Power policy primary source differs: ' + name)
+    primary[name] = path.read_bytes()
+  for name, denied in [(LOGIN1_POLICY, LOGIN1_DENIED), (SYSTEMD1_POLICY, SYSTEMD1_DENIED)]:
+    actions = [node.attrib['id'] for node in ET.fromstring(primary[name]).findall('action')]
+    require(len(actions) == len(set(actions)) and set(denied).issubset(actions),
+            'Installed privileged action catalog differs')
+  logind = gzip.decompress(primary[LOGIND_MAN]).decode('utf-8')
+  manager = gzip.decompress(primary[MANAGER_MAN]).decode('utf-8')
+  require(all(key + '=' in logind for key in LOGIND_IGNORE_KEYS) and
+          'CtrlAltDelBurstAction=' in manager and '"none"' in manager,
+          'Installed systemd power configuration keys differ')
+  # A literal action switch and user guard avoid granting anything to root or
+  # to another subject. Unrelated actions fall through to the installed policy.
+  rule = ('// Bounded qualification only; root recovery uses its owned syscall path.\n'
+          'polkit.addRule(function(action, subject) {\n'
+          '  if (subject.user !== "shieldqual") { return; }\n'
+          '  switch (action.id) {\n')
+  rule += ''.join('    case ' + json.dumps(action) + ':\n' for action in LOGIN1_DENIED + SYSTEMD1_DENIED)
+  rule += ('      return polkit.Result.NO;\n'
+           '    default: return;\n'
+           '  }\n'
+           '});\n')
+  return {POLKIT_PATH: rule, LOGIND_PATH: '[Login]\n' +
+          ''.join(key + '=ignore\n' for key in LOGIND_IGNORE_KEYS)}
 
 
 def account_plan():
@@ -29,6 +114,7 @@ def admitted_text(root, manifest, name):
 
 def render(root, manifest):
   validate_manifest(manifest)
+  power_files = power_policy(root)
   source = admitted_text(root, manifest, 'usr/share/omarchy/config/hypr/hyprland.lua')
   autostart = admitted_text(root, manifest, 'usr/share/omarchy/default/hypr/autostart.lua')
   session = admitted_text(root, manifest, 'usr/share/omarchy/default/wayland-sessions/omarchy.desktop')
@@ -66,6 +152,7 @@ end)
 RuntimeWatchdogSec=0
 RebootWatchdogSec=0
 KExecWatchdogSec=0
+CtrlAltDelBurstAction=none
 DefaultTimeoutStopSec=5s
 ''',
     'etc/systemd/journald.conf.d/90-shield-qualification.conf': '''[Journal]
@@ -152,6 +239,7 @@ After=basic.target shield-guardian.service shield-qualification-desktop.service
 AllowIsolate=yes
 ''',
   }
+  root_files.update(power_files)
   home_files = {
     f'{USER}/.config/hypr/hyprland.lua': hyprland,
     f'{USER}/.config/hypr/monitors.lua': '''-- Previously exercised native display mode; wider modes remain unqualified.
@@ -170,7 +258,8 @@ fi
     'normal_first_run_complete': False,
     'deferred_actions': ['online first-run provisioning and tool installation', 'automatic storage mounting',
                          'power-profile initialization', 'owner post-boot hooks'],
-    'masked_services': {'sddm.service': 'qualification owns tty1',
+    'masked_services': {'ctrl-alt-del.target': 'qualification recovery owns restart requests',
+      'sddm.service': 'qualification owns tty1',
       'getty@tty1.service': 'qualification owns tty1',
       'omarchy-provision-hardware.service': 'deferred hardware leaves require separate admission',
       'power-profiles-daemon.service': 'DVFS and power policy remain unqualified',
@@ -182,10 +271,14 @@ fi
       'systemd-hibernate.service': 'sleep and wake remain separately unqualified',
       'systemd-hybrid-sleep.service': 'sleep and wake remain separately unqualified',
       'systemd-suspend-then-hibernate.service': 'sleep and wake remain separately unqualified'},
+    'user_power_policy': {'subject_user': USER, 'denied_actions': list(LOGIN1_DENIED + SYSTEMD1_DENIED),
+      'unrelated_subjects_and_actions': 'fall through', 'logind_ignored_keys': list(LOGIND_IGNORE_KEYS),
+      'ctrl_alt_del_burst_action': 'none', 'native_effective_policy_verified': False},
     'guardian_required_before_desktop': True, 'boot_ready': False, 'physical_qualified': False,
     'source_files': {name: hashlib.sha256(value.encode()).hexdigest() for name, value in
       [('usr/share/omarchy/config/hypr/hyprland.lua', source),
        ('usr/share/omarchy/default/hypr/autostart.lua', autostart),
-       ('usr/share/omarchy/default/wayland-sessions/omarchy.desktop', session)]}}
+       ('usr/share/omarchy/default/wayland-sessions/omarchy.desktop', session)]},
+    'power_policy_primary_sources': dict(PRIMARY_SHA256)}
   home_files[f'{USER}/.local/state/omarchy/shield-qualification.json'] = json.dumps(policy, indent=2) + '\n'
   return {'root': root_files, 'home': home_files, 'policy': policy}

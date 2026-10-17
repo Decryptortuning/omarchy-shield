@@ -23,7 +23,7 @@ import uuid
 sys.path.insert(0, '/usr/lib/omarchy/shield/qualification')
 from guardian_binding import INSTALL, PROFILE, load_runtime, owned_file
 from guardian_client import GuardianClient, MAGIC, REQUEST, SECOND, STATUS, VERSION
-from usb_root_profile import digest, require
+from usb_root_profile import digest, require, safe_relative
 
 DIRECTORY = Path('/run/shield-recovery')
 ENDPOINT = DIRECTORY / 'request.sock'
@@ -156,14 +156,33 @@ def artifacts(profile):
 def startup_policy(profile):
   overlay = owned_file(INSTALL / 'overlay-manifest.json', 0o600)
   require(digest(overlay) == profile['overlay_sha256'], 'Startup policy binding differs')
-  policy = json.loads(overlay.read_text())['policy']
+  manifest = json.loads(overlay.read_text())
+  policy = manifest['policy']
+  root_files = {name[5:]: identity for name, identity in manifest['files'].items() if name.startswith('root/')}
+  require(bool(root_files), 'Missing installed startup policy files')
+  for relative, identity in root_files.items():
+    safe_relative(relative)
+    require(identity['mode'] == 0o644 and identity['uid'] == identity['gid'] == 0,
+            'Wrong startup policy ownership')
+    path = owned_file(Path('/') / relative, 0o644)
+    require(digest(path) == identity['sha256'], 'Installed startup policy file differs')
+  primary = policy['power_policy_primary_sources']
+  require(set(primary) == {'usr/share/polkit-1/actions/org.freedesktop.login1.policy',
+          'usr/share/polkit-1/actions/org.freedesktop.systemd1.policy',
+          'usr/share/man/man5/logind.conf.5.gz', 'usr/share/man/man5/systemd-system.conf.5.gz'},
+          'Power policy primary closure differs')
+  for relative, expected in primary.items():
+    path = owned_file(Path('/') / relative)
+    require(not path.stat().st_mode & 0o022 and digest(path) == expected,
+            'Installed base power policy source differs')
   require(policy['payload_candidate_id'] == profile['filesystem']['candidate_id']
           and policy['guardian_required_before_desktop'] is True
           and policy['account']['uid'] == 1001 and policy['account']['administrative'] is False,
           'Startup ownership policy differs')
   masks = policy['masked_services']
   require({'power-profiles-daemon.service', 'udisks2.service', 'sleep.target',
-           'sshd.service', 'sddm.service', 'getty@tty1.service'}.issubset(masks), 'Safety masks missing')
+           'sshd.service', 'sddm.service', 'getty@tty1.service', 'ctrl-alt-del.target'}.issubset(masks),
+          'Safety masks missing')
   for unit in masks:
     require(re.fullmatch('[A-Za-z0-9@_.-]+\\.(service|target)', unit)
             and unit not in {'shield-guardian.service', 'shield-qualification-recovery.service'}, 'Unsafe mask name')
@@ -175,11 +194,12 @@ def startup_policy(profile):
       stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=2)
     require(result.returncode == 0 and result.stdout.strip() in {'inactive', 'failed'}, 'Masked unit remains active')
   result = subprocess.run(['/usr/bin/systemctl', 'show', '--property=RuntimeWatchdogUSec',
-    '--property=RebootWatchdogUSec', '--property=KExecWatchdogUSec'],
+    '--property=RebootWatchdogUSec', '--property=KExecWatchdogUSec', '--property=CtrlAltDelBurstAction'],
     stdin=subprocess.DEVNULL, capture_output=True, text=True, timeout=2)
   values = dict(line.split('=', 1) for line in result.stdout.splitlines() if '=' in line)
   require(result.returncode == 0 and values == {'RuntimeWatchdogUSec': '0',
-          'RebootWatchdogUSec': '0', 'KExecWatchdogUSec': '0'}, 'PID1 hardware watchdog ownership is not disabled')
+          'RebootWatchdogUSec': '0', 'KExecWatchdogUSec': '0', 'CtrlAltDelBurstAction': 'none'},
+          'PID1 watchdog or keyboard shutdown ownership differs')
 
 
 def notify_ready():
