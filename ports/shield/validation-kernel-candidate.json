@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "date_UTC": "2026-10-17",
+  "source_commit": "cda825a3417cdcb00e2a9461be0a958bb1d50ca8",
+  "board_profile": "darcy-t210-a04",
+  "kernel_source_commit": "9336ceeebe1d75021d9fd98c94abaec522ba39b3",
+  "ordered_patch_count": 15,
+  "kernel_release": "7.1.0-shield-bringup",
+  "Image_sha256": "e6b49a014b90ca443b024cc576e82d71a3330bd404c2b919c77c633eed28f721",
+  "modules_AArch64_ET_REL_matching_release": 1561,
+  "source_intent_and_SHA256SUMS_pass": true,
+  "configuration_fragment_provenance_checked": true,
+  "display_reset_and_controller_contracts_pass": true,
+  "default_fullboard_fixed_PTSA_optin": false,
+  "both_changed_bindings_DT_meta_schema_pass": true,
+  "focused_port_tests_passed": 44,
+  "QEMU_kernel_and_diagnostic_ramdisk_pass": true,
+  "two_fresh_kernel_Image_and_module_sets_byte_identical": true,
+  "incremental_make_counter_and_build_ID_change": "Retained unselected scratch output; selected fresh bundle and paired modules remain immutable.",
+  "upstream_warnings": [
+    "BusyBox host usage write return ignored",
+    "BusyBox archive chown return ignored",
+    "BusyBox sed fchown return ignored",
+    "BusyBox modutils possible local-address warning; actual local-buffer path duplicates before return"
+  ],
+  "kernel_compiler_or_clock_skew_warnings": false,
+  "package_versions_planned": {
+    "linux-shield": "7.1.0-8",
+    "omarchy_and_settings": "4.0.0.alpha-99.7"
+  },
+  "paired_package_build_completed": false,
+  "physical_Shield_execution_of_this_bundle": false,
+  "owner_USB_updated": false,
+  "permanent_boot_qualified": false,
+  "scope": "Offline maintained kernel/DT/module candidate only. Qualified native80 used its separately pinned Image171/restricted DT. Default MMC fast modes, radios/media/DVFS/fan lifecycle and normal PID1 remain unqualified.",
+  "private_qualification_receipt_sha256": "3f1193fe5921facd38cc222f1043517384b15f0890ae4d1638a1d9a3cec04a25"
+}
