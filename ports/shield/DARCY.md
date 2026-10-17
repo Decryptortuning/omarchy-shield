@@ -2,7 +2,7 @@
 
 ## Current physical qualification — October 16 local / October 17 UTC
 
-[The current milestone receipt](validation-native-milestones.json) supersedes the earlier capability gaps below for its exact bounded scope. The owner device is Darcy A04 with original Tegra210 A02; these results do not establish 2019 B01 support. The later tested kernel/DT/probe changes are pinned privately, and their complete published package/build integration remains pending.
+[The current milestone receipt](validation-native-milestones.json) supersedes the earlier capability gaps below for its exact bounded scope. The owner device is Darcy A04 with original Tegra210 A02; these results do not establish 2019 B01 support. The physical probes retain their exact private kernel/DT identities. Their maintained kernel/package integration and matched-root VM qualification are recorded below; they do not extend physical acceptance to the new root.
 
 | Capability | New evidence | Remaining scope |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ Automatic fan control is still missing a cooling map in the tested DT; the bound
 
 ### Maintained kernel candidate
 
-[The maintained candidate receipt](validation-kernel-candidate.json) records all 15 patches, 44 focused port tests, 1,561 matching ARM64 modules, actual compiled reset contracts, two passing binding meta-schema checks and a QEMU kernel/ramdisk boot. The selected fresh kernel and module set reproduced byte-for-byte across two builds. An additional incremental make advanced the build counter/GNU build ID; that scratch output is retained separately and is not mixed into the selected bundle. Upstream BusyBox compiler warnings remain visible in the receipt. Kernel package 8 and paired runtime/settings release 99.7 staging and full-filesystem VM acceptance are the next steps; this candidate has not run on the Shield.
+[The maintained candidate receipt](validation-kernel-candidate.json) records all 15 patches, 44 focused port tests, 1,561 matching ARM64 modules, actual compiled reset contracts, two passing binding meta-schema checks and a QEMU kernel/ramdisk boot. The selected fresh kernel and module set reproduced byte-for-byte across two builds. An additional incremental make advanced the build counter/GNU build ID; that scratch output is retained separately and is not mixed into the selected bundle. Upstream BusyBox compiler warnings remain visible in the receipt. [The matched runtime receipt](validation-runtime-closure.json) now records 72 passing port tests, a single five-package installation including full Mesa, exact installed graphics/kernel/module payload checks and a passing full-filesystem QEMU test. The updated root and selected kernel have not run together on the Shield. A bounded physical systemd/root transition is next; backup metadata cleanup, watchdog ownership, automatic cooling and durable boot health remain open.
 
 The last physical native80 screenshot shows the complete bounded desktop session, with the USB root still read-only:
 
