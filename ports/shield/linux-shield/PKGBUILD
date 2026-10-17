@@ -3,7 +3,7 @@
 # This package never writes a boot partition.
 pkgname=linux-shield
 pkgver=7.1.0
-pkgrel=11
+pkgrel=12
 pkgdesc='Experimental Shield Tegra kernel components; boot image installation is separate'
 arch=('aarch64')
 license=('GPL-2.0-only')
@@ -60,6 +60,9 @@ package() {
   # are public; preserve module bytes/modes and never follow symlink targets.
   find "$pkgdir/usr/lib/modules" -type d -exec chmod 0755 {} +
   printf '%s\n' "$pkgname" > "$pkgdir/usr/lib/modules/$release/pkgbase"
+  # Private compile-tree modes are not installed module-data permissions.
+  # ELF/data bytes and symlink targets stay unchanged.
+  find -P "$pkgdir/usr/lib/modules/$release" -type f -exec chmod 0644 {} +
   install -d "$pkgdir/usr/lib/omarchy/shield/kernel"
   local file
   for file in Image Image.gz kernel-release.txt kernel.config config-fragments.json \

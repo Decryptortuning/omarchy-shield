@@ -80,7 +80,7 @@ class SourceExportTests(unittest.TestCase):
 
 
 class KernelModulePackageTests(unittest.TestCase):
-  def test_module_package_directories_are_public_without_changing_files_or_links(self):
+  def test_module_package_permissions_are_public_without_changing_data_or_link_targets(self):
     # Exercise the actual package() boundary, not kernel compilation/admission.
     with tempfile.TemporaryDirectory(prefix='shield-module-package-') as temporary:
       base = Path(temporary)
@@ -91,10 +91,16 @@ class KernelModulePackageTests(unittest.TestCase):
       for directory in [module_root, *[p for p in module_root.rglob('*') if p.is_dir()]]:
         directory.chmod(0o700)
       module.write_bytes(b'fixture module bytes\n')
-      module.chmod(0o644)
+      module.chmod(0o600)
+      metadata = module.parent.parent / 'modules.builtin'
+      metadata.write_bytes(b'fixture module metadata\n')
+      metadata.chmod(0o600)
       outside = base / 'outside'
       outside.mkdir(mode=0o700)
       outside.chmod(0o700)
+      outside_file = outside / 'outside.ko'
+      outside_file.write_bytes(b'outside fixture bytes\n')
+      outside_file.chmod(0o600)
       (module.parent / 'outside-link').symlink_to(outside, target_is_directory=True)
       compiled = base / 'source/compiled'
       compiled.mkdir(parents=True)
@@ -118,9 +124,17 @@ class KernelModulePackageTests(unittest.TestCase):
       installed = package / 'usr/lib/modules' / release / 'kernel/example.ko'
       self.assertEqual(installed.read_bytes(), module.read_bytes())
       self.assertEqual(stat.S_IMODE(installed.stat().st_mode), 0o644)
+      self.assertEqual(stat.S_IMODE(module.stat().st_mode), 0o600)
+      installed_metadata = installed.parent.parent / 'modules.builtin'
+      self.assertEqual(installed_metadata.read_bytes(), metadata.read_bytes())
+      self.assertEqual(stat.S_IMODE(installed_metadata.stat().st_mode), 0o644)
+      self.assertEqual(stat.S_IMODE(metadata.stat().st_mode), 0o600)
+      self.assertEqual(stat.S_IMODE((installed.parent.parent / 'pkgbase').stat().st_mode), 0o644)
       self.assertTrue((installed.parent / 'outside-link').is_symlink())
       self.assertEqual(os.readlink(installed.parent / 'outside-link'), str(outside))
       self.assertEqual(stat.S_IMODE(outside.stat().st_mode), 0o700)
+      self.assertEqual(outside_file.read_bytes(), b'outside fixture bytes\n')
+      self.assertEqual(stat.S_IMODE(outside_file.stat().st_mode), 0o600)
 
 
 @unittest.skipUnless(os.geteuid() == 0, 'Disposable UID/GID migration fixtures require root')
