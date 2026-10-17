@@ -37,6 +37,8 @@ The A04 build also verifies the final compiled VBUS GPIO specifiers and the XUSB
 
 ## Signed ARM filesystem and packages
 
+Before local package staging, build the complete patched Mesa output with `--with-x11 --with-va` into `"$build_root/mesa-desktop"` using the source/sysroot procedure below. A minimal Wayland-only probe bundle is not a desktop package input. This adds the matched Mesa payload to the kernel/runtime/settings/platform cutover; source staging still does not install or contact the Shield.
+
 The base tarball, signature and keyring are checksum-pinned. Signature verification additionally requires the exact Arch Linux ARM build-system fingerprint in the lock. The download URL points at a moving upstream archive: if it changes, the fetch fails instead of accepting a new base. Retain the verified cache or review a new signed input deliberately.
 
 ```sh
@@ -50,12 +52,15 @@ sudo python3 ports/shield/configure-build.py --rootfs "$build_root/rootfs" \
 sudo bash ports/shield/chroot.sh "$build_root/rootfs" \
   /bin/bash /var/lib/shield-linux/bootstrap-packages.sh
 sudo python3 ports/shield/stage-packages.py --rootfs "$build_root/rootfs" \
-  --recipes ../omarchy-pkgs --kernel-dir "$build_root/kernel"
+  --recipes ../omarchy-pkgs --kernel-dir "$build_root/kernel" \
+  --mesa-dir "$build_root/mesa-desktop"
 sudo bash ports/shield/chroot.sh "$build_root/rootfs" \
   /bin/bash /var/lib/shield-linux/build-target-packages.sh
 ```
 
-The bootstrap installs the complete repository package set from pinned sync databases. The four local packages are `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`. The ARM kernel recipe declares `python` and `dtc` (which provides `fdtget`) as build dependencies. The pinned package audit includes `dtc` as a build input so bootstrap supplies it before the `--nodeps` package build; host intent tests also require the documented device-tree-compiler tools.
+The bootstrap installs the complete repository package set from pinned sync databases. The five local packages are `mesa`, `linux-shield`, `omarchy`, `omarchy-settings` and `omarchy-shield`; the installer submits them in one ALPM transaction. The ARM kernel recipe declares `python` and `dtc` (which provides `fdtget`) as build dependencies. The pinned package audit includes `dtc` as a build input so bootstrap supplies it before the `--nodeps` package build; host intent tests also require the documented device-tree-compiler tools.
+
+Staging records `package-artifacts-intent.json` from the five exact recipes. Before invoking ALPM, the installer requires one archive per component and matches its `.PKGINFO` name, full version and AArch64 architecture, plus `.BUILDINFO` recipe hash. Same-name older packages and archives built from another recipe are refused before the transaction. This coordinated dependency transaction is not a power-loss rollback guarantee.
 
 The candidate staging recipes use paired runtime/settings release `99.7`; the installed USB root remains on `99.6`, and the earlier integration build used `99.4`. Local installation validates dependencies together and replaces the generic ALARM kernel through its declared conflict. `linux-shield` owns modules and selected kernel/DTB/matrix inputs under `/usr/lib/omarchy/shield/kernel`; it has no boot-partition install hook. The platform package includes all three acceptance matrices and the guarded collector.
 
@@ -217,7 +222,7 @@ python3 ports/shield/tools/build-mesa.py \
 
 `--with-x11` adds the paired X11/GLX components needed for installed-desktop preparation. `--with-va` adds the Nouveau VA-API frontend and Mesa's codec parsers. Omitting both reproduces the smaller Wayland/EGL/GBM/Gallium diagnostic configuration. These configurations build only the Nouveau and Tegra Gallium drivers, without Vulkan or LLVM. Building the VA frontend does not establish Tegra video-engine support or hardware decoding. The output manifest records every installed file and explicitly leaves native qualification false; installation and hardware tests are separate steps. Keep EGL, GBM, its backend, Gallium and any GLX/DRI/VA components from the same build because Mesa checks their internal interface identity.
 
-`mesa-shield/PKGBUILD` packages a build made with both switches as `mesa` 1:26.2.4-99.1. Set `SHIELD_MESA_DIR` to the completed builder output and use an AArch64 makepkg configuration. The recipe verifies the source/patch identity, complete file manifest, required ARM libraries and symlink boundaries before packaging. It replaces the distribution Mesa package as one unit and retains the VA/OpenGL package provides; it is specific to this board and does not include other GPUs' drivers. It does not install anything or update the owner's USB drive. The separate `vulkan-nouveau` package remains outside this build and outside native qualification.
+`mesa-shield/PKGBUILD` packages a build made with both switches as `mesa` 1:26.2.4-99.1. Set `SHIELD_MESA_DIR` to the completed builder output and `OMARCHY_SRC` to the exact source export, and use an AArch64 makepkg configuration. The package and staging tool use the same validator against that export’s Mesa lock; incomplete X11/VA outputs, stale source/patch/CPU identity, changed files or escaping symlinks are refused. `stage-packages.py --mesa-dir` stages only the checked manifest/install tree, and the five-package build/install includes Mesa atomically. The recipe verifies the source/patch identity, complete file manifest, required ARM libraries and symlink boundaries before packaging. It replaces the distribution Mesa package as one unit and retains the VA/OpenGL package provides; it is specific to this board and does not include other GPUs' drivers. It does not install anything or update the owner's USB drive. The separate `vulkan-nouveau` package remains outside this build and outside native qualification.
 
 The [software package receipt](validation-desktop-package.json) records the completed build, ARM loader checks and isolated installation with kernel release 7. The 26-file/link Mesa payload, embedded build manifest and all 1,561 modules were verified after installation; ALPM reported no database errors or missing files. This is a disposable-filesystem installation test, not a native full-desktop or video-decoding pass. The Shield pacman template includes `mesa` in its local-package hold so a later distribution upgrade cannot silently discard the required Tegra fixes.
 

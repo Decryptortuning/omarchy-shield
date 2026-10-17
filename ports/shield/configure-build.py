@@ -36,8 +36,8 @@ def main():
     shutil.copy2(database, sync / f"{repository['name']}.db")
     (sync / f"{repository['name']}.db.sig").unlink(missing_ok=True)
   state = rootfs / 'var/lib/shield-linux'
-  # Build these four locally; repository packages supply all their dependencies.
-  built = {'omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'}
+  # Build these five locally; repository packages supply all their dependencies.
+  built = {'mesa', 'omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'}
   names = sorted({'omarchy-keyring'} | {item['name'][0] for requested, item in audit['resolved'].items() if requested not in built})
   (state / 'repository-packages.txt').write_text('\n'.join(names) + '\n')
   shutil.copy2(port / 'bootstrap-packages.sh', state / 'bootstrap-packages.sh')

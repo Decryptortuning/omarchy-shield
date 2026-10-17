@@ -5,6 +5,7 @@ This only stages files. It never enters a chroot, installs on the host, or
 executes upstream setup scripts. Python 3.12 or later is required.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import shutil
@@ -12,6 +13,8 @@ import subprocess
 import tarfile
 import tempfile
 from tools.kernel_profile import verify_kernel_intent
+from tools.mesa_profile import verify_mesa_profile
+from tools.package_set import package_intent
 
 
 def git(repository, *arguments, **options):
@@ -35,11 +38,13 @@ def main():
   parser.add_argument('--rootfs', required=True, type=Path)
   parser.add_argument('--recipes', required=True, type=Path)
   parser.add_argument('--kernel-dir', required=True, type=Path)
+  parser.add_argument('--mesa-dir', required=True, type=Path, help='Complete --with-x11 --with-va Mesa output')
   parser.add_argument('--commit', default='HEAD', help='Exact fork commit to export; defaults to HEAD')
   args = parser.parse_args()
   rootfs = args.rootfs.resolve(strict=True)
   recipes = args.recipes.resolve(strict=True)
   kernel = args.kernel_dir.resolve(strict=True)
+  mesa = args.mesa_dir.resolve(strict=True)
   if rootfs == Path('/') or not (rootfs / 'var/lib/shield-linux/sources.lock.json').is_file():
     raise SystemExit('Use a separately prepared Shield ARM build filesystem')
   commit = git(source, 'rev-parse', '--verify', f'{args.commit}^{{commit}}', capture_output=True, text=True).stdout.strip()
@@ -56,6 +61,7 @@ def main():
     export(source, commit, admitted)
     try:
       verify_kernel_intent(kernel, admitted)
+      mesa_manifest, mesa_root = verify_mesa_profile(mesa, admitted)
     except (ValueError, OSError, KeyError) as error:
       raise SystemExit(str(error)) from error
     version = (admitted / 'version').read_text().strip()
@@ -82,13 +88,21 @@ def main():
     shutil.copy2(exported / 'ports/shield' / asset, build / 'omarchy-shield' / asset)
   shutil.copytree(exported / 'ports/shield/linux-shield', build / 'linux-shield')
   shutil.copytree(kernel, build / 'kernel-inputs')
+  shutil.copytree(exported / 'ports/shield/mesa-shield', build / 'mesa-shield')
+  mesa_inputs = build / 'mesa-inputs'
+  mesa_inputs.mkdir()
+  shutil.copy2(mesa / 'manifest.json', mesa_inputs / 'manifest.json')
+  shutil.copytree(mesa_root, mesa_inputs / 'install', symlinks=True)
   for script, destination in (('build-packages.sh', 'build-target-packages.sh'),
                               ('install-packages.sh', 'install-target-packages.sh')):
     shutil.copy2(exported / 'ports/shield' / script, rootfs / 'var/lib/shield-linux' / destination)
+  (rootfs / 'var/lib/shield-linux/package-artifacts-intent.json').write_text(json.dumps(package_intent(build), indent=2) + '\n')
   provenance = {
     'omarchy_commit': commit, 'packaging_commit': recipe_commit,
     'pkgver': version, 'pkgrel': '99.7', 'architecture': 'aarch64',
-    'package_names': ['omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'],
+    'package_names': ['mesa', 'omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'],
+    'mesa_source_commit': mesa_manifest['mesa_commit'],
+    'mesa_manifest_sha256': hashlib.sha256((mesa / 'manifest.json').read_bytes()).hexdigest(),
     'kernel_source_commit': json.loads((kernel / 'sources.lock.json').read_text())['kernel']['commit'],
     'board_variant': json.loads((kernel / 'sources.lock.json').read_text())['board_variant'],
     'physical_shield_tested': False, 'flashable_image': False,

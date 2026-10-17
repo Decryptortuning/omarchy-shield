@@ -116,6 +116,19 @@ class KernelIntentTests(unittest.TestCase):
 
   def test_stager_rejects_stale_bundle_before_root_build_mutation(self):
     self.stale_checksummed_bundle()
+    self.assert_stage_refused('exported source commit intent')
+
+  def test_stager_rejects_incomplete_mesa_before_root_build_mutation(self):
+    records = [self.sha(p) + '  ' + p.name for p in sorted(self.bundle.iterdir()) if p.is_file()]
+    (self.bundle / 'SHA256SUMS').write_text('\n'.join(records) + '\n')
+    target = self.source / 'ports/shield/mesa.lock.json'
+    shutil.copy2(PORT / 'mesa.lock.json', target)
+    mesa = self.root / 'unused-mesa'
+    mesa.mkdir()
+    (mesa / 'manifest.json').write_text('{"format_version":0}')
+    self.assert_stage_refused('Unknown Mesa build manifest')
+
+  def assert_stage_refused(self, expected):
     rootfs = self.root / 'rootfs'
     marker = rootfs / 'var/lib/shield-linux/sources.lock.json'
     marker.parent.mkdir(parents=True)
@@ -137,10 +150,12 @@ class KernelIntentTests(unittest.TestCase):
     def export(repository, commit, destination, *paths):
       shutil.copytree(self.source, destination, dirs_exist_ok=True)
 
+    mesa = self.root / 'unused-mesa'
+    mesa.mkdir(exist_ok=True)
     args = ['stage-packages.py', '--rootfs', str(rootfs), '--recipes', str(recipes),
-            '--kernel-dir', str(self.bundle), '--commit', 'c' * 40]
+            '--kernel-dir', str(self.bundle), '--mesa-dir', str(mesa), '--commit', 'c' * 40]
     with mock.patch.object(stage, 'git', git), mock.patch.object(stage, 'export', export), mock.patch.object(sys, 'argv', args):
-      with self.assertRaisesRegex(SystemExit, 'exported source commit intent'):
+      with self.assertRaisesRegex(SystemExit, expected):
         stage.main()
     self.assertFalse((rootfs / 'build').exists())
 
