@@ -7,6 +7,7 @@ executes upstream setup scripts. Python 3.12 or later is required.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -29,6 +30,14 @@ def export(repository, commit, destination, *paths):
     archive.seek(0)
     with tarfile.open(fileobj=archive) as tree:
       tree.extractall(destination, filter='data')
+  # The data filter deliberately discards directory modes. A private host
+  # umask must not become unreadable directories in cp -a package payloads.
+  # Preserve the private container itself and never chmod symlink targets.
+  for parent, names, _files in os.walk(destination, followlinks=False):
+    for name in names:
+      directory = Path(parent) / name
+      if not directory.is_symlink():
+        directory.chmod(0o755)
 
 
 def main():
@@ -77,7 +86,7 @@ def main():
       destination = build / package
       shutil.copytree(staged / 'pkgbuilds' / package, destination)
       recipe = destination / 'PKGBUILD'
-      replacements = {'pkgver': version, 'pkgrel': '99.8', '_commit': repr(commit), '_tag': "''"}
+      replacements = {'pkgver': version, 'pkgrel': '99.9', '_commit': repr(commit), '_tag': "''"}
       lines = []
       for line in recipe.read_text().splitlines():
         key = line.split('=', 1)[0]
@@ -99,7 +108,7 @@ def main():
   (rootfs / 'var/lib/shield-linux/package-artifacts-intent.json').write_text(json.dumps(package_intent(build), indent=2) + '\n')
   provenance = {
     'omarchy_commit': commit, 'packaging_commit': recipe_commit,
-    'pkgver': version, 'pkgrel': '99.8', 'architecture': 'aarch64',
+    'pkgver': version, 'pkgrel': '99.9', 'architecture': 'aarch64',
     'package_names': ['mesa', 'omarchy', 'omarchy-settings', 'omarchy-shield', 'linux-shield'],
     'mesa_source_commit': mesa_manifest['mesa_commit'],
     'mesa_manifest_sha256': hashlib.sha256((mesa / 'manifest.json').read_bytes()).hexdigest(),

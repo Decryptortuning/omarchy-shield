@@ -3,7 +3,7 @@
 # This package never writes a boot partition.
 pkgname=linux-shield
 pkgver=7.1.0
-pkgrel=9
+pkgrel=10
 pkgdesc='Experimental Shield Tegra kernel components; boot image installation is separate'
 arch=('aarch64')
 license=('GPL-2.0-only')
@@ -51,10 +51,13 @@ package() {
   read -r release < "$srcdir/compiled/kernel-release.txt"
   read -r dtb < "$srcdir/compiled/dtb-name.txt"
   [[ $release == "$pkgver-shield-bringup" ]] || return 1
-  install -d "$pkgdir/usr"
+  install -d "$pkgdir/usr/lib"
   # Build-tree owners are not installed-system owners; fakeroot owns the package.
   bsdtar --no-same-owner -xpf "$srcdir/compiled/kernel-modules.tar.zst" -C "$pkgdir/usr"
   [[ -d $pkgdir/usr/lib/modules/$release ]] || return 1
+  # Build archives may have private directory modes. Installed module paths
+  # are public; preserve module bytes/modes and never follow symlink targets.
+  find "$pkgdir/usr/lib/modules" -type d -exec chmod 0755 {} +
   printf '%s\n' "$pkgname" > "$pkgdir/usr/lib/modules/$release/pkgbase"
   install -d "$pkgdir/usr/lib/omarchy/shield/kernel"
   local file
