@@ -1,0 +1,65 @@
+{
+  "format_version": 1,
+  "scope": "Actual pure guardian state/wire and disabled ARM entrypoint, plus host overlay rendering",
+  "passed": true,
+  "boot_ready": false,
+  "physical_USB_changed": false,
+  "shield_boot_partitions_changed": false,
+  "enabled_native_guardian_qualified": false,
+  "systemd_desktop_boot_qualified": false,
+  "feature_performance_parity_qualified": false,
+  "source_hashes": {
+    "main.c": "3f81927c6c2e930f4d7de32873fcc10ac18f9a545cd4e982631ab8cac6ef7312",
+    "sampler.c": "3f46f1983be9e3b965a43e1339543a432b1a67cd21c41dfffaa2a9e2d8060784",
+    "state.c": "330408766baaf7a4e756246d2098473e3a181106df761378a08d7ce1e323898e",
+    "guardian.h": "ed9fbd2953d36a47a36ae4b80734cce87903fc6319f78b30cc5db7d3b5823c1f",
+    "profile.h": "bcd75507bd2f533f720cf79b33811a42ee960223775ae6a41d92fd2f782e7b2b"
+  },
+  "client_sha256": "780e20a73efd11dcf893bafd233b53e1ec19a7188a8e866d9a32a189046aac22",
+  "harness_sha256": "6e8c72b30354ca893ce6e1cb258e49b93cf9210077057ae2bb953dc2853ddbbc",
+  "normal_suite": {
+    "total": 120,
+    "passed": 109,
+    "root_only_skipped": 11
+  },
+  "actual_source_checks": {
+    "pure_state_assertions": "passed",
+    "C_to_Python_status_bytes": 248,
+    "C_to_Python_control_packets": 2,
+    "coverage": [
+      "Pre-open and post-open cutoff boundaries",
+      "Freshness, sensor/fan/timer rejection",
+      "Irreversible held-fd fault state",
+      "Ping lateness and completion latency",
+      "Repeated quiesce cannot extend cleanup",
+      "Automatic work cutoff and final no-ping cutoff",
+      "Exact little-endian C/Python status and control layout"
+    ],
+    "disabled_ARM_profile": {
+      "exit_code": 64,
+      "bytes": 777840,
+      "sha256": "2cc1506dd059a6a8d52edb5563b4ef5a1212cdedf9835c5acf0995d882222ecd",
+      "watchdog_MMIO_or_sysfs_access": false
+    }
+  },
+  "qualification_overlay": {
+    "source_reference_verified": true,
+    "root_files_rendered": 6,
+    "home_files_rendered": 4,
+    "temporary_account_UID": 1001,
+    "temporary_account_administrative": false,
+    "online_first_run_marked_complete": false,
+    "guardian_installed": false,
+    "account_created": false,
+    "theme_seeded": false,
+    "root_modified": false
+  },
+  "remaining": [
+    "Reviewed bound profile and enabled guardian artifact",
+    "Recovery listener and bounded cleanup consumers",
+    "Actual systemd unit/readiness graph",
+    "Account creation and headless theme seeding",
+    "Physical memory/device/internal-storage admission",
+    "Native boot, hardware and performance qualification"
+  ]
+}
