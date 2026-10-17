@@ -237,3 +237,11 @@ python3 ports/shield/tools/check-mesa-surfaces.py \
 ```
 
 The first check reproduces the baseline null-callback crash in a child and verifies optional callback forwarding. The second compiles the real current Mesa API headers and Tegra callback bodies to check framebuffer textures, clear surfaces, scissor rectangles, null attachments and preservation of caller data. These checks supplement the physical compositor result; they do not qualify every hardware clear path, application or sustained session.
+
+## Host preparation of the matched USB maintenance payload
+
+`tools/prepare-usb-payload.py` creates an offline maintenance input from the verified ARM build root and the pinned original USB-root reference. Pass `--rootfs`, `--base-rootfs`, `--audit`, `--filesystem-uuid` and a new `--output` directory. Use WSL root when the installed package files include protected directories. The tool never mounts storage, installs packages or contacts the Shield.
+
+It admits the exact five locally built archives and the audited `dtc` archive with its detached signature, then copies and rechecks them before publishing the output. `tools/usb_root_profile.py` provides the paired archive admission and installed-root verifier: complete installed package versions and ALPM semantics (installation timestamps deliberately excluded), selected payload metadata/hashes/xattrs, matching module and dynamic-loader state, and explicit obsolete paths derived from the original/new package lists. Shared paths owned by another package are retained. Signature integrity here is a pinned-byte check; upstream PGP authentication belongs to the later package transaction.
+
+This is input preparation only. The physical USB remains unchanged, and no updater or hardware boot is released by creating a payload. The next maintenance candidate needs a separately reviewed device-identity check, exclusive mount ownership, new root/home/log subvolumes, interrupted-update interlock, verified clean relinquishment and recovery route. The existing root/default subvolume must remain available. The systemd desktop candidate also needs its actual initramfs handoff, finite watchdog/fan guard, user/session configuration and phased hardware/performance acceptance runner.
