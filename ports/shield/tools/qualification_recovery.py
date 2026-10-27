@@ -86,7 +86,9 @@ def bind_native_control(profile):
   for name, identity in sources.items():
     if not name.startswith('run/shield-native/runtime/'):
       continue
-    safe_relative(name)
+    # The literal runtime prefix is already admitted above. Validate its
+    # relative suffix, not a payload-root path which correctly forbids run/.
+    safe_relative(name[len('run/shield-native/runtime/'):])
     require(name.count('/') == 3 and name.endswith('.py'), 'Unsafe native bootstrap source')
     require(type(identity['bytes']) is int and 0 < identity['bytes'] <= 8 * 1024**2,
             'Native bootstrap source size differs')

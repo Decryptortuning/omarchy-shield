@@ -17,6 +17,7 @@ import native_control_protocol as protocol
 import native_host_link as host_module
 
 SECOND = host_module.SECOND
+UTC_NS = 1_800_000_000_000_000_000
 KEY = b'\x03' * 32
 BOOT = '11111111-2222-4333-8444-555555555555'
 OTHER_BOOT = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee'
@@ -30,6 +31,7 @@ class Clock:
 class NativeHostLinkTests(unittest.TestCase):
   def setUp(self):
     self.clock = Clock()
+    self.utc = UTC_NS
     self.temporary = tempfile.TemporaryDirectory()
     self.directory = Path(self.temporary.name)
     os.chmod(self.directory, 0o700)
@@ -54,7 +56,7 @@ class NativeHostLinkTests(unittest.TestCase):
     return host_module.HostLink(context, KEY, self.bridge,
       self.clock.value + 100 * SECOND, epoch=epoch, store=store,
       boot_id=boot_id, handoff_pin=handoff_pin, maintenance_pin=maintenance_pin, clock=self.clock,
-      challenge_source=lambda: next(challenges))
+      challenge_source=lambda: next(challenges), utc_clock=lambda: self.utc)
 
   def hint(self, host=None):
     host = host or self.host
@@ -82,6 +84,28 @@ class NativeHostLinkTests(unittest.TestCase):
       'challenge': ping_record.payload['challenge'], 'boottime_ns': 2 * SECOND}))
     self.assertTrue(self.host.ready)
     self.host.take_events()
+
+  def test_each_ping_samples_current_host_utc_without_changing_deadline(self):
+    original_deadline = self.host.deadline
+    self.ready()
+    self.utc += 5 * SECOND
+    self.host.ping('f' * 64)
+    frame, = self.written()
+    record = self.native.receive(frame)
+    self.assertEqual(record.payload['utc_ns'], self.utc)
+    self.assertEqual(self.host.deadline, original_deadline)
+
+  def test_invalid_host_utc_poisoned_before_ping_or_ready(self):
+    self.utc = True
+    self.host.feed_device(self.hint())
+    probe, = self.written()
+    self.native.receive(probe)
+    with self.assertRaises(ValueError):
+      self.host.feed_device(self.native.send('HELLO', {
+        'kernel_release': protocol.KERNEL_RELEASE, 'boottime_ns': SECOND,
+        'probe_challenge': self.native.probe_challenge}))
+    self.assertTrue(self.host.failed)
+    self.assertFalse(self.host.ready)
 
   def observation(self, *, reason=None):
     receipt = {'phase': 'filesystem-readonly', 'boot_ready': False,
@@ -317,7 +341,9 @@ class NativeHostLinkTests(unittest.TestCase):
   def handoff_observation(self):
     return {'kind': 'systemd-handoff', **self.handoff_pin.projection(),
       'ram_children_reaped': True, 'watchdog_opened': False,
-      'source_root_verified': True, 'boottime_ns': 3 * SECOND}
+      'source_root_verified': True, 'immutable_layer_postimages_verified': True,
+      'user_home_boundary_verified': True, 'user_home_contents_verified': False,
+      'boottime_ns': 3 * SECOND}
 
   def handoff_ping(self):
     frame = self.evidence(self.handoff_observation())
@@ -329,6 +355,19 @@ class NativeHostLinkTests(unittest.TestCase):
 
   def test_early_systemd_requires_independent_handoff_pin(self):
     with self.assertRaises(ValueError): self.make_host(epoch='early', boot_id=None)
+
+  def test_current_home_handoff_contract_has_no_legacy_or_boolean_coercion(self):
+    fields = {'immutable_layer_postimages_verified': True,
+      'user_home_boundary_verified': True, 'user_home_contents_verified': False}
+    for field, expected in fields.items():
+      for wrong in ('missing', not expected, int(expected)):
+        self.early_systemd()
+        value = self.handoff_observation()
+        if wrong == 'missing': del value[field]
+        else: value[field] = wrong
+        with self.subTest(field=field, wrong=wrong), self.assertRaises(ValueError):
+          self.host.feed_device(self.evidence(value))
+        self.assertFalse(self.store.attempted)
 
   def test_handoff_wrong_root_session_is_rejected_before_retention(self):
     self.early_systemd()

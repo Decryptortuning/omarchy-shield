@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import native_control_protocol as protocol
 
 
+UTC_NS = 1_800_000_000_000_000_000
 KEY = b"\x01" * 32
 BOOT = "11111111-2222-4333-8444-555555555555"
 OTHER_BOOT = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee"
@@ -165,7 +166,7 @@ class NativeControlProtocolTests(unittest.TestCase):
     hello = native.send("HELLO", envelope()["payload"])
     with self.assertRaises(protocol.ProtocolError): native.send("EVIDENCE", {"observations": {}})
     host.receive(hello)
-    with self.assertRaises(protocol.ProtocolError): host.send("PING", {"challenge": CHALLENGE})
+    with self.assertRaises(protocol.ProtocolError): host.send("PING", {'utc_ns': UTC_NS, "challenge": CHALLENGE})
     with self.assertRaises(protocol.ProtocolError):
       native.receive(signed(envelope(direction="host", seq=2, kind="ACK", payload={"hello_body_sha256": "f" * 64})))
     self.assertEqual(native.received_sequence, 1)
@@ -174,16 +175,16 @@ class NativeControlProtocolTests(unittest.TestCase):
 
   def test_ping_pong_matches_outstanding_challenge(self):
     native, host = pair()
-    native.receive(host.send("PING", {"challenge": CHALLENGE}))
+    native.receive(host.send("PING", {'utc_ns': UTC_NS, "challenge": CHALLENGE}))
     self.assertEqual(host.sent_sequence, 3)
-    with self.assertRaises(protocol.ProtocolError): host.send("PING", {"challenge": "e" * 64})
+    with self.assertRaises(protocol.ProtocolError): host.send("PING", {'utc_ns': UTC_NS, "challenge": "e" * 64})
     with self.assertRaises(protocol.ProtocolError): native.send("PONG", {"challenge": "e" * 64, "boottime_ns": 2})
     wrong = envelope(seq=2, kind="PONG", payload={"challenge": "e" * 64, "boottime_ns": 2})
     with self.assertRaises(protocol.ProtocolError): host.receive(signed(wrong))
     self.assertEqual(host.received_sequence, 1)
     host.receive(native.send("PONG", {"challenge": CHALLENGE, "boottime_ns": 2}))
     self.assertEqual(native.sent_sequence, 2)
-    native.receive(host.send("PING", {"challenge": "e" * 64}))
+    native.receive(host.send("PING", {'utc_ns': UTC_NS, "challenge": "e" * 64}))
     host.receive(native.send("PONG", {"challenge": "e" * 64, "boottime_ns": 3}))
     self.assertEqual(host.received_sequence, 3)
 
@@ -223,7 +224,7 @@ class NativeControlProtocolTests(unittest.TestCase):
   def test_host_cannot_send_effect_selectors_or_native_message_kinds(self):
     native, host = pair()
     for kind, payload in [("RUN", {"exec": "anything"}), ("RESULT", {"observations": {}}),
-                          ("PING", {"challenge": CHALLENGE, "duration": 20}),
+                          ("PING", {"challenge": CHALLENGE, "utc_ns": UTC_NS, "duration": 20}),
                           ("ABORT", {"reason": "operator", "path": "/anywhere"}),
                           ("ABORT", {"reason": "arbitrary text"})]:
       with self.assertRaises(protocol.ProtocolError): host.send(kind, payload)
@@ -334,7 +335,7 @@ class NativeControlProtocolTests(unittest.TestCase):
     for value in bad:
       with self.assertRaises(protocol.ProtocolError): host.receive(signed(value))
     for value in [envelope(direction="host", kind="PROBE", payload={"challenge": CHALLENGE}),
-                  envelope(direction="host", seq=3, kind="PING", payload={"challenge": CHALLENGE},
+                  envelope(direction="host", seq=3, kind="PING", payload={'utc_ns': UTC_NS, "challenge": CHALLENGE},
                     boot=protocol.BOOTSTRAP_BOOT_ID)]:
       with self.assertRaises(protocol.ProtocolError): native.receive(signed(value))
     self.assertEqual((native.received_sequence, host.received_sequence), (2, 1))
@@ -349,6 +350,34 @@ class NativeControlProtocolTests(unittest.TestCase):
         native.receive(signed(envelope(direction="host", kind="PROBE",
           boot=protocol.BOOTSTRAP_BOOT_ID, payload=payload)))
     self.assertEqual((host.sent_sequence, native.received_sequence), (0, 0))
+
+
+class NativeUtcPayloadTests(unittest.TestCase):
+  def test_supported_boundaries_are_carried_without_clock_side_effects(self):
+    for value in [protocol.UTC_MIN_NS, protocol.UTC_MAX_NS - 1]:
+      native, host = pair()
+      record = native.receive(host.send("PING", {"challenge": CHALLENGE, "utc_ns": value}))
+      self.assertEqual(record.payload["utc_ns"], value)
+
+  def test_missing_malformed_and_outside_calendar_samples_do_not_commit(self):
+    payloads = [{"challenge": CHALLENGE}]
+    payloads.extend({"challenge": CHALLENGE, "utc_ns": value} for value in
+      [None, True, False, 0, -1, "1800000000000000000", 1.8e18,
+       protocol.UTC_MIN_NS - 1, protocol.UTC_MAX_NS, 2**63 - 1])
+    for payload in payloads:
+      with self.subTest(payload=payload):
+        native, host = pair()
+        with self.assertRaises(protocol.ProtocolError): host.send("PING", payload)
+        self.assertEqual(host.sent_sequence, 2)
+        with self.assertRaises(protocol.ProtocolError):
+          native.receive(signed(envelope(direction="host", seq=3, kind="PING", payload=payload)))
+        self.assertEqual(native.received_sequence, 2)
+
+  def test_bootstrap_probe_cannot_carry_a_clock_assignment(self):
+    host = protocol.Session(context(), KEY, side="host")
+    with self.assertRaises(protocol.ProtocolError):
+      host.send("PROBE", {"challenge": CHALLENGE, "utc_ns": UTC_NS})
+    self.assertEqual(host.sent_sequence, 0)
 
 
 if __name__ == "__main__":

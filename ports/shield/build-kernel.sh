@@ -92,6 +92,8 @@ if [[ $variant == "omarchy-a04" ]]; then
     --kernel-source "$kernel_src" --output "$dist/xusb-otg-vbus-regression.json"
   python3 "$port_dir/tools/check-sdhci-fixed-supply.py" \
     --kernel-source "$kernel_src" --output "$dist/sdhci-fixed-supply-regression.json"
+  python3 "$port_dir/tools/check-pcie-config-window.py" \
+    --kernel-source "$kernel_src" --output "$dist/pcie-config-window-regression.json"
 fi
 
 archive="$build_root/downloads/busybox-$busybox_version.tar.bz2"

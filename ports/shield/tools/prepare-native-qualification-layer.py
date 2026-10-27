@@ -22,7 +22,8 @@ PURPOSE = 'host-only exact native qualification layer'
 ACCOUNTS = {'etc/' + name for name in ['passwd', 'group', 'shadow', 'gshadow']}
 HOME = 'home/shieldqual'
 RUNTIME = 'usr/lib/omarchy/shield/qualification'
-POLICY_DIRECTORIES = {'etc/systemd/logind.conf.d', 'etc/systemd/system.conf.d'}
+POLICY_DIRECTORIES = {'etc/systemd/logind.conf.d', 'etc/systemd/system.conf.d',
+                      'etc/systemd/journald.conf.d', 'etc/systemd/system/user@1001.service.d'}
 
 
 def inventory(root, prepared, installation):
@@ -34,7 +35,7 @@ def inventory(root, prepared, installation):
   for name in prepared['applied_files']: add(name, 'overlay')
   for name in prepared['service_masks']: add('etc/systemd/system/' + name, 'mask')
   for name in installation['installed_files']: add(RUNTIME + '/' + name, 'runtime')
-  # These three directories are actual installation destinations, not merely
+  # These directories are actual installation destinations, not merely
   # ancestor preconditions. Phase A legitimately lacks them. Do not broaden
   # this to every ancestor: base/package parents and polkit's root:102 0750
   # rules directory must already have their independently pinned identities.

@@ -7,6 +7,7 @@ import sys
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parent.parent / 'tools'
 sys.path.insert(0, str(TOOLS))
@@ -45,6 +46,45 @@ class NativeLayerPackTests(unittest.TestCase):
     root, _entries, _manifest = self.fixture()
     (root / 'outside-parent').symlink_to(root, target_is_directory=True)
     with self.assertRaises(ValueError): file_identity(root, 'outside-parent/file')
+
+  def policy_fixture(self):
+    temporary = tempfile.TemporaryDirectory(); self.addCleanup(temporary.cleanup)
+    root = Path(temporary.name)
+    fragments = [name + '/shield.conf' for name in LAYER.POLICY_DIRECTORIES]
+    applied = fragments + ['etc/polkit-1/rules.d/shield.rules']
+    paths = [*LAYER.ACCOUNTS, *applied, LAYER.RUNTIME + '/native-boot.py',
+             LAYER.HOME + '/.config/hypr/hyprland.conf', 'etc/machine-id']
+    for name in paths:
+      target = root / name; target.parent.mkdir(parents=True, exist_ok=True)
+      target.write_bytes(b'')
+    def identity(base, name):
+      item = file_identity(base, name)
+      if name == LAYER.HOME or name.startswith(LAYER.HOME + '/'):
+        item.update(uid=1001, gid=1001)
+      if name == 'etc/polkit-1/rules.d': item.update(gid=102, mode=0o750)
+      return item
+    prepared = {'applied_files': applied, 'service_masks': [],
+                'home_files': ['.config/hypr/hyprland.conf']}
+    return root, prepared, {'installed_files': ['native-boot.py']}, identity
+
+  def test_runtime_dropin_parents_are_explicit_overlay_not_existing_only(self):
+    root, prepared, installation, identity = self.policy_fixture()
+    with patch.object(LAYER, 'file_identity', side_effect=identity):
+      entries = LAYER.inventory(root, prepared, installation)
+    for name in ['etc/systemd/journald.conf.d', 'etc/systemd/system/user@1001.service.d']:
+      self.assertEqual(entries[name]['roles'], ['ancestor', 'overlay'])
+      self.assertEqual(entries[name]['identity']['type'], 'directory')
+    self.assertEqual(entries['etc']['roles'], ['ancestor'])
+    self.assertEqual(entries['etc/polkit-1/rules.d']['roles'], ['ancestor'])
+    self.assertEqual(entries['etc/polkit-1/rules.d']['identity']['gid'], 102)
+    self.assertEqual(entries['etc/polkit-1/rules.d']['identity']['mode'], 0o750)
+
+  def test_unused_policy_parent_does_not_gain_creation_authority(self):
+    root, prepared, installation, identity = self.policy_fixture()
+    prepared['applied_files'].remove('etc/systemd/journald.conf.d/shield.conf')
+    with patch.object(LAYER, 'file_identity', side_effect=identity):
+      with self.assertRaisesRegex(ValueError, 'Unused explicit policy directory'):
+        LAYER.inventory(root, prepared, installation)
 
   def test_archive_extra_missing_duplicate_or_link_members_are_rejected(self):
     root, entries, manifest = self.fixture()

@@ -73,7 +73,7 @@ class Maintenance:
     require(not self.failed and not self.s.aborted and not self.s.children.interrupted
             and not self.s.children.unexpected_statuses and self.recovery.reason is None,
             'Maintenance work interrupted')
-    require(self.s.link is not None and self.s.link.ready
+    require(self.s.clock_ready and self.s.link is not None and self.s.link.ready
             and self.s.link.last_host_ns is not None
             and now() - self.s.link.last_host_ns < 15 * SECOND,
             'Authenticated maintenance host became stale')

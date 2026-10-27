@@ -85,7 +85,12 @@ def validate(bundle, *, bound):
           and [p.name for p in (GADGET / 'configs/c.1').iterdir() if p.is_symlink()] == ['acm.usb0'],
           'Wrong gadget function link')
   for name, expected in NUMBERS.items():
-    require(numeric(name) == expected, 'Gadget numeric descriptor differs')
+    if name == 'bcdUSB' and bound:
+      # Selected composite.c GET_DESCRIPTOR mutates this same configfs field:
+      # initial 0200; SS-capable USB2 0210; SuperSpeed 0320. Identity stays exact.
+      require(numeric(name) in {0x0200, 0x0210, 0x0320}, 'Gadget bound USB version differs')
+    else:
+      require(numeric(name) == expected, 'Gadget numeric descriptor differs')
   for name, expected in strings(bundle).items():
     require(read(name) == expected, 'Gadget string descriptor differs')
   require(numeric('functions/acm.usb0/port_num') == 0

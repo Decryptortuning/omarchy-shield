@@ -1,8 +1,8 @@
-"""Source-only worker fixtures pending the combined native208 source gate.
+"""Maintenance worker identity, ownership and fixed-command fixtures.
 
-Synthetic job data and mocked command IO only: no subprocess, device, mount,
-package or watchdog operation. Fatal command failures model PID1 cancellation;
-these fixtures do not prove actual descendant reaping or physical release.
+Job and command fixtures use mocked IO; a read-only host procfs fixture checks
+owned FD mount IDs. No subprocess, device, mount, package or watchdog operation.
+These fixtures do not prove physical Btrfs release or native package success.
 """
 from contextlib import ExitStack
 import importlib.util
@@ -11,6 +11,7 @@ from types import SimpleNamespace
 import os
 import stat
 import sys
+import tempfile
 import unittest
 from unittest.mock import Mock, patch
 
@@ -75,14 +76,19 @@ class MountIdentityTests(unittest.TestCase):
     self.row = {'id': 45, 'filesystem': 'btrfs', 'root': '/', 'path': str(worker.TOP),
       'options': {'rw', 'nosuid', 'nodev'}, 'super_options': {'rw', 'compress=zstd:1'},
       'dev': '0:42', 'source': '/dev/sda1'}
-    self.stack.enter_context(patch.object(worker, 'table', return_value=[self.row]))
+    self.table = self.stack.enter_context(patch.object(worker, 'table', return_value=[self.row]))
     self.directory = self.stack.enter_context(patch.object(worker, 'directory'))
-    self.stack.enter_context(patch.object(worker.os, 'stat', return_value=SimpleNamespace(st_dev=os.makedev(0, 42))))
+    self.mounted = SimpleNamespace(st_dev=os.makedev(0, 99), st_ino=256,
+      st_mode=stat.S_IFDIR | 0o755, st_uid=0, st_gid=0)
+    self.path_stat = self.stack.enter_context(patch.object(worker.os, 'stat', return_value=self.mounted))
+    self.stack.enter_context(patch.object(worker.os, 'fstat', return_value=self.mounted))
+    self.opened = self.stack.enter_context(patch.object(worker.os, 'open', return_value=71))
+    self.closed = self.stack.enter_context(patch.object(worker.os, 'close'))
+    self.mount_id = self.stack.enter_context(patch.object(worker, 'fd_mount_id', return_value=45))
     self.stack.enter_context(patch.object(worker.Path, 'lstat', return_value=SimpleNamespace(
       st_mode=stat.S_IFBLK | 0o600, st_rdev=os.makedev(8, 1))))
     self.usb = self.stack.enter_context(patch.object(worker, 'usb_ancestor', return_value=('usb', 'xusb')))
     self.identity = self.stack.enter_context(patch.object(worker, 'filesystem_identity'))
-    # Model the resolved sysfs link into devices while preserving source dev_t.
     self.node = Path('/sys/devices/tegra-xusb/usb/block/sda/sda1')
     def resolve(path, **_kwargs):
       return self.node if path == Path('/sys/dev/block/8:1') else path
@@ -93,16 +99,125 @@ class MountIdentityTests(unittest.TestCase):
       return worker.USB_STORAGE['partition_bytes' if path.parent == self.node else 'disk_bytes'] // 512
     self.stack.enter_context(patch.object(worker, 'number', side_effect=geometry))
 
-  def test_anonymous_btrfs_view_and_distinct_physical_source_are_valid(self):
+  def test_distinct_btrfs_root_stat_and_superblock_devices_accept_matching_owned_mount_id(self):
     worker.top_identity(self.value, job(self.value))
+    self.assertNotEqual(self.row['dev'], f'{os.major(self.mounted.st_dev)}:{os.minor(self.mounted.st_dev)}')
     self.directory.assert_called_once_with(worker.TOP)
+    self.opened.assert_called_once_with(worker.TOP, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+    self.mount_id.assert_called_once_with(71)
+    self.closed.assert_called_once_with(71)
     self.usb.assert_called_once_with(self.node, self.value.profile['filesystem']['usb'])
     self.identity.assert_called_once_with(worker.TOP, self.value.profile['filesystem']['uuid'])
+    self.assertEqual(self.table.call_count, 2)
 
-  def test_wrong_mounted_view_device_is_rejected_before_usb_admission(self):
-    self.row['dev'] = '0:43'
+  def test_wrong_owned_fd_mount_id_rejected_before_usb_admission(self):
+    self.mount_id.return_value = 46
     with self.assertRaises(ValueError): worker.top_identity(self.value, job(self.value))
     self.usb.assert_not_called(); self.identity.assert_not_called()
+    self.closed.assert_called_once_with(71)
+
+  def test_job_mount_id_mismatch_is_rejected_before_open(self):
+    self.row['id'] = 46
+    with self.assertRaises(ValueError): worker.top_identity(self.value, job(self.value))
+    self.opened.assert_not_called(); self.usb.assert_not_called(); self.identity.assert_not_called()
+
+  def test_replaced_path_inode_rejected_before_usb_admission(self):
+    self.path_stat.return_value = SimpleNamespace(st_mode=stat.S_IFDIR | 0o755,
+      st_dev=self.mounted.st_dev, st_ino=self.mounted.st_ino + 1)
+    with self.assertRaises(ValueError): worker.top_identity(self.value, job(self.value))
+    self.usb.assert_not_called(); self.identity.assert_not_called(); self.closed.assert_called_once_with(71)
+
+  def test_nondirectory_path_with_same_numeric_identity_is_rejected(self):
+    self.path_stat.return_value = SimpleNamespace(st_mode=stat.S_IFLNK | 0o755,
+      st_dev=self.mounted.st_dev, st_ino=self.mounted.st_ino)
+    with self.assertRaises(ValueError): worker.top_identity(self.value, job(self.value))
+    self.usb.assert_not_called(); self.identity.assert_not_called(); self.closed.assert_called_once_with(71)
+
+  def test_same_inode_bind_replacement_with_changed_final_mount_id_is_rejected(self):
+    changed = dict(self.row, id=46)
+    self.table.side_effect = [[dict(self.row)], [changed]]
+    with self.assertRaises(ValueError): worker.top_identity(self.value, job(self.value))
+    self.identity.assert_called_once_with(worker.TOP, self.value.profile['filesystem']['uuid'])
+    self.assertEqual(self.table.call_count, 2); self.closed.assert_called_once_with(71)
+
+  def test_geometry_rejection_still_closes_held_mount_fd(self):
+    with patch.object(worker, 'number', return_value=0), self.assertRaises(ValueError):
+      worker.top_identity(self.value, job(self.value))
+    self.identity.assert_not_called(); self.closed.assert_called_once_with(71)
+
+  def test_filesystem_uuid_failure_remains_fatal_and_closes_held_fd(self):
+    self.identity.side_effect = ValueError('Different filesystem UUID')
+    with self.assertRaises(ValueError): worker.top_identity(self.value, job(self.value))
+    self.closed.assert_called_once_with(71); self.assertEqual(self.table.call_count, 1)
+
+
+class KernelFdMountIdentityTests(unittest.TestCase):
+  def capture(self, raw, *, info=None, magic=0x9fa0):
+    metadata = info or SimpleNamespace(st_mode=stat.S_IFREG | 0o444, st_uid=0, st_gid=0)
+    with patch.object(worker.os, 'open', return_value=72) as opened, \
+         patch.object(worker.os, 'fstat', return_value=metadata), \
+         patch.object(worker, 'filesystem_magic', return_value=magic), \
+         patch.object(worker.os, 'read', return_value=raw) as read, \
+         patch.object(worker.os, 'close') as closed:
+      try: value = worker.fd_mount_id(71)
+      except BaseException:
+        self.assertLessEqual(read.call_count, 1); closed.assert_called_once_with(72)
+        raise
+      opened.assert_called_once_with('/proc/self/fdinfo/71', os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+      read.assert_called_once_with(72, 4097); closed.assert_called_once_with(72)
+      return value
+
+  @unittest.skipUnless(os.geteuid() == 0, 'Actual root-owned procfs FD fixture requires root')
+  def test_real_owned_directory_fd_uses_actual_kernel_mount_table_identifier(self):
+    with tempfile.TemporaryDirectory(prefix='shield-owned-fd-') as directory:
+      fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+      try:
+        candidates = [row for row in worker.table() if Path(directory).is_relative_to(Path(row['path']))]
+        row = max(candidates, key=lambda item: len(item['path']))
+        self.assertEqual(worker.fd_mount_id(fd), row['id'])
+      finally: os.close(fd)
+
+  def test_exact_single_positive_canonical_id_including_maximum(self):
+    for value in [1, 45, 0x7fffffff]:
+      raw = b'pos:\t0\nflags:\t02300000\nmnt_id:\t' + str(value).encode('ascii') + b'\nino:\t256\n'
+      self.assertEqual(self.capture(raw), value)
+
+  def test_missing_duplicate_noncanonical_truncated_or_oversized_metadata_refused(self):
+    cases = [b'', b'pos:\t0\n', b'mnt_id:\t45', b'mnt_id:\t0\n', b'mnt_id:\t-1\n',
+      b'mnt_id:\t+45\n', b'mnt_id:\t045\n', b'mnt_id:\t2147483648\n', b'mnt_id:\t99999999999\n',
+      b'mnt_id: 45\n', b'mnt_id:\t45 \n', b'mnt_id:\t45\r\n', b'mnt_id:\t45\0\n',
+      b'mnt_id:\t45\nprivate:\xff\n', b'mnt_id:\t45\nmnt_id:\t45\n',
+      b'mnt_id:\t45\n' + b'x' * 4096 + b'\n']
+    for raw in cases:
+      with self.subTest(raw=raw[:60]), self.assertRaises(ValueError): self.capture(raw)
+
+  def test_kernel_metadata_must_be_procfs_regular_root_owned_and_nonwritable(self):
+    for changes in [dict(st_mode=stat.S_IFDIR | 0o444), dict(st_uid=1), dict(st_gid=1),
+                    dict(st_mode=stat.S_IFREG | 0o464), dict(st_mode=stat.S_IFREG | 0o446)]:
+      info = dict(st_mode=stat.S_IFREG | 0o444, st_uid=0, st_gid=0); info.update(changes)
+      with self.assertRaises(ValueError): self.capture(b'mnt_id:\t45\n', info=SimpleNamespace(**info))
+    with self.assertRaises(ValueError): self.capture(b'mnt_id:\t45\n', magic=0xef53)
+
+  def test_invalid_descriptor_refused_before_metadata_open(self):
+    for descriptor in [-1, True, None, '71', 0x80000000]:
+      with patch.object(worker.os, 'open') as opened, self.assertRaises(ValueError):
+        worker.fd_mount_id(descriptor)
+      opened.assert_not_called()
+
+  def test_metadata_read_failure_closes_without_retry(self):
+    info = SimpleNamespace(st_mode=stat.S_IFREG | 0o444, st_uid=0, st_gid=0)
+    with patch.object(worker.os, 'open', return_value=72), patch.object(worker.os, 'fstat', return_value=info), \
+         patch.object(worker, 'filesystem_magic', return_value=0x9fa0), \
+         patch.object(worker.os, 'read', side_effect=OSError(5, 'read refused')) as read, \
+         patch.object(worker.os, 'close') as closed, self.assertRaises(OSError):
+      worker.fd_mount_id(71)
+    read.assert_called_once_with(72, 4097); closed.assert_called_once_with(72)
+
+  def test_metadata_open_error_does_not_close_an_unowned_descriptor(self):
+    with patch.object(worker.os, 'open', side_effect=OSError(40, 'nofollow refused')), \
+         patch.object(worker.os, 'close') as closed, self.assertRaises(OSError):
+      worker.fd_mount_id(71)
+    closed.assert_not_called()
 
 
 class CommandAuthorityTests(unittest.TestCase):

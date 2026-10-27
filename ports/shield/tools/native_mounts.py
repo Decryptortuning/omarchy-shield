@@ -76,7 +76,7 @@ class MountDomain:
       self.device.check()
       directory(path)
       flags = MS_RDONLY | MS_NOSUID | MS_NODEV | MS_NOEXEC if readonly else MS_RELATIME
-      if path == TOP and not readonly: flags |= MS_NOSUID | MS_NODEV
+      if path in {TOP, NEWROOT / 'home'} and not readonly: flags |= MS_NOSUID | MS_NODEV
       options = 'subvolid=5' if subvolume is None else 'subvol=' + subvolume
       options += ',rescue=nologreplay' if readonly else ',compress=zstd:1'
       source = '/dev/' + self.device.partition.name
@@ -105,7 +105,11 @@ class MountDomain:
       expected = {'nosuid', 'nodev'} | ({'noexec'} if readonly else set())
       actual = entry['options'] & {'nosuid', 'nodev', 'noexec'}
       require(actual == expected, 'Owned top mount execution/device flags differ')
-    elif entry['path'] in {str(NEWROOT), str(NEWROOT / 'home'), str(NEWROOT / 'var/log')}:
+    elif entry['path'] == str(NEWROOT / 'home'):
+      expected = {'nosuid', 'nodev'} | ({'noexec'} if readonly else set())
+      require(entry['options'] & {'nosuid', 'nodev', 'noexec'} == expected,
+              'Runtime home must retain nosuid,nodev and execution')
+    elif entry['path'] in {str(NEWROOT), str(NEWROOT / 'var/log')}:
       require(not entry['options'] & {'nosuid', 'nodev', 'noexec'},
               'Normal candidate mount execution/device flags differ')
     rescue = {option for option in entry['super_options'] if option.startswith('rescue=')}
@@ -178,9 +182,29 @@ class MountDomain:
     self.device.verify_superblock()
     self._mount(TOP, None, False, deadline)
 
+  def owner_preparation_rw(self, deadline):
+    require(self.bundle.phase == 'owner-prepare'
+            and self.bundle.configuration.get('purpose') == 'omarchy-shield-owner-preparation'
+            and self.bundle.profile.get('purpose') == 'omarchy-shield-owner'
+            and self.mounted.get(TOP, (None, None))[1] is True,
+            'OWNER preparation requires explicit purpose and read-only admission')
+    self._unmount(TOP, deadline)
+    self.device.verify_superblock()
+    self._mount(TOP, None, False, deadline)
+
   def candidate(self, deadline):
     require(self.bundle.phase == 'systemd' and self.mounted.get(TOP, (None, None))[1] is True,
             'Systemd candidate requires completed read-only admission')
+    return self._candidate_mounts(deadline)
+
+  def owner_candidate(self, deadline):
+    require(self.bundle.phase == 'owner' and self.bundle.profile.get('purpose') == 'omarchy-shield-owner',
+            'OWNER candidate requires explicit OWNER enrollment')
+    return self._candidate_mounts(deadline)
+
+  def _candidate_mounts(self, deadline):
+    require(self.mounted.get(TOP, (None, None))[1] is True,
+            'Candidate requires completed read-only admission')
     self._unmount(TOP, deadline)
     self.device.verify_superblock()
     self.new_target(NEWROOT)

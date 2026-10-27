@@ -92,6 +92,11 @@
         "path": "ports/shield/kernel-patches/0017-btrfs-subvol-info-return.patch",
         "sha256": "2d0c76538b0346ac850bc0518d573bdeca038f06ae1c4030b466811a5199149e",
         "reason": "Backport upstream 75a41e3e51eb0d6f7a4969c5056298c2aa3e85f2: reset the successful GET_SUBVOL_INFO backref lookup return to zero so native/compat callers copy the completed record. Read-only VM exposed all-zero records for ordinary subvolumes; no board, driver, UAPI layout or error handling changes."
+      },
+      {
+        "path": "ports/shield/kernel-patches/0018-darcy-pcie-config-window.patch",
+        "sha256": "47281ac407e8bd7ceac5f0904e34f700d8cc85edaf0d5e9f31ae4af34426a208",
+        "reason": "Explicit Darcy A04 fixed-FPCI/dynamic-AXI configuration window matching retained stock PCIe driver behavior. Strict board/controller/aperture opt-in; candidate for downstream scan SError, not hardware-qualified."
       }
     ],
     "variant": "omarchy-a04",
@@ -101,6 +106,11 @@
         "path": "ports/shield/tegra210-shield-cec.dtso",
         "sha256": "9cdd1caf920fb801848e612b122d979a8460cc6bcb3d15a8f0c73245b754de9e",
         "reason": "Enable CEC on the shared P2894 PCC0 pinmux for this original Tegra210 evaluation DT; physical operation remains untested."
+      },
+      {
+        "path": "ports/shield/tegra210-shield-darcy-pcie.dtso",
+        "sha256": "7c0c8f389a4a75de7162702da66d7676d05f4e93ef4901c4def28672f996d99b",
+        "reason": "Pair explicit A04 PCIe config-window driver opt-in with stock 0x11fff000/4K cs aperture; pads/AFI ranges preserved. Hardware qualification pending."
       }
     ],
     "additional_config_fragments": [

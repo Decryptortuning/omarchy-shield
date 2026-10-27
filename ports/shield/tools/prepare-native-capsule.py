@@ -204,8 +204,14 @@ def command_line(phase, candidate, bundle_sha):
     'initcall_blacklist=tegra_cpufreq_init', 'shield.first-ram-probe=1',
     'tegra_smmu.reset_inherited=1', 'tegra_smmu.quarantine_gpub_inherited=1',
     'watchdog.open_timeout=240', 'watchdog.stop_on_reboot=0',
+    'pstore.compress=none',  # Stock recovery uses a different deflate framing.
     'shield.guardian=' + candidate, 'shield.native-bundle=' + bundle_sha]
-  if phase == 'systemd': tokens.append('systemd.unit=shield-qualification.target')
+  if phase == 'systemd':
+    # The ramoops console backend observes console priority filtering; keep this
+    # diagnostic phase visible even when Plymouth suppresses console output.
+    tokens += ['ignore_loglevel', 'systemd.unit=shield-qualification.target', 'systemd.log_target=kmsg',
+      'systemd.log_level=info', 'systemd.journald.forward_to_kmsg=1',
+      'systemd.journald.max_level_kmsg=info']
   return (' '.join(tokens) + '\n').encode('ascii')
 
 
@@ -287,10 +293,13 @@ def assemble(contract):
       add(entries, SEED + 'packages/' + name, raw, 0o600)
   root = {}
   if phase == 'systemd':
+    # The installed receiver admits Python bootstrap sources here. Early
+    # helper ELFs remain sealed in the early epoch and are not root imports.
     root = {name: dict(item) for name, item in early.items()
-            if name.startswith(RUNTIME_PREFIX) or name.startswith(prefix)}
+            if (name.startswith(RUNTIME_PREFIX) and name.endswith('.py'))
+            or name.startswith(prefix)}
     root.update({name: {'sha256': digest(raw), 'bytes': len(raw), 'mode': 0o644}
-                 for name, raw in policy_files().items()})
+                 for name, raw in policy_files(profile).items()})
   configuration = {'phase': phase,
     'kernel': {'image_sha256': IMAGE_SHA256, 'config_sha256': CONFIG_SHA256, 'release': '7.1.0-shield-bringup'},
     'dtb_sha256': DTB_SHA256, 'guardian_profile_sha256': digest(profile_raw),

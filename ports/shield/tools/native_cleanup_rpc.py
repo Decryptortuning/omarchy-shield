@@ -121,7 +121,9 @@ def send(channel, value):
 
 def receive(channel):
   packet, ancillary, flags, _address = channel.recvmsg(MAX_PACKET, 0, socket.MSG_CMSG_CLOEXEC)
-  require(packet and not ancillary and not flags, 'Truncated/ancillary/closed cleanup packet')
+  # Ignore only Linux's echoed CLOEXEC input flag, never truncation or ancillary data.
+  require(packet and not ancillary and not (flags & ~socket.MSG_CMSG_CLOEXEC),
+          'Truncated/ancillary/closed cleanup packet')
   return json_bytes(packet)
 
 

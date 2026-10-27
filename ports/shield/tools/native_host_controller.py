@@ -101,6 +101,67 @@ class Spec:
     object.__setattr__(self, 'source_pins', MappingProxyType(dict(self.source_pins)))
 
 
+def preserve_worker_failure(directory, error, deadline):
+  """Best-effort bounded private diagnostic; never a success/authority record."""
+  directory_fd = output_fd = None
+  try:
+    if now() >= deadline:
+      return False
+    admitted = frozenset({
+      'native_host_controller.py', 'native_host_link.py',
+      'native_control_protocol.py', 'native_serial_link.py',
+      'native_phase_plan.py', 'native_boot_context.py',
+      'usb_root_profile.py', 'guardian_binding.py'})
+    frames = []
+    node = error.__traceback__
+    visited = 0
+    while node is not None and visited < 8:
+      visited += 1
+      path = Path(node.tb_frame.f_code.co_filename)
+      if path.parent == Path(__file__).parent and path.name in admitted:
+        line = node.tb_lineno
+        if type(line) is int and 0 < line <= 100000:
+          frames.append({'file': path.name, 'line': line})
+      node = node.tb_next
+    kinds = {ValueError: 'ValueError', OSError: 'OSError',
+             TimeoutError: 'TimeoutError', BlockingIOError: 'BlockingIOError'}
+    number = getattr(error, 'errno', None) if isinstance(error, OSError) else None
+    number = number if type(number) is int and 0 <= number <= 4095 else 0
+    value = {'format_version': 1, 'purpose': 'failed host worker diagnostic only',
+             'error_type': kinds.get(type(error), 'Other'), 'errno': number,
+             'public_frames': frames, 'trace_truncated': node is not None,
+             'qualification': False, 'boot_ready': False}
+    raw = canonical(value)
+    if len(raw) > 4096 or now() >= deadline:
+      return False
+    directory_fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY |
+                           os.O_NOFOLLOW | os.O_CLOEXEC)
+    owner = os.fstat(directory_fd)
+    if not (stat.S_ISDIR(owner.st_mode) and stat.S_IMODE(owner.st_mode) == 0o700
+            and owner.st_uid == owner.st_gid == 0):
+      return False
+    output_fd = os.open('worker-failure.json', os.O_WRONLY | os.O_CREAT |
+                        os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC,
+                        0o600, dir_fd=directory_fd)
+    item = os.fstat(output_fd)
+    if not (stat.S_ISREG(item.st_mode) and item.st_uid == item.st_gid == 0
+            and item.st_nlink == 1 and stat.S_IMODE(item.st_mode) == 0o600):
+      return False
+    if now() >= deadline:
+      return False
+    # One write only. No fsync/durability claim, retry, extra deadline or authority.
+    return os.write(output_fd, raw) == len(raw)
+  except BaseException:
+    return False
+  finally:
+    for descriptor in [output_fd, directory_fd]:
+      if descriptor is not None:
+        try:
+          os.close(descriptor)
+        except OSError:
+          pass
+
+
 def notify(channel, value, cutoff):
   raw = canonical(value)
   require(len(raw) <= 8192, 'Private controller result budget')
@@ -319,7 +380,9 @@ class Attempt:
         channel = socket.socket(fileno=3)
         session_worker(self.spec, self.directory, channel, self.deadline)
         os._exit(0)
-      except BaseException: os._exit(75)
+      except BaseException as error:
+        preserve_worker_failure(self.directory, error, self.deadline)
+        os._exit(75)
     child.close()
     self.child_endpoint = None
     self.pidfd = os.pidfd_open(self.pid, 0)

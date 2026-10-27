@@ -1,0 +1,18 @@
+/dts-v1/;
+/plugin/;
+
+/* Darcy A04 stock configuration aperture. Hardware qualification pending. */
+/ {
+	compatible = "nvidia,p2894-0050-a04";
+
+	fragment@0 {
+		target-path = "/pcie@1003000";
+		__overlay__ {
+			/* pads/AFI unchanged; stock configuration aperture only. */
+			reg = <0x0 0x01003000 0x0 0x00000800>,
+			      <0x0 0x01003800 0x0 0x00000800>,
+			      <0x0 0x11fff000 0x0 0x00001000>;
+			nvidia,darcy-axi-config-window;
+		};
+	};
+};

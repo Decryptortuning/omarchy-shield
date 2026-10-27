@@ -1,0 +1,141 @@
+--- a/drivers/pci/controller/pci-tegra.c
++++ b/drivers/pci/controller/pci-tegra.c
+@@ -29,6 +29,7 @@
+ #include <linux/init.h>
+ #include <linux/module.h>
+ #include <linux/msi.h>
++#include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_pci.h>
+ #include <linux/of_platform.h>
+@@ -408,6 +409,12 @@
+ 	} ectl;
+ };
+ 
++/* Exact Darcy A04 stock CPU configuration aperture, end exclusive. */
++#define DARCY_CFG_CPU_FIRST	0x02000000U
++#define DARCY_CFG_CPU_LAST_PAGE	0x11fff000U
++#define DARCY_CFG_CPU_END	0x12000000ULL
++#define DARCY_CFG_FPCI_BASE	0xfe100000U
++
+ struct tegra_pcie {
+ 	struct device *dev;
+ 
+@@ -417,6 +424,7 @@
+ 	int irq;
+ 
+ 	struct resource cs;
++	bool darcy_axi_config_window;
+ 
+ 	struct clk *pex_clk;
+ 	struct clk *afi_clk;
+@@ -542,11 +550,36 @@
+ 		unsigned int offset;
+ 		u32 base;
+ 
++		if (pcie->darcy_axi_config_window &&
++		    (where < 0 || where >= PCI_CFG_SPACE_EXP_SIZE))
++			return NULL;
++
+ 		offset = tegra_pcie_conf_offset(bus->number, devfn, where);
+ 
+-		/* move 4 KiB window to offset within the FPCI region */
+-		base = 0xfe100000 + ((offset & ~(SZ_4K - 1)) >> 8);
+-		afi_writel(pcie, base, AFI_FPCI_BAR0);
++		if (pcie->darcy_axi_config_window) {
++			u32 page = offset & ~(SZ_4K - 1);
++			u32 size;
++
++			/* Reject bad identities/arithmetic before any AFI write. */
++			if (pcie->cs.start != DARCY_CFG_CPU_LAST_PAGE ||
++			    resource_size(&pcie->cs) != SZ_4K ||
++			    page > SZ_256M - SZ_4K || page > pcie->cs.start)
++				return NULL;
++
++			base = (u32)pcie->cs.start - page;
++			size = page + SZ_4K;
++			if (base < DARCY_CFG_CPU_FIRST || size > SZ_256M ||
++			    (u64)base + size != DARCY_CFG_CPU_END)
++				return NULL;
++
++			/* Stock: fixed FPCI target, move AXI start/size instead. */
++			afi_writel(pcie, base, AFI_AXI_BAR0_START);
++			afi_writel(pcie, size >> 12, AFI_AXI_BAR0_SZ);
++		} else {
++			/* Existing Tegra mapping remains unchanged without opt-in. */
++			base = 0xfe100000 + ((offset & ~(SZ_4K - 1)) >> 8);
++			afi_writel(pcie, base, AFI_FPCI_BAR0);
++		}
+ 
+ 		/* move to correct offset within the 4 KiB page */
+ 		addr = pcie->cfg + (offset & (SZ_4K - 1));
+@@ -1143,6 +1176,8 @@
+ 	size = resource_size(&pcie->cs);
+ 	afi_writel(pcie, pcie->cs.start, AFI_AXI_BAR0_START);
+ 	afi_writel(pcie, size >> 12, AFI_AXI_BAR0_SZ);
++	if (pcie->darcy_axi_config_window)
++		afi_writel(pcie, DARCY_CFG_FPCI_BASE, AFI_FPCI_BAR0);
+ 
+ 	resource_list_for_each_entry(entry, &bridge->windows) {
+ 		u32 fpci_bar, axi_address;
+@@ -1730,6 +1765,35 @@
+ 					i, err);
+ 		}
+ 	}
++}
++
++/* Explicit board/DT opt-in; validate before clocks, resets or PHY effects. */
++static int tegra_pcie_darcy_config_window_init(struct platform_device *pdev,
++					     struct tegra_pcie *pcie)
++{
++	struct device *dev = &pdev->dev;
++	struct resource *res;
++	int length;
++
++	if (!of_find_property(dev->of_node, "nvidia,darcy-axi-config-window",
++			      &length))
++		return 0;
++
++	if (length ||
++	    !of_machine_is_compatible("nvidia,p2894-0050-a04") ||
++	    !of_device_is_compatible(dev->of_node, "nvidia,tegra210-pcie"))
++		return dev_err_probe(dev, -EINVAL,
++				     "invalid Darcy config-window opt-in\n");
++
++	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "cs");
++	if (!res || res->start != DARCY_CFG_CPU_LAST_PAGE ||
++	    res->end != DARCY_CFG_CPU_END - 1 ||
++	    resource_size(res) != SZ_4K)
++		return dev_err_probe(dev, -EINVAL,
++				     "Darcy config aperture must be 0x11fff000/4K\n");
++
++	pcie->darcy_axi_config_window = true;
++	return 0;
+ }
+ 
+ static int tegra_pcie_get_resources(struct tegra_pcie *pcie)
+@@ -2993,6 +3057,10 @@
+ 	INIT_LIST_HEAD(&pcie->ports);
+ 	pcie->dev = dev;
+ 
++	err = tegra_pcie_darcy_config_window_init(pdev, pcie);
++	if (err < 0)
++		return err;
++
+ 	err = tegra_pcie_parse_dt(pcie);
+ 	if (err < 0)
+ 		return err;
+--- a/Documentation/devicetree/bindings/pci/nvidia,tegra20-pcie.txt
++++ b/Documentation/devicetree/bindings/pci/nvidia,tegra20-pcie.txt
+@@ -66,6 +66,11 @@
+   - pcie_x
+ 
+ Optional properties:
++- nvidia,darcy-axi-config-window: Empty boolean, private Darcy A04 opt-in for
++  the stock fixed-FPCI/dynamic-AXI configuration window. Only valid when the
++  root compatible includes "nvidia,p2894-0050-a04", this controller is
++  "nvidia,tegra210-pcie", and the "cs" resource is exactly 0x11fff000/0x1000.
++  Does not change link/PHY/MSI or BAR1-5 policy. No implicit aperture fallback.
+ - pinctrl-names: A list of pinctrl state names. Must contain the following
+   entries:
+   - "default": active state, puts PCIe I/O out of deep power down state

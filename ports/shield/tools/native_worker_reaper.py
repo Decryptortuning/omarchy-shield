@@ -23,11 +23,75 @@ import struct
 import sys
 import time
 
+def worker_diagnostic(stage, error):
+  fd = None
+  try:
+    stages = ('worker-import', 'worker-main', 'worker-command', 'worker-exec', 'reaper-main')
+    if type(stage) is not str or stage not in stages:
+      return
+    public_stage = stages[stages.index(stage)]
+    names = ('ValueError', 'RuntimeError', 'OSError', 'PermissionError',
+        'FileNotFoundError', 'ProcessLookupError', 'TimeoutError',
+        'ChildProcessError', 'ImportError', 'ModuleNotFoundError',
+        'AttributeError', 'TypeError', 'KeyError', 'AssertionError',
+        'SystemExit', 'KeyboardInterrupt', 'MemoryError')
+    name = type(error).__name__
+    public_type = names[names.index(name)] if name in names else 'other'
+    number = error.errno if isinstance(error, OSError) else None
+    number = number if type(number) is int and 0 <= number <= 4095 else -1
+    fd = os.open('/dev/kmsg', os.O_WRONLY | os.O_NONBLOCK |
+          os.O_CLOEXEC | os.O_NOFOLLOW)
+    info = os.fstat(fd)
+    if (not stat.S_ISCHR(info.st_mode) or info.st_uid or info.st_gid or
+        info.st_rdev != os.makedev(1, 11) or info.st_mode & 0o022):
+      return
+    record = (f'<3>shield-worker stage={public_stage} error={public_type} '
+         f'errno={number}\n').encode('ascii')
+    if len(record) <= 240:
+      os.write(fd, record)  # One attempt, no retry/fsync.
+    allowed = ('maintenance-worker.py', 'native_worker_reaper.py',
+         'native_boot_context.py', 'native_phase_plan.py',
+         'native_work_guard.py', 'native_mounts.py',
+         'native_root_storage.py', 'usb_candidate_transaction.py',
+         'usb_root_profile.py', 'maintenance_accounts.py',
+         'guardian_binding.py', 'qualification_recovery.py',
+         'native_layer_reader.py', 'native_layer_writer.py',
+             'guardian_client.py', 'native_serial_link.py', 'native_control_protocol.py')
+    trace = error.__traceback__
+    for depth in range(8):  # Inspected links, including unlisted frames.
+      if trace is None:
+        break
+      code = trace.tb_frame.f_code
+      base = code.co_filename.rsplit('/', 1)[-1]
+      line = trace.tb_lineno
+      if (base in allowed and code.co_name != 'require' and
+          type(line) is int and 0 < line <= 99999):
+        public_file = allowed[allowed.index(base)]
+        record = (f'<3>shield-worker-fault stage={public_stage} '
+             f'file={public_file} line={line} depth={depth}\n').encode('ascii')
+        if len(record) <= 240:
+          os.write(fd, record)
+      trace = trace.tb_next
+  except BaseException:
+    pass  # Evidence failure must not replace immediate owner exit.
+  finally:
+    if fd is not None:
+      try:
+        os.close(fd)
+      except BaseException:
+        pass
+
+
 sys.path.insert(0, '/run/shield-native/runtime')
 
-from native_boot_context import (DIRECTORY, RUNTIME, close_from, directory,
-  filesystem_magic, load, standard_fds)
-from usb_root_profile import require
+try:
+  from native_boot_context import (DIRECTORY, RUNTIME, close_from, directory,
+    filesystem_magic, load, standard_fds)
+  from usb_root_profile import require
+except BaseException as error:
+  worker_diagnostic('worker-import', error)
+  raise  # Preserve the original uncaught import failure and exit status.
+
 
 LEAF = Path('/sys/fs/cgroup/shield-native-worker')
 WORK = Path('/run/shield-worker')
@@ -164,7 +228,8 @@ def stopped_worker(log_fd):
     # Only the reaper's post-assignment START path sends the owned SIGCONT.
     os.execve('/usr/bin/python3.14', ['/usr/bin/python3.14', '-I', '-S', '-B',
               str(WORKER), '--run'], {'PATH': '/usr/bin:/bin', 'LC_ALL': 'C', 'HOME': '/root'})
-  except BaseException:
+  except BaseException as error:
+    worker_diagnostic('worker-exec', error)
     os._exit(70)
 
 
@@ -320,7 +385,8 @@ def main():
 if __name__ == '__main__':
   try:
     raise SystemExit(main())
-  except (OSError, ValueError):
+  except (OSError, ValueError) as error:
+    worker_diagnostic('reaper-main', error)
     # Early/unexpected reaper death is not a cleanup receipt. PID1 marks the
     # attempt ineligible; no replacement reaper, replay or fallback reboot.
     raise SystemExit(65)

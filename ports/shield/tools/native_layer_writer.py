@@ -123,6 +123,13 @@ def _pairs(pairs):
   return value
 
 
+def require_existing_ancestor(row, expected):
+  """Shared pure preflight for an admitted layer row, never creation authority."""
+  if row['roles'] == ['ancestor']:
+    require(row['identity']['type'] == 'directory' and expected == row['identity'],
+            'Ancestor-only destination requires exact existing identity')
+
+
 def admit(content, pin, raw):
   """Hash first, then exact schemas. No physical postimages are adopted."""
   require(type(pin) is WriterPin, 'WriterPin required'); pin.validate()
@@ -186,9 +193,7 @@ def admit(content, pin, raw):
                                       'machine-id', 'dbus-identity', 'ancestor'}, 'Wrong destination roles')
     item = row['identity']; identity_schema(item)
     if expected[name] is not None: identity_schema(expected[name])
-    if row['roles'] == ['ancestor']:
-      require(item['type'] == 'directory' and expected[name] == item,
-              'Ancestor-only destination requires exact existing identity')
+    require_existing_ancestor(row, expected[name])
     if name == 'etc/polkit-1/rules.d':
       require(row['roles'] == ['ancestor'] and item['type'] == 'directory'
               and (item['uid'], item['gid'], item['mode']) == (0, 102, 0o750),
