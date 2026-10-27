@@ -37,9 +37,18 @@ INPUT_PATHS = {'payload': 'payload.json', 'plan': 'plan.json', 'layer': 'layer.t
   'predecessorB': 'predecessor-B.json'}
 RUNTIME_PREFIX = 'run/shield-native/runtime/'
 UNIT_PATHS = frozenset({'run/systemd/system/shield-native-control.service',
-  'run/systemd/system/shield-qualification-recovery.service.d/10-native-control.conf'})
+  'run/systemd/system/shield-qualification-recovery.service.d/10-native-control.conf',
+  'run/systemd/system/shield-native-startup@.service',
+  'run/systemd/system/shield-native-startup-45.timer',
+  'run/systemd/system/shield-native-startup-90.timer',
+  'run/systemd/system/shield-native-cleanup-observer.service',
+  'run/systemd/system/shield-native-cleanup-observer.timer',
+  'run/systemd/system/home.mount.d/10-user-data.conf',
+  'run/systemd/system/shield-qualification.target.d/20-startup-observer.conf'})
 UDEV_PATH = 'run/udev/rules.d/99-omarchy-shield-native-control.rules'
-POLICY_PATHS = UNIT_PATHS | {UDEV_PATH}
+STARTUP_SCRIPT = 'run/shield-native/startup-diagnostics.sh'
+CLEANUP_SCRIPT = 'run/shield-native/cleanup-diagnostics.py'
+POLICY_PATHS = UNIT_PATHS | {UDEV_PATH, STARTUP_SCRIPT, CLEANUP_SCRIPT}
 COMMON_RUNTIME = {'native_boot_context.py', 'native_control_protocol.py', 'native_serial_link.py',
   'native_gadget.py', 'guardian_binding.py', 'guardian_client.py', 'usb_root_profile.py',
   'native_phase_plan.py', 'native_layer_reader.py', 'native_layer_writer.py',

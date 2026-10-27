@@ -92,6 +92,8 @@ class Event:
   kind: str
   challenge: str | None = None
   reason: str | None = None
+  utc_ns: int | None = None
+  received_boottime_ns: int | None = None
 
 
 class NativeLink:
@@ -123,6 +125,7 @@ class NativeLink:
     self.next_hint = self.previous
     self.events = []
     self.pong_pending = False
+    self.initial_clock_sample = None
     self.last_host_ns = None
 
   def _time(self):
@@ -188,6 +191,9 @@ class NativeLink:
           require(self.state in {'ping', 'active'} and not self.pong_pending,
                   'PING before HELLO/ACK or prior PONG transfer')
           challenge = record.payload['challenge']
+          if not self.ready:
+            require(self.initial_clock_sample is None, 'Repeated initial UTC sample')
+            self.initial_clock_sample = (record.payload['utc_ns'], self.last_host_ns)
           self.pong_pending = True
           self._append(self.session.send('PONG', {'challenge': challenge,
             'boottime_ns': self._time()}), ('pong', challenge))
@@ -219,7 +225,10 @@ class NativeLink:
         if not self.ready:
           self.ready = True
           self.state = 'active'
-          self._event(Event('ready', challenge=challenge))
+          utc_ns, received_ns = self.initial_clock_sample
+          self.initial_clock_sample = None
+          self._event(Event('ready', challenge=challenge, utc_ns=utc_ns,
+                            received_boottime_ns=received_ns))
         self._event(Event('pong-transferred', challenge=challenge))
       elif kind == 'evidence':
         self._event(Event('evidence-transferred', challenge=challenge))

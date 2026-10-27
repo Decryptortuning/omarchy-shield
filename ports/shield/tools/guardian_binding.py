@@ -15,7 +15,7 @@ BOARD = {'model': 'NVIDIA Shield TV (Darcy A04)',
          'stamp': 'a04-first-ram-probe-v1'}
 IMAGE_SHA256 = 'b7865e9b7e077ea3f75ed740e66566811e704641b8cc7840843d8f94a3452186'
 CONFIG_SHA256 = 'ce00a1be7b8b2a800f57bc8a8bd7b8b261515221e444cc327c0959af963ce11b'
-DTB_SHA256 = '378996e1e9ff1c5d434b125d8ef543555a9f661d02779c0ca9b22e9cb7b9d96d'
+DTB_SHA256 = '869c841f0e002689ed0d34d4a3dcd5c9652a3f0a30e78613c478a0852db848c2'
 TIMING = {'open_seconds': 120, 'work_seconds': 540, 'final_seconds': 600,
           'cleanup_seconds': 60, 'ping_seconds': 30, 'sample_age_seconds': 3}
 USB = {'vendor': '0781', 'product': '5591'}

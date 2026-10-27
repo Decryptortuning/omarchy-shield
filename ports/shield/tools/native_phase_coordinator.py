@@ -42,9 +42,30 @@ FDT_PROPERTIES = [('/', 'compatible', 's'), ('/', 'nvidia,dtsfilename', 's'),
 def now(): return time.monotonic_ns()
 
 
+def legacy_shell_text(raw):
+  """Canonicalize only the external ADB shell text boundary, never binary I/O."""
+  require(type(raw) is bytes, 'Legacy shell output must be bytes')
+  text = raw.decode('ascii').replace('\r\n', '\n')
+  require('\r' not in text, 'Bare carriage return in legacy shell text')
+  return text.strip()
+
+
+def legacy_shell_features(raw):
+  """Current `adb features` CLI emits one opaque feature name per line."""
+  require(type(raw) is bytes and len(raw) <= 8192, 'Invalid ADB feature output budget/type')
+  text = raw.decode('ascii').replace('\r\n', '\n')
+  require('\r' not in text, 'Bare carriage return in ADB features')
+  rows = text.split('\n')
+  if rows[-1] == '': rows.pop()
+  require(len(rows) <= 256 and len(rows) == len(set(rows))
+          and all(re.fullmatch('[A-Za-z0-9_.-]{1,128}', row) for row in rows),
+          'Malformed one-feature-per-line ADB output')
+  return frozenset(rows)
+
+
 def legacy_available_bytes(text):
   # adb shell on the verified Windows/recovery route emits CRLF. Parse text
-  # lines here; never normalize the binary exec-in/exec-out byte streams.
+  # lines here; never normalize the binary exec-out byte streams.
   require(type(text) is str and text.isascii(), 'Invalid legacy memory text')
   lines = [line for line in text.splitlines() if line.startswith('MemAvailable:')]
   require(len(lines) == 1, 'Missing or duplicate legacy MemAvailable')
@@ -56,24 +77,38 @@ def legacy_available_bytes(text):
 
 
 def legacy_stage_command(name, size, expected_sha256):
-  # adb exec-in's local process completion is not remote child completion.
+  # A local pipe completion is not remote delivery. The sole staging wire
+  # is base64 ASCII; decode to the original binary, verify and seal the
+  # closed file, then emit the ACK before the host may close stdin.
   # A bounded reader exits after these exact immutable bytes. The shell waits
   # for that child and its redirected output to close before creating the
-  # exclusive completion marker. Never wait for transport EOF to finish cat.
+  # complete pending record before publishing its final name with a no-replace
+  # hard link. Existence of the final marker must imply complete bytes, even
+  # while the uploader's remote shell is still exiting. Keep the pending link as
+  # evidence; only the marker has two links, never the staged artifact.
+  # The private 0700 staging directory has one writer; explicit absence checks
+  # reject preexisting directories/symlinks before ordinary ln can follow them.
+  # Never wait for transport EOF to finish cat.
   require(type(name) is str and name in {'Image', 'initramfs.cpio.gz', 'board.dtb',
     'cmdline.txt', 'kexec', 'legacy-watchdog-exec', 'legacy-handoff.sh', 'legacy-boot-id'},
     'Unknown fixed staging artifact')
   require(type(size) is int and 0 < size <= 384 * 1024**2, 'Invalid staged byte count')
   sha(expected_sha256)
+  encoded_size = 4 * ((size + 2) // 3)
   target = RAM + '/' + name
   marker = target + '.closed'
+  pending = marker + '.pending'
   expected = 'NATIVE_STAGE_CLOSED_V1 ' + str(size) + ' ' + expected_sha256
-  command = ('umask 077; set -C; /system/bin/toybox head -c ' + str(size) + ' > ' + target +
+  command = ('umask 077; set -C; /system/bin/toybox head -c ' + str(encoded_size) +
+    ' | /system/bin/toybox base64 -d > ' + target +
     ' && test "$(/system/bin/toybox stat -c %s ' + target + ')" = ' + str(size) +
     ' && test "$(/system/bin/toybox sha256sum ' + target + ')" = ' +
     shlex.quote(expected_sha256 + '  ' + target) +
     " && printf '%s %s\\n' " + shlex.quote(expected) +
-    ' "$(/system/bin/toybox stat -c \'%d %i\' ' + target + ')" > ' + marker)
+    ' "$(/system/bin/toybox stat -c \'%d %i\' ' + target + ')" > ' + pending +
+    ' && test ! -e ' + marker + ' && test ! -L ' + marker +
+    ' && /system/bin/toybox ln ' + pending + ' ' + marker +
+    " && /system/bin/toybox printf '%s\\n' " + shlex.quote('SHIELD_STAGE_INPUT_CONFIRMED ' + str(size) + ' ' + expected_sha256))
   return command, marker, expected
 
 
@@ -81,14 +116,30 @@ def check(deadline):
   require(type(deadline) is int and 0 < now() < deadline, 'Outer phase deadline exhausted')
 
 
-def run_owned(argv, cutoff, *, data=None, budget=1024**2, readonly_until=None):
-  """Bounded pipes and positive wait; only fixed internal callers choose argv.
+class OwnedClientError(ValueError):
+  """Actual local client failure facts; never a remote completion or retry grant."""
+  def __init__(self, cause, status, waited, stdout, stderr, written, acknowledged):
+    super().__init__('Owned client failed; no effect replay')
+    self.cause_type = type(cause).__name__
+    self.actual_wait_exit, self.positive_wait_observed = status, waited
+    self.stdout, self.stderr = stdout, stderr
+    self.input_bytes_written, self.input_ack_observed = written, acknowledged
 
-  readonly_until is used ONLY for the owned read-only runner-log tail. Seeing
-  that fixed marker stops/reaps this local client; it is not job completion.
-  No input prefix is replayed after any uncertain transfer.
+
+def run_owned(argv, cutoff, *, data=None, budget=1024**2, readonly_until=None, input_ack=None):
+  """Own one bounded client. Binary input requires an explicit remote ACK.
+
+  Keep stdin OPEN after the final local write until the complete remote ACK.
+  A local pipe write/exit cannot establish remote delivery. Shell-v2 provides
+  the ACK and remote exit on a separate output path; no exec-in fallback.
   """
   check(cutoff)
+  require((data is None and input_ack is None) or
+          (type(data) is bytes and len(data) > 0 and type(input_ack) is bytes
+           and 0 < len(input_ack) <= 4096 and input_ack.isascii()
+           and input_ack.endswith(b'\n') and input_ack.count(b'\n') == 1
+           and b'\r' not in input_ack and readonly_until is None),
+          'Binary input requires one exact remote acknowledgement')
   require(len(os.listdir('/proc/self/task')) == 1 and signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL,
           'Owned client requires a single waitable process owner')
   process = subprocess.Popen(argv, stdin=subprocess.PIPE if data is not None else subprocess.DEVNULL,
@@ -96,44 +147,62 @@ def run_owned(argv, cutoff, *, data=None, budget=1024**2, readonly_until=None):
   outputs = {process.stdout.fileno(): bytearray(), process.stderr.fileno(): bytearray()}
   pending = set(outputs)
   input_fd = process.stdin.fileno() if data is not None else None
-  cursor = 0
+  cursor, acknowledged, waited, status = 0, False, False, None
   event_seen = False
   try:
     for fd in pending | ({input_fd} if input_fd is not None else set()): os.set_blocking(fd, False)
     while pending or input_fd is not None:
       check(cutoff)
-      reads, writes, _ = select.select(list(pending), [input_fd] if input_fd is not None else [], [],
+      # Once all bytes are accepted locally, retain the descriptor but stop
+      # selecting it for writes. EOF is released only after the remote ACK.
+      writes = [input_fd] if input_fd is not None and cursor < len(data) else []
+      reads, ready_writes, _ = select.select(list(pending), writes, [],
                                       min(0.25, max(0, (cutoff - now()) / SECOND)))
       check(cutoff)
-      if input_fd is not None and input_fd in writes:
-        if cursor == len(data): process.stdin.close(); input_fd = None
-        else:
-          try: count = os.write(input_fd, data[cursor:cursor + 65536])
-          except BlockingIOError: count = 0
-          require(0 <= count <= min(65536, len(data) - cursor), 'Unknown staging write count')
-          cursor += count
+      if input_fd is not None and input_fd in ready_writes:
+        try: count = os.write(input_fd, data[cursor:cursor + 65536])
+        except BlockingIOError: count = 0
+        require(0 <= count <= min(65536, len(data) - cursor), 'Unknown staging write count')
+        cursor += count
       for fd in reads:
         try: chunk = os.read(fd, min(65536, budget + 1 - len(outputs[fd])))
         except BlockingIOError: continue
         if not chunk: pending.remove(fd); continue
         outputs[fd].extend(chunk)
         require(len(outputs[fd]) <= budget, 'Owned client output budget')
+      if input_ack is not None:
+        observed = bytes(outputs[process.stdout.fileno()])
+        # These are the same external LF/CRLF text boundary, not protocol versions.
+        forms = (input_ack, input_ack.replace(b'\n', b'\r\n'))
+        require(any(form.startswith(observed) for form in forms), 'Unexpected staging acknowledgement')
+        if observed in forms:
+          require(cursor == len(data), 'Acknowledgement preceded complete local input')
+          acknowledged = True
+          if input_fd is not None: process.stdin.close(); input_fd = None
+        if not pending and not acknowledged and input_fd is not None:
+          # Terminal output EOF without ACK is already a failed transfer.
+          # Close input only for failure cleanup, then observe the natural
+          # exit before classifying it. Do not race a zero exit with kill().
+          process.stdin.close(); input_fd = None
       if readonly_until is not None and readonly_until in outputs[process.stdout.fileno()]:
         require(data is None, 'No early stop of an effectful input transfer')
         event_seen = True
-        process.terminate()  # Only our still-owned read-only log client.
+        process.terminate()
         break
     check(cutoff)
     status = process.wait(timeout=min(2, max(0, (cutoff - now()) / SECOND)))
+    waited = True
     check(cutoff)
     require(event_seen or status == 0, 'Owned client failed; no effect replay')
-    require(data is None or cursor == len(data), 'Incomplete staging transfer')
+    require(data is None or (cursor == len(data) and acknowledged
+            and not outputs[process.stderr.fileno()]), 'Unconfirmed staging input or stderr')
     return bytes(outputs[process.stdout.fileno()]), bytes(outputs[process.stderr.fileno()])
-  except BaseException:
+  except BaseException as cause:
     if process.poll() is None: process.kill()
-    try: process.wait(timeout=1)
+    try: status = process.wait(timeout=1); waited = True
     except subprocess.TimeoutExpired: pass
-    raise
+    raise OwnedClientError(cause, status, waited, bytes(outputs[process.stdout.fileno()]),
+      bytes(outputs[process.stderr.fileno()]), cursor, acknowledged) from cause
   finally:
     for stream in [process.stdin, process.stdout, process.stderr]:
       if stream is not None: stream.close()
@@ -259,17 +328,65 @@ class Coordinator:
             and signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL,
             'Only the original single-threaded outer owner may commit or cancel')
 
-  def adc(self, arguments, *, data=None, seconds=20, budget=1024**2, readonly_until=None):
-    check(self.deadline)
-    if self.expected_legacy_boot is not None and arguments[0] in {'shell', 'exec-in', 'exec-out'}:
-      command = arguments[1] if len(arguments) == 2 else ' '.join(shlex.quote(item) for item in arguments[1:])
-      command = ('test "$(cat /proc/sys/kernel/random/boot_id)" = ' +
+  def guarded_legacy_command(self, command):
+    if self.expected_legacy_boot is not None:
+      return ('test "$(cat /proc/sys/kernel/random/boot_id)" = ' +
         shlex.quote(self.expected_legacy_boot) + ' && ( ' + command + ' )')
-      arguments = [arguments[0], command]
-    return run_owned([str(ADB), '-s', self.serial, *arguments], min(now() + seconds * SECOND, self.deadline),
-                     data=data, budget=budget, readonly_until=readonly_until)[0]
+    return command
 
-  def shell(self, command, **options): return self.adc(['shell', command], **options).decode('ascii').strip()
+  def client_failure(self, operation, failure):
+    if self.journal is None or now() >= self.deadline: return
+    value = {'operation': operation, 'cause_type': failure.cause_type,
+      'actual_wait_exit': failure.actual_wait_exit,
+      'positive_wait_observed': failure.positive_wait_observed,
+      'input_bytes_written': failure.input_bytes_written,
+      'input_ack_observed': failure.input_ack_observed, 'replay_allowed': False}
+    for name, raw in [('stdout', failure.stdout), ('stderr', failure.stderr)]:
+      value[name + '_bytes'] = len(raw)
+      value[name + '_sha256'] = hashlib.sha256(raw).hexdigest()
+      value[name + '_preview_hex'] = raw[:8192].hex()
+    try: self.record('owned-client-failure.json', value)
+    except BaseException: pass  # Do not replace the actual failure or extend its deadline.
+
+  def adc(self, arguments, *, seconds=20, budget=1024**2, readonly_until=None):
+    check(self.deadline)
+    if arguments[0] in {'shell', 'exec-out'}:
+      command = arguments[1] if len(arguments) == 2 else ' '.join(shlex.quote(item) for item in arguments[1:])
+      arguments = [arguments[0], self.guarded_legacy_command(command)]
+    try:
+      return run_owned([str(ADB), '-s', self.serial, *arguments], min(now() + seconds * SECOND, self.deadline),
+                       budget=budget, readonly_until=readonly_until)[0]
+    except OwnedClientError as failure:
+      self.client_failure(arguments[0], failure)
+      raise
+
+  def upload(self, name, raw):
+    require(self.expected_legacy_boot is not None and type(raw) is bytes, 'Fixed recovery boot and immutable bytes required before upload')
+    command, marker, expected = legacy_stage_command(name, len(raw), hashlib.sha256(raw).hexdigest())
+    acknowledgement = ('SHIELD_STAGE_INPUT_CONFIRMED ' + str(len(raw)) + ' ' +
+                       hashlib.sha256(raw).hexdigest() + '\n').encode('ascii')
+    # Client flags stay client-side. adc() deliberately only wraps command-only
+    # shell callers; passing -T through it would put options inside the command.
+    bounded = '/system/bin/toybox timeout -k 1 55 /system/bin/sh -c ' + shlex.quote(command)
+    argv = [str(ADB), '-s', self.serial, 'shell', '-T', '-e', 'none',
+            self.guarded_legacy_command(bounded)]
+    # Windows shell stdin CRT mode is not assumed binary. This one current
+    # wire representation contains no control bytes or line endings. The
+    # device must decode, verify the original binary and ACK before EOF.
+    wire = base64.b64encode(raw)
+    try:
+      run_owned(argv, min(now() + 60 * SECOND, self.deadline), data=wire,
+                budget=8192, input_ack=acknowledgement)
+    except OwnedClientError as failure:
+      self.client_failure('acknowledged-stage-' + name, failure)
+      raise
+    self.record('stage-' + name + '-input-confirmed.json', {'input_bytes': len(raw),
+      'input_sha256': hashlib.sha256(raw).hexdigest(), 'wire_encoding': 'base64-ascii',
+      'wire_input_bytes': len(wire), 'remote_timeout_seconds': 55, 'remote_ack_observed': True,
+      'actual_local_wait_exit': 0, 'remote_shell_v2_exit': 0, 'stdin_EOF_after_ACK': True})
+    return marker, expected
+
+  def shell(self, command, **options): return legacy_shell_text(self.adc(['shell', command], **options))
 
   def record(self, name, value):
     write_once(self.journal.fd, name, canonical(value), self.deadline)
@@ -421,22 +538,27 @@ class Coordinator:
     for engine in CLIENTS:
       require(self.shell('/system/bin/toybox timeout -k 1 4 cat /sys/bus/platform/devices/' + engine +
         '/power/runtime_status') == 'suspended', 'Qualified legacy client is not suspended')
+    raw_features = self.adc(['features'], seconds=10, budget=8192)
+    self.record('stage-shell-capability-source.json', {'stdout_bytes': len(raw_features),
+      'stdout_sha256': hashlib.sha256(raw_features).hexdigest(), 'stdout_hex': raw_features.hex()})
+    features = legacy_shell_features(raw_features)
+    require('shell_v2' in features, 'Acknowledged raw staging requires shell_v2')
+    self.record('stage-shell-capability.json', {'shell_v2_observed': True, 'raw_shell_client_flags': ['-T', '-e', 'none']})
     self.memory_guard()
     self.check_ram_stage(before=True)
     self.shell('test ! -e ' + RAM + ' && test ! -L ' + RAM + ' && mkdir -m 700 ' + RAM)
     for name, raw in self.files.items():
-      # stdin carries immutable bytes, avoiding a Windows read of private WSL
-      # file paths. A partial transfer is retained and never retried.
-      command, marker, expected = legacy_stage_command(name, len(raw), hashlib.sha256(raw).hexdigest())
-      self.adc(['exec-in', command], data=raw, seconds=60)
-      # This is bounded observation of the one upload, never an upload retry.
-      wait = 'while test ! -f ' + marker + '; do /system/bin/toybox sleep 0.05; done; cat ' + marker
-      closed = self.shell('/system/bin/toybox timeout -k 1 5 /system/bin/sh -c ' + shlex.quote(wait),
+      # One acknowledged raw-shell upload; immutable bytes never use Windows
+      # file paths, and a local pipe/exit cannot substitute for remote delivery.
+      marker, expected = self.upload(name, raw)
+      closed = self.shell('/system/bin/toybox timeout -k 1 5 cat ' + marker,
         seconds=8, budget=8192)
       identity = self.shell("/system/bin/toybox stat -c '%f %u %g %d %i %h %s' " + RAM + '/' + name).split()
       require(len(identity) == 7 and identity[:3] == ['8180', '0', '0']
         and all(item.isdecimal() for item in identity[1:]) and identity[5:] == ['1', str(len(raw))],
         'Closed staged file identity differs')
+      self.record('stage-' + name + '-completion.json', {'observed_marker': closed,
+        'expected_marker': expected + ' ' + identity[3] + ' ' + identity[4], 'target_identity': identity})
       require(closed == expected + ' ' + identity[3] + ' ' + identity[4],
         'Remote staging writer completion or inode differs')
       require(self.shell('sha256sum ' + RAM + '/' + name).split() ==
