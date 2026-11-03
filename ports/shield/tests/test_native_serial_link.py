@@ -17,6 +17,7 @@ from native_control_protocol import Context, Session
 from native_serial_link import (BYTE_BUDGET, CLEANUP_DOMAIN, Framer, NativeLink,
   SECOND, cleanup_challenge)
 
+UTC_NS = 1_800_000_000_000_000_000
 KEY = b'\x01' * 32
 BOOT = '11111111-2222-4333-8444-555555555555'
 CONTEXT = Context('a' * 64, 'systemd', 'b' * 64, 'c' * 64)
@@ -48,7 +49,7 @@ class NativeSerialLinkTests(unittest.TestCase):
     self.flush()
     hello = self.peer.receive(self.host.recv(8192))
     self.host.sendall(self.peer.send('ACK', {'hello_body_sha256': hello.body_sha256})
-                     + self.peer.send('PING', {'challenge': 'e' * 64}))
+                     + self.peer.send('PING', {'utc_ns': UTC_NS, 'challenge': 'e' * 64}))
     self.link.drive_read()
 
   def handshake(self):
@@ -81,6 +82,22 @@ class NativeSerialLinkTests(unittest.TestCase):
     self.assertEqual(self.peer.receive(self.host.recv(8192)).payload['challenge'], 'e' * 64)
     events = self.link.take_events()
     self.assertEqual([event.kind for event in events], ['ready', 'pong-transferred'])
+
+  def test_ready_sample_is_bound_to_initial_complete_pong_only(self):
+    self.prepare_pong()
+    self.assertEqual(self.link.take_events(), ())
+    self.timestamp += SECOND
+    self.flush()
+    self.peer.receive(self.host.recv(8192))
+    initial = self.link.take_events()[0]
+    self.assertEqual((initial.utc_ns, initial.received_boottime_ns), (UTC_NS, SECOND))
+    self.host.sendall(self.peer.send('PING', {'challenge': 'f' * 64, 'utc_ns': UTC_NS + 50 * SECOND}))
+    self.link.drive_read(); self.flush()
+    self.peer.receive(self.host.recv(8192))
+    events = self.link.take_events()
+    self.assertEqual([event.kind for event in events], ['pong-transferred'])
+    self.assertTrue(all(event.utc_ns is None for event in events))
+    self.assertIsNone(self.link.initial_clock_sample)
 
   def test_streaming_probe_fragments_do_not_generate_partial_hello(self):
     frame = self.peer.send('PROBE', {'challenge': 'd' * 64})
@@ -152,7 +169,7 @@ class NativeSerialLinkTests(unittest.TestCase):
     self.assertEqual(challenge, hashlib.sha256(CLEANUP_DOMAIN + frame).hexdigest())
     self.assertEqual(challenge, cleanup_challenge(frame))
     self.assertEqual(self.link.take_events()[0].kind, 'evidence-transferred')
-    self.host.sendall(self.peer.send('PING', {'challenge': challenge}))
+    self.host.sendall(self.peer.send('PING', {'utc_ns': UTC_NS, 'challenge': challenge}))
     self.link.drive_read(); self.flush()
     self.assertEqual(self.peer.receive(self.host.recv(8192)).payload['challenge'], challenge)
     self.assertEqual(self.link.take_events()[0].challenge, challenge)

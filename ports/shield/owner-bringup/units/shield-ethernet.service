@@ -1,0 +1,12 @@
+[Unit]
+Description=Enable Shield PCIe Ethernet (Tegra210 host bridge + Realtek r8169)
+After=shield-owner-ready.service local-fs.target NetworkManager.service
+ConditionPathExists=/usr/lib/omarchy/shield/ethernet/pci-tegra.ko
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/sh -c 'echo "shield-ethernet: loading pci-tegra + r8169" > /dev/kmsg; /usr/bin/insmod /usr/lib/omarchy/shield/ethernet/pci-tegra.ko && /usr/bin/insmod /lib/modules/7.1.0-shield-bringup/kernel/drivers/net/ethernet/realtek/r8169.ko'
+
+[Install]
+WantedBy=multi-user.target

@@ -16,22 +16,107 @@ import subprocess
 import sys
 import time
 
+def worker_diagnostic(stage, error, *, command=None):
+  fd = None
+  try:
+    stages = ('worker-import', 'worker-main', 'worker-command', 'worker-exec', 'reaper-main')
+    if type(stage) is not str or stage not in stages:
+      return
+    public_stage = stages[stages.index(stage)]
+    names = ('ValueError', 'RuntimeError', 'OSError', 'PermissionError',
+        'FileNotFoundError', 'ProcessLookupError', 'TimeoutError',
+        'ChildProcessError', 'ImportError', 'ModuleNotFoundError',
+        'AttributeError', 'TypeError', 'KeyError', 'AssertionError',
+        'SystemExit', 'KeyboardInterrupt', 'MemoryError')
+    name = type(error).__name__
+    public_type = names[names.index(name)] if name in names else 'other'
+    number = error.errno if isinstance(error, OSError) else None
+    number = number if type(number) is int and 0 <= number <= 4095 else -1
+    fd = os.open('/dev/kmsg', os.O_WRONLY | os.O_NONBLOCK |
+          os.O_CLOEXEC | os.O_NOFOLLOW)
+    info = os.fstat(fd)
+    if (not stat.S_ISCHR(info.st_mode) or info.st_uid or info.st_gid or
+        info.st_rdev != os.makedev(1, 11) or info.st_mode & 0o022):
+      return
+    record = (f'<3>shield-worker stage={public_stage} error={public_type} '
+         f'errno={number}\n').encode('ascii')
+    if len(record) <= 240:
+      os.write(fd, record)  # One attempt, no retry/fsync.
+    if public_stage == 'worker-command' and command is not None:
+      # Public numeric identity only; never copy argv, output or exception text.
+      # This cannot select a command or change the original failure policy.
+      index = count = ordinal = child_status = 'unknown'
+      if type(command) is tuple and len(command) == 4:
+        sealed, arguments, attempted, observed = command
+        if (type(sealed) is frozenset and 0 < len(sealed) <= 128
+            and all(type(row) is tuple and row
+                    and all(type(value) is str for value in row) for row in sealed)
+            and type(arguments) is list and all(type(value) is str for value in arguments)
+            and tuple(arguments) in sealed):
+          count = len(sealed)
+          index = sorted(sealed).index(tuple(arguments)) + 1
+        if type(attempted) is int and 1 <= attempted <= 1024:
+          ordinal = attempted
+        if type(observed) is int and -64 <= observed <= 255:
+          child_status = observed
+      record = (f'<3>shield-worker-command index={index} count={count} '
+           f'ordinal={ordinal} status={child_status}\n').encode('ascii')
+      if len(record) <= 240:
+        os.write(fd, record)  # One bounded attempt; never retry or export raw logs.
+    allowed = ('maintenance-worker.py', 'native_worker_reaper.py',
+         'native_boot_context.py', 'native_phase_plan.py',
+         'native_work_guard.py', 'native_mounts.py',
+         'native_root_storage.py', 'usb_candidate_transaction.py',
+         'usb_root_profile.py', 'maintenance_accounts.py',
+         'guardian_binding.py', 'qualification_recovery.py',
+         'native_layer_reader.py', 'native_layer_writer.py',
+             'guardian_client.py', 'native_serial_link.py', 'native_control_protocol.py')
+    trace = error.__traceback__
+    for depth in range(8):  # Inspected links, including unlisted frames.
+      if trace is None:
+        break
+      code = trace.tb_frame.f_code
+      base = code.co_filename.rsplit('/', 1)[-1]
+      line = trace.tb_lineno
+      if (base in allowed and code.co_name != 'require' and
+          type(line) is int and 0 < line <= 99999):
+        public_file = allowed[allowed.index(base)]
+        record = (f'<3>shield-worker-fault stage={public_stage} '
+             f'file={public_file} line={line} depth={depth}\n').encode('ascii')
+        if len(record) <= 240:
+          os.write(fd, record)
+      trace = trace.tb_next
+  except BaseException:
+    pass  # Evidence failure must not replace immediate owner exit.
+  finally:
+    if fd is not None:
+      try:
+        os.close(fd)
+      except BaseException:
+        pass
+
+
 sys.path.insert(0, '/run/shield-native/runtime')
 sys.path.insert(1, '/usr/lib/omarchy/shield/qualification')
 
-from guardian_binding import INSTALL
-from maintenance_accounts import account_preimages
-from native_boot_context import (RUNTIME, USB_STORAGE, directory, filesystem_magic,
-  json_bytes, load, owned_bytes, plain)
-from native_layer_reader import read_layer
-from native_layer_writer import materialize
-from native_mounts import TOP, table
-from native_phase_plan import canonical, decode, load_plan, predecessor, read_raw_input
-from native_root_storage import number, usb_ancestor
-from native_work_guard import WorkGuard
-from qualification_recovery import filesystem_identity
-from usb_candidate_transaction import base_unchanged, default_subvolume, update_candidate
-from usb_root_profile import admit_payload, require, verify_root
+try:
+  from guardian_binding import INSTALL
+  from maintenance_accounts import account_preimages
+  from native_boot_context import (RUNTIME, USB_STORAGE, directory, filesystem_magic,
+    json_bytes, load, owned_bytes, plain)
+  from native_layer_reader import read_layer
+  from native_layer_writer import materialize
+  from native_mounts import TOP, table
+  from native_phase_plan import canonical, decode, load_plan, predecessor, read_raw_input
+  from native_root_storage import number, usb_ancestor
+  from native_work_guard import WorkGuard
+  from qualification_recovery import filesystem_identity
+  from usb_candidate_transaction import base_unchanged, default_subvolume, update_candidate
+  from usb_root_profile import admit_payload, require, verify_root
+except BaseException as error:
+  worker_diagnostic('worker-import', error)
+  raise  # Preserve the original uncaught import failure and exit status.
+
 
 WORK = Path('/run/shield-worker')
 PACKAGES = Path('/run/shield-native/packages')
@@ -83,6 +168,38 @@ def peer(pid, argv):
     os.close(descriptor); raise
 
 
+
+def fd_mount_id(descriptor):
+  """Bind an owned open directory to the mountinfo/job mount-ID domain.
+
+  Btrfs getattr reports a per-root anonymous device, while mountinfo reports
+  the superblock device. Neither value is the physical USB device identity.
+  The kernel exposes the matching mount identifier through this owned FD.
+  """
+  require(type(descriptor) is int and 0 <= descriptor <= 0x7fffffff,
+          'Invalid owned mount descriptor')
+  info_fd = os.open('/proc/self/fdinfo/' + str(descriptor),
+                    os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
+  try:
+    info = os.fstat(info_fd)
+    require(stat.S_ISREG(info.st_mode) and info.st_uid == info.st_gid == 0
+            and not info.st_mode & 0o022 and filesystem_magic(info_fd) == 0x9fa0,
+            'Owned kernel FD metadata required')
+    raw = os.read(info_fd, 4097)
+    require(0 < len(raw) <= 4096 and raw.endswith(b'\n') and raw.isascii()
+            and b'\0' not in raw and b'\r' not in raw, 'Incomplete kernel FD metadata')
+    rows = [line for line in raw.split(b'\n') if line.startswith(b'mnt_id:')]
+    prefix = b'mnt_id:\t'
+    require(len(rows) == 1 and rows[0].startswith(prefix), 'Ambiguous kernel mount identifier')
+    value = rows[0][len(prefix):]
+    require(0 < len(value) <= 10 and value.isdigit()
+            and str(int(value)).encode('ascii') == value
+            and 0 < int(value) <= 0x7fffffff, 'Invalid kernel mount identifier')
+    return int(value)
+  finally:
+    os.close(info_fd)
+
+
 def top_identity(bundle, job):
   entries = [row for row in table() if row['path'] == str(TOP)]
   require(len(entries) == 1, 'Owned top mount is ambiguous')
@@ -93,20 +210,35 @@ def top_identity(bundle, job):
           and not any(x.startswith('rescue=') for x in row['super_options'])
           and 'compress=zstd:1' in row['super_options'], 'Wrong maintenance top posture')
   directory(TOP)
-  mounted = os.stat(TOP)
-  require(row['dev'] == f'{os.major(mounted.st_dev)}:{os.minor(mounted.st_dev)}',
-          'Mount table differs from actual Btrfs view')
-  source = Path(row['source']).resolve(strict=True)
-  info = source.lstat()
-  require(source.is_relative_to(Path('/dev')) and stat.S_ISBLK(info.st_mode), 'Wrong USB source node')
-  node = (Path('/sys/dev/block') / f'{os.major(info.st_rdev)}:{os.minor(info.st_rdev)}').resolve(strict=True)
-  require(node.is_relative_to(Path('/sys/devices'))
-          and usb_ancestor(node, bundle.profile['filesystem']['usb']) is not None
-          and number(node / 'partition') == USB_STORAGE['partition_index']
-          and number(node / 'start') * 512 == USB_STORAGE['partition_start_bytes']
-          and number(node / 'size') * 512 == USB_STORAGE['partition_bytes']
-          and number(node.parent / 'size') * 512 == USB_STORAGE['disk_bytes'], 'Wrong selected USB geometry/host')
-  filesystem_identity(TOP, bundle.profile['filesystem']['uuid'])
+  descriptor = os.open(TOP, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC)
+  try:
+    mounted = os.fstat(descriptor)
+    require(stat.S_ISDIR(mounted.st_mode) and mounted.st_uid == mounted.st_gid == 0
+            and not mounted.st_mode & 0o022 and fd_mount_id(descriptor) == row['id'],
+            'Owned top FD mount identifier differs')
+    current = os.stat(TOP, follow_symlinks=False)
+    require(stat.S_ISDIR(current.st_mode)
+            and (mounted.st_dev, mounted.st_ino) == (current.st_dev, current.st_ino),
+            'Owned top path changed after opening')
+    source = Path(row['source']).resolve(strict=True)
+    info = source.lstat()
+    require(source.is_relative_to(Path('/dev')) and stat.S_ISBLK(info.st_mode), 'Wrong USB source node')
+    node = (Path('/sys/dev/block') / f'{os.major(info.st_rdev)}:{os.minor(info.st_rdev)}').resolve(strict=True)
+    require(node.is_relative_to(Path('/sys/devices'))
+            and usb_ancestor(node, bundle.profile['filesystem']['usb']) is not None
+            and number(node / 'partition') == USB_STORAGE['partition_index']
+            and number(node / 'start') * 512 == USB_STORAGE['partition_start_bytes']
+            and number(node / 'size') * 512 == USB_STORAGE['partition_bytes']
+            and number(node.parent / 'size') * 512 == USB_STORAGE['disk_bytes'], 'Wrong selected USB geometry/host')
+    filesystem_identity(TOP, bundle.profile['filesystem']['uuid'])
+    # The held FD and the path can name the same Btrfs inode through different
+    # bind mounts. Recheck the mount identifier and posture after source/UUID
+    # admission; inode equality alone does not bind that final mount view.
+    final = [entry for entry in table() if entry['path'] == str(TOP)]
+    require(len(final) == 1 and final[0] == row,
+            'Owned top mount changed during identity admission')
+  finally:
+    os.close(descriptor)
 
 
 def command_set(phase, maintenance, manifest):
@@ -150,6 +282,7 @@ class Execute:
   def __init__(self, allowed, guard):
     self.allowed, self.guard = allowed, guard
     self.running = False
+    self.attempted = 0
 
   def __call__(self, arguments):
     require(type(arguments) is list and all(type(x) is str for x in arguments)
@@ -160,6 +293,8 @@ class Execute:
     require(0 < started < cutoff, 'No existing command allowance')
     program = arguments[0] if arguments[0] == '/usr/bin/bsdtar' else '/usr/bin/' + arguments[0]
     self.running = True
+    self.attempted += 1
+    status = None  # Only the original poll below can establish a child status.
     try:
       log = os.open(WORK / 'worker-command.log', os.O_WRONLY | os.O_CREAT | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
       info = os.fstat(log)
@@ -205,7 +340,9 @@ class Execute:
       require(now() < cutoff, 'Command finished outside original allowance')
       self.guard()
       result = bytes(raw).decode('ascii') if arguments[:3] == ['btrfs', 'subvolume', 'get-default'] else bytes(raw).decode('utf-8', errors='replace')
-    except BaseException:
+    except BaseException as error:
+      worker_diagnostic('worker-command', error,
+        command=(self.allowed, arguments, self.attempted, status))
       # No killpg, retries, or unwinding into the core's mount cleanup. PID1
       # observes master failure, kills its cgroup ONCE, and reaps descendants.
       os._exit(75)
@@ -318,4 +455,6 @@ def main():
 
 if __name__ == '__main__':
   try: main()
-  except BaseException: os._exit(75)
+  except BaseException as error:
+    worker_diagnostic('worker-main', error)
+    os._exit(75)

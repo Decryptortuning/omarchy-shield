@@ -15,7 +15,7 @@ import struct
 from native_layer_reader import LayerContent, LayerPin
 from maintenance_accounts import ACCOUNT_NAMES, validate_accounts
 from native_layer_writer import (FIVE, MAX_PROFILE, PURPOSE, Roots,
-  WriterPin, admit, canonical, identity_schema, observe, plain)
+  WriterPin, admit, canonical, identity_schema, observe, plain, require_existing_ancestor)
 from usb_root_profile import require
 
 WITNESS_PURPOSE = 'read-only VM expected-A content witness'
@@ -79,6 +79,10 @@ def collect(content, layer_pin, root_fd, home_fd, original_fd, *, guard_check):
     roots = {name: observe(fd, None, guard_check)
              for name, fd in [('root', root_fd), ('home', home_fd)]}
     entries = {name: candidate.observe(name) for name in sorted(manifest['entries'])}
+    # Reject an impossible writer contract while this is still a read-only witness.
+    for name, row in manifest['entries'].items():
+      guard_check()
+      require_existing_ancestor(row, entries[name])
     before, originals = {}, {}
     for name in sorted(ACCOUNT_NAMES):
       expected, data = original.observe(name, data=True)
@@ -159,3 +163,51 @@ def finalize(witness_raw, expected_witness_sha256, content, layer_pin, publicati
     value['filesystem_uuid'], phase_a_plan_sha256, publication.predecessor_sha256, original_accounts_sha256)
   admit(content, pin, result)
   return result, pin
+
+
+def finalize_audited_completed(witness_raw, expected_witness_sha256, content, layer_pin, completion,
+             phase_a_plan_sha256, original_accounts_sha256):
+  """Finalize after separately granted closed-A admission and fresh secure recovery."""
+  from native_attempt_journal import AuditedCompletedPreparation
+  from native_phase_plan import RECEIPT_FIELDS, decode
+  require(type(completion) is AuditedCompletedPreparation, 'Distinct audited completed-A authority required')
+  try:
+    completion.begin_finalization(expected_witness_sha256, layer_pin)
+    require(type(witness_raw) is bytes and digest(witness_raw) == expected_witness_sha256,
+            'Witness pin differs')
+    value = decode(witness_raw)
+    require(canonical(value) == witness_raw and set(value) == {'format_version', 'purpose',
+      'candidate_id', 'filesystem_uuid', 'layer', 'original_accounts', 'original_accounts_sha256',
+      'roots', 'entries', 'source_mounted_readonly', 'physical_preimages_admitted', 'boot_ready'}
+      and type(value['format_version']) is int and value['format_version'] == 1
+      and value['purpose'] == WITNESS_PURPOSE and value['source_mounted_readonly'] is True
+      and value['physical_preimages_admitted'] is False and value['boot_ready'] is False,
+      'Wrong read-only witness')
+    raw = completion.predecessor_raw
+    receipt = decode(raw)
+    require(digest(raw) == completion.predecessor_sha256 and set(receipt) == RECEIPT_FIELDS
+            and receipt['purpose'] == 'native preparation completion'
+            and receipt['state'] == 'RELEASED_AND_RECOVERED' and receipt['phase'] == 'packages'
+            and receipt['candidate_id'] == value['candidate_id']
+            and receipt['filesystem_uuid'] == value['filesystem_uuid']
+            and receipt['payload_manifest_sha256'] == layer_pin.payload_manifest_sha256
+            and receipt['plan_sha256'] == phase_a_plan_sha256
+            and receipt['clean_usb_release'] is True
+            and receipt['authenticated_recovery_observed'] is True
+            and receipt['recovery_observation_sha256'] == completion.recovery_observation_sha256
+            and receipt['boot_ready'] is False and receipt['physical_powerloss_qualified'] is False,
+            'Actual phase-A completion does not match witness')
+    require(value['original_accounts_sha256'] == original_accounts_sha256,
+            'Witness original accounts differ from maintenance plan')
+    profile = {key: value[key] for key in ['candidate_id', 'filesystem_uuid', 'layer',
+      'original_accounts', 'original_accounts_sha256', 'roots', 'entries']}
+    profile.update(format_version=1, purpose=PURPOSE,
+      phase_a_plan_sha256=phase_a_plan_sha256, phase_a_receipt_sha256=completion.predecessor_sha256)
+    result = canonical(profile)
+    pin = WriterPin(layer_pin, digest(result), len(result), value['candidate_id'],
+      value['filesystem_uuid'], phase_a_plan_sha256, completion.predecessor_sha256, original_accounts_sha256)
+    admit(content, pin, result)
+    completion.note_finalized(result)
+    return result, pin
+  finally:
+    completion.close()

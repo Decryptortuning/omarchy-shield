@@ -274,6 +274,22 @@ class LayerWriterFilesystemTests(unittest.TestCase):
     with self.assertRaises(ValueError): self.run_writer()
     self.assertFalse((self.journal / CID).exists())
 
+  def test_shared_ancestor_preflight_rejects_missing_and_changed_identity(self):
+    row = self.entries['usr']
+    writer.require_existing_ancestor(row, row['identity'])
+    changed = {**row['identity'], 'mode': row['identity']['mode'] ^ 0o020}
+    for expected in [None, changed]:
+      with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, 'Ancestor-only'):
+        writer.require_existing_ancestor(row, expected)
+    self.assertFalse((self.journal / CID).exists())
+
+  def test_explicit_overlay_parent_is_distinct_from_existing_only_ancestor(self):
+    row = {**self.entries['usr'], 'roles': ['ancestor', 'overlay']}
+    writer.require_existing_ancestor(row, None)
+    with self.assertRaisesRegex(ValueError, 'Ancestor-only'):
+      writer.require_existing_ancestor({**row, 'roles': ['ancestor']}, None)
+    self.assertFalse((self.journal / CID).exists())
+
   def test_symlink_parent_cannot_escape_supplied_root(self):
     outside = self.root.parent / 'outside'; outside.mkdir()
     (outside / 'passwd').write_bytes(b'outside sentinel')

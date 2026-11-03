@@ -1,0 +1,77 @@
+--- board.pcie336.v1.dts	2026-11-02 17:00:03.691236539 -0700
++++ board.v2.dts	2026-11-02 17:00:03.693190369 -0700
+@@ -202,11 +202,14 @@
+ 		vddio-pex-ctl-supply = <0x06>;
+ 
+ 		pci@1,0 {
++			nvidia,disable-aspm-states = <0x0f>;
++			phy-names = "pcie-0\0pcie-1\0pcie-2\0pcie-3";
++			phys = <0x71 0x72 0x73 0x74>;
+ 			device_type = "pci";
+ 			assigned-addresses = <0x82000800 0x00 0x1000000 0x00 0x1000>;
+ 			reg = <0x800 0x00 0x00 0x00 0x00>;
+ 			bus-range = <0x00 0xff>;
+-			status = "disabled";
++			status = "okay";
+ 			#address-cells = <0x03>;
+ 			#size-cells = <0x02>;
+ 			ranges;
+@@ -214,6 +217,7 @@
+ 		};
+ 
+ 		pci@2,0 {
++			nvidia,disable-aspm-states = <0x0f>;
+ 			device_type = "pci";
+ 			assigned-addresses = <0x82001000 0x00 0x1001000 0x00 0x1000>;
+ 			reg = <0x1000 0x00 0x00 0x00 0x00>;
+@@ -2217,10 +2221,11 @@
+ 		resets = <0x03 0x41>;
+ 		dmas = <0x23 0x13 0x23 0x13>;
+ 		dma-names = "rx\0tx";
+-		status = "disabled";
++		status = "okay";
+ 		reset-names = "serial";
+ 
+ 		bluetooth {
++			max-speed = <0x2dc6c0>;
+ 			compatible = "brcm,bcm43540-bt";
+ 			device-wakeup-gpios = <0x1e 0x3b 0x00>;
+ 			shutdown-gpios = <0x1e 0x3c 0x00>;
+@@ -2869,7 +2874,7 @@
+ 		resets = <0x03 0x7d 0x03 0x80 0x03 0x6f>;
+ 		reset-names = "hda\0hda2hdmi\0hda2codec_2x";
+ 		power-domains = <0x0a>;
+-		status = "disabled";
++		status = "okay";
+ 		nvidia,model = "NVIDIA SHIELD TV HDA";
+ 	};
+ 
+@@ -2978,24 +2983,28 @@
+ 					};
+ 
+ 					pcie-1 {
++						phandle = <0x71>;
+ 						status = "okay";
+ 						#phy-cells = <0x00>;
+ 						nvidia,function = "pcie-x4";
+ 					};
+ 
+ 					pcie-2 {
++						phandle = <0x72>;
+ 						status = "okay";
+ 						#phy-cells = <0x00>;
+ 						nvidia,function = "pcie-x4";
+ 					};
+ 
+ 					pcie-3 {
++						phandle = <0x73>;
+ 						status = "okay";
+ 						#phy-cells = <0x00>;
+ 						nvidia,function = "pcie-x4";
+ 					};
+ 
+ 					pcie-4 {
++						phandle = <0x74>;
+ 						status = "okay";
+ 						#phy-cells = <0x00>;
+ 						nvidia,function = "pcie-x4";

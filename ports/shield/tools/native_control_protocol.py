@@ -33,7 +33,7 @@ callers require that round trip before any workload. Payloads are EXACTLY:
   native HELLO: {kernel_release: "7.1.0-shield-bringup", boottime_ns: positive int,
                  probe_challenge: the verified PROBE challenge}
   host ACK:     {hello_body_sha256: lowercase 64-hex digest}
-  host PING:    {challenge: lowercase 64-hex value}
+  host PING:    {challenge: lowercase 64-hex value, utc_ns: supported UTC int}
   native PONG: {challenge: the outstanding PING, boottime_ns: positive int}
   host ABORT:   {reason: one member of ABORT_REASONS}
   native EVIDENCE and RESULT: {observations: JSON object}
@@ -85,6 +85,13 @@ MAX_ITEMS = 2048
 MAX_STRING_CHARS = 4096
 MAX_INTEGER = (1 << 63) - 1
 MAC_DOMAIN = b"shield-native-control/SNCP1/v1\x00"
+# Calendar policy, not an assertion that an authenticated HOST clock is correct.
+UTC_MIN_NS = 1_577_836_800_000_000_000  # 2020-01-01 inclusive.
+UTC_MAX_NS = 4_102_444_800_000_000_000  # 2100-01-01 exclusive.
+
+
+def valid_utc_ns(value):
+  return type(value) is int and UTC_MIN_NS <= value < UTC_MAX_NS
 KERNEL_RELEASE = "7.1.0-shield-bringup"
 ABORT_REASONS = frozenset({"operator", "deadline", "health", "protocol", "transport", "evidence"})
 
@@ -243,7 +250,7 @@ def _payload(direction, kind, value):
   fields = {
     "PROBE": {"challenge"},
     "HELLO": {"kernel_release", "boottime_ns", "probe_challenge"},
-    "ACK": {"hello_body_sha256"}, "PING": {"challenge"},
+    "ACK": {"hello_body_sha256"}, "PING": {"challenge", "utc_ns"},
     "PONG": {"challenge", "boottime_ns"}, "ABORT": {"reason"},
     "EVIDENCE": {"observations"}, "RESULT": {"observations"},
   }
@@ -254,6 +261,8 @@ def _payload(direction, kind, value):
     _need(_hex(value["probe_challenge"]), "Wrong PROBE challenge")
   if kind in {"HELLO", "PONG"}:
     _need(_positive(value["boottime_ns"]), "Wrong boot timestamp")
+  if kind == "PING":
+    _need(valid_utc_ns(value["utc_ns"]), "Unsupported UTC timestamp")
   if kind == "ACK":
     _need(_hex(value["hello_body_sha256"]), "Wrong HELLO digest")
   if kind in {"PROBE", "PING", "PONG"}:

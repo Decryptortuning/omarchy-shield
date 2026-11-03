@@ -137,7 +137,8 @@ class Recovery:
       # PID1 unregisters this still-owned fd and observes the pinned pidfd/wait
       # without polling the EOF stream. close() ultimately relinquishes it.
       return self._pending_loss({'event': 'guardian-disconnected'})
-    require(not ancillary and not flags and len(data) == REQUEST.size,
+    # Linux echoes the requested CLOEXEC input flag; every other output flag is invalid.
+    require(not ancillary and not (flags & ~socket.MSG_CMSG_CLOEXEC) and len(data) == REQUEST.size,
             'Wrong guardian recovery packet')
     magic, version, operation, fault, candidate, boot = REQUEST.unpack(data)
     require(magic == MAGIC and version == VERSION

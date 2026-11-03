@@ -1,0 +1,13 @@
+/dts-v1/;
+/plugin/;
+/ {
+ fragment@0 { target-path = "/pcie@1003000/pci@1,0"; __overlay__ {
+   status = "okay";
+   phys = <0 0 0 0>;
+   phy-names = "pcie-0", "pcie-1", "pcie-2", "pcie-3";
+   nvidia,disable-aspm-states = <0x0f>;
+ }; };
+ fragment@1 { target-path = "/pcie@1003000/pci@2,0"; __overlay__ {
+   nvidia,disable-aspm-states = <0x0f>;
+ }; };
+};

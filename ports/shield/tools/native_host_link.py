@@ -48,7 +48,8 @@ RECEIPT_FIELDS = frozenset({'phase', 'boot_ready', 'candidate', 'reason',
 HANDOFF_FIELDS = frozenset({'kind', 'root_session_id', 'candidate_id', 'filesystem_uuid',
   'payload_manifest_sha256', 'layer_manifest_sha256', 'phase_a_receipt_sha256',
   'phase_b_receipt_sha256', 'original_default', 'ram_children_reaped',
-  'watchdog_opened', 'source_root_verified', 'boottime_ns'})
+  'watchdog_opened', 'source_root_verified', 'immutable_layer_postimages_verified',
+  'user_home_boundary_verified', 'user_home_contents_verified', 'boottime_ns'})
 
 MAINTENANCE_FIELDS = frozenset({'kind', 'phase', 'candidate_id', 'filesystem_uuid',
   'payload_manifest_sha256', 'plan_sha256', 'worker_result_sha256', 'journal_sha256',
@@ -255,7 +256,7 @@ class HostLink:
 
   def __init__(self, context, key, bridge, deadline_ns, *, epoch, store=None,
                boot_id=None, handoff_pin=None, maintenance_pin=None, clock=now,
-               challenge_source=lambda: secrets.token_hex(32)):
+               challenge_source=lambda: secrets.token_hex(32), utc_clock=time.time_ns):
     require(type(bridge) is BridgeState and epoch in {'early', 'root'}
             and (epoch != 'root' or context.phase == 'systemd' and boot_id is not None)
             and type(deadline_ns) is int, 'Wrong host epoch/context/deadline')
@@ -274,7 +275,7 @@ class HostLink:
     else:
       require(handoff_pin is None and maintenance_pin is None and (store is None or epoch == 'root'
               and store.purpose == 'root-cleanup'), 'Wrong epoch receipt purpose')
-    self.clock, self.challenge_source = clock, challenge_source
+    self.clock, self.challenge_source, self.utc_clock = clock, challenge_source, utc_clock
     self.previous = clock()
     require(0 < self.previous < deadline_ns, 'Expired host deadline')
     self.deadline = deadline_ns
@@ -321,7 +322,9 @@ class HostLink:
 
   def _ping(self, challenge):
     require(self.ping_challenge is None, 'Outstanding host PING')
-    self._queue(self.session.send('PING', {'challenge': challenge}))
+    # The trusted HOST samples realtime at enqueue, after HELLO/ACK for the
+    # initial PING. This does not alter any monotonic deadline or lease.
+    self._queue(self.session.send('PING', {'challenge': challenge, 'utc_ns': self.utc_clock()}))
     self.ping_challenge = challenge
 
   def _target(self, timestamp):
@@ -405,6 +408,9 @@ class HostLink:
             and value['kind'] == 'systemd-handoff'
             and value['ram_children_reaped'] is True and value['watchdog_opened'] is False
             and value['source_root_verified'] is True
+            and value['immutable_layer_postimages_verified'] is True
+            and value['user_home_boundary_verified'] is True
+            and value['user_home_contents_verified'] is False
             and type(value['boottime_ns']) is int
             and self.target_ns <= value['boottime_ns'] < 100 * SECOND,
             'Wrong handoff fields, claims or native timestamp')

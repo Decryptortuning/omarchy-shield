@@ -1,0 +1,13 @@
+[Unit]
+Description=Apply Shield runtime device-tree overlays (HDMI audio, Bluetooth UART)
+DefaultDependencies=no
+After=local-fs.target systemd-modules-load.service
+Before=sound.target bluetooth.target sysinit.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/insmod /usr/lib/omarchy/shield/overlays/shield_overlay.ko overlay_path=shield/hda.dtbo,shield/bt.dtbo guard_node=/hda@70030000,/serial@70006300
+
+[Install]
+WantedBy=sysinit.target

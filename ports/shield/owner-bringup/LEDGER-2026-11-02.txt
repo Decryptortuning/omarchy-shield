@@ -1,0 +1,22 @@
+APP_before=5d205be76e2e58e3
+2026-11-02T23:1xZ  read-only: APP p19 dd copy (APP.img 5d205be7), state = pending seq7 (246a9b18) + healthy seq6 (9af89c00); fs clean, unmounted
+2026-11-02T23:20Z  device write: archive-helper (wave641 static, eb5266cc) renamed pending -> pending.failed-632; healthy6 unchanged; APP unmounted (archive-632.log)
+2026-11-02T23:20Z  pre-reboot: usb host bus root hubs only; temps CPU48.5 board49 diode51.5; all 7 host1x clients suspended; PC on OTG port (adb)
+2026-11-02T23:20:46Z adb reboot (warm) -> attempt seq7 (third)
+2026-11-02T23:21:35Z LINUX_UP via Wi-Fi SSH at +49s: boot_id 29a0422e, nproc 4, shield-wifi active, Hyprland running, shieldqual session on tty1
+2026-11-02T23:22Z  ACK: /boot/shield-owner/state healthy seq7 = pending seq7 (246a9b18); shield-owner-ready active/exited
+2026-11-02T23:2xZ  uptime watch: Linux stayed up through 326s+ with temps ~41C, no SError/panic (uptime-watch.log)
+2026-11-02T23:26Z  carrier build: 619 sources unchanged; profile regenerated with boot_reasons + "shutdown,battery_low"; 620 stage reproduced byte-exact (7b94eaf7) before change; cold-boot stage = 593ba2e3 (carrier/build/coldboot)
+2026-11-02T23:27Z  LNX repack from 621 candidate (ee43aafa): only system/bin/shield-owner-internal-stage record changed; kernel+DTBO identical; padded LNX = 25da1757 (carrier/build/coldboot-lnx)
+2026-11-02T23:29Z  device write: LNX p18 caa4c805 -> 25da1757 via SSH dd+fsync+readback; SOS/DTB unchanged (carrier/write-lnx.log). Rollback image: diagnostic-retry621 output candidate-LNX-padded.bin (caa4c805)
+2026-11-02T23:30Z  warm reboot on new carrier (LNX 25da1757): LINUX_UP at +94s, boot_id 9d97cc15, healthy=pending=seq8
+2026-11-02T23:44Z  overlay loader: shield_overlay.ko built as external module vs kernel457 (config+symvers identical, vermagic match) in overlay/; hda.dtbo (hda@70030000 okay), bt.dtbo (serial@70006300 okay + bluetooth max-speed 3000000)
+2026-11-02T23:45Z  runtime test: HDMI audio card0 "NVIDIA SHIELD TV HDA" ELD valid, speaker-test L/R ok, PipeWire default sink = HDMI; Bluetooth hci0 BCM4354 fw patched (board hcd from stock harvest, 43e001b2), bluetoothd powered on, discovery ran. BD addr is firmware default 43:50:C0:00:1F:AC -> follow-up: real BDADDR from stock NCT/nvram
+2026-11-02T23:49Z  persistence: /usr/lib/omarchy/shield/overlays/{shield_overlay.ko,hda.dtbo,bt.dtbo,manifest.sha256}, /usr/lib/firmware/shield/*.dtbo, /etc/systemd/system/shield-overlays.service (sysinit, insmod with both overlays) enabled; bluetooth.service enabled. Not yet validated across a reboot.
+2026-11-02T23:53Z  board.v2.dtb (c0fef725, 73816B) = pcie336 + pci@1,0 okay/phys 0x71-0x74 (lane phandles added to pcie-1..4)/phy-names/aspm-states 0xf, pci@2,0 aspm 0xf, hda okay, serial@70006300 okay + bt max-speed 3000000 (dtb/v1.dts vs v2.dts)
+2026-11-02T23:54Z  carrier v2: descriptor.v2 board.dtb pin updated; stage 1f7f6c1e; LNX 6a5c527c (carrier/build/v2-lnx)
+2026-11-02T23:55Z  device write: bootset 3982163b board.dtb b5a2bb41 -> c0fef725 (backup /boot/shield-owner/bootsets/board.dtb.v1.bak); LNX 25da1757 -> 6a5c527c; SOS/DTB unchanged; shield-overlays.service disabled (DT now native)
+2026-11-02T23:56Z  warm reboot on carrier v2: LINUX_UP, seq9 healthy=pending, hda@/serial@70006300/pci@1,0 all okay natively; card0 HDA present; hci0 present; LNX 6a5c527c
+2026-11-02T23:58Z  ETHERNET E3: insmod in-tree pci-tegra.ko (566db4f9) with pci@1,0 enabled + aspm-states 0xf on both ports -> link0 down ignored, RP 00:02.0 up, endpoint 0000:01:00.0 [10ec:8168] enumerated, BARs assigned, NO SError (overlay/ethernet-e3.log). Root cause of Oct 18-21 config-read SError = root port 0 never enabled (stock enables both ports); patch 0018 / 616 aperture work was not the issue
+2026-11-02T23:59Z  ETHERNET: insmod r8169 -> enp1s0 RTL8168g/8111g, link 1000/full, NM "Wired connection 1" DHCP <lan-ip>/24 (overlay/ethernet-r8169.log, ethernet-dhcp.log); IPv4 gateway/route via eth under check
+2026-11-03T00:00Z  persistence: /usr/lib/omarchy/shield/ethernet/{pci-tegra.ko (in-tree kernel457 566db4f9), shield-ethernet.service} enabled; cmdline blacklist r8169,pci_tegra left in place (explicit insmod bypasses it) -> follow-up: drop blacklist + ship module in /lib/modules via carrier cmdline/bootset update
