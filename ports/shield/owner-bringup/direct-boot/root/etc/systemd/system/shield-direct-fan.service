@@ -1,6 +1,8 @@
 [Unit]
-Description=Shield fan at conservative full speed (direct boot)
+Description=Shield fan at full speed when the DT has no thermal fan control (direct boot)
 ConditionKernelCommandLine=shield.boot=direct
+# A board DT that maps pwm-fan into cpu-thermal lets the kernel thermal governor drive the fan.
+ConditionPathExists=!/proc/device-tree/thermal-zones/cpu-thermal/cooling-maps
 After=systemd-udev-trigger.service
 
 [Service]

@@ -1,0 +1,152 @@
+--- v4a.dts	2026-11-04 11:41:47.694158821 -0700
++++ v5a.dts	2026-11-04 11:41:47.691262065 -0700
+@@ -3265,7 +3265,7 @@
+ 		reset-names = "dvco\0dfll";
+ 		#clock-cells = <0x00>;
+ 		clock-output-names = "dfllCPU_out";
+-		status = "disabled";
++		status = "okay";
+ 		nvidia,cf = <0x06>;
+ 		nvidia,ci = <0x00>;
+ 		nvidia,cg = <0x02>;
+@@ -3919,11 +3919,62 @@
+ 
+ 		cpu-thermal {
+ 			polling-delay-passive = <0x3e8>;
+-			polling-delay = <0x00>;
++			polling-delay = <0x7d0>;
+ 			thermal-sensors = <0x61 0x00>;
+ 
++			cooling-maps {
++
++				fan-high {
++					cooling-device = <0x63 0x04 0x04>;
++					trip = <0x83>;
++				};
++
++				fan-mid {
++					cooling-device = <0x63 0x03 0x03>;
++					trip = <0x82>;
++				};
++
++				fan-low {
++					cooling-device = <0x63 0x02 0x02>;
++					trip = <0x81>;
++				};
++
++				fan-quiet {
++					cooling-device = <0x63 0x01 0x01>;
++					trip = <0x80>;
++				};
++			};
++
+ 			trips {
+ 
++				fan-high {
++					phandle = <0x83>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0x11170>;
++				};
++
++				fan-mid {
++					phandle = <0x82>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0xea60>;
++				};
++
++				fan-low {
++					phandle = <0x81>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0xc350>;
++				};
++
++				fan-quiet {
++					phandle = <0x80>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0x7530>;
++				};
++
+ 				cpu-shutdown-trip {
+ 					temperature = <0x19064>;
+ 					hysteresis = <0x00>;
+@@ -4016,11 +4067,39 @@
+ 
+ 		gpu-thermal {
+ 			polling-delay-passive = <0x3e8>;
+-			polling-delay = <0x00>;
++			polling-delay = <0x7d0>;
+ 			thermal-sensors = <0x61 0x02>;
+ 
+ 			trips {
+ 
++				fan-high {
++					phandle = <0x87>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0x11170>;
++				};
++
++				fan-mid {
++					phandle = <0x86>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0xea60>;
++				};
++
++				fan-low {
++					phandle = <0x85>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0xc350>;
++				};
++
++				fan-quiet {
++					phandle = <0x84>;
++					type = "active";
++					hysteresis = <0xbb8>;
++					temperature = <0x7530>;
++				};
++
+ 				gpu-shutdown-trip {
+ 					temperature = <0x19258>;
+ 					hysteresis = <0x00>;
+@@ -4037,6 +4116,26 @@
+ 
+ 			cooling-maps {
+ 
++				fan-high {
++					cooling-device = <0x63 0x04 0x04>;
++					trip = <0x87>;
++				};
++
++				fan-mid {
++					cooling-device = <0x63 0x03 0x03>;
++					trip = <0x86>;
++				};
++
++				fan-low {
++					cooling-device = <0x63 0x02 0x02>;
++					trip = <0x85>;
++				};
++
++				fan-quiet {
++					cooling-device = <0x63 0x01 0x01>;
++					trip = <0x84>;
++				};
++
+ 				map0 {
+ 					trip = <0x69>;
+ 					cooling-device = <0x6a 0x01 0x01>;
+@@ -4135,7 +4234,7 @@
+ 		fan-supply = <0x6d>;
+ 		interrupt-parent = <0x1e>;
+ 		interrupts = <0x30 0x01>;
+-		cooling-levels = <0x00 0x7f 0xbf 0xff>;
++		cooling-levels = <0x00 0x50 0x7f 0xbf 0xff>;
+ 		#cooling-cells = <0x02>;
+ 		phandle = <0x63>;
+ 	};

@@ -2,7 +2,7 @@
 
 This folder records work on the connected Darcy A04 Shield. It reuses the kernel457, policy555 and carrier 619-622 artifacts that were already built; nothing here is a new kernel. Private inputs (board DTB lineage, stage profile descriptor, LNX images, keys, APP images) stay under `$SHIELD_BUILD/bringup-2026-11-02/`, and the `$WORK` placeholder in the scripts refers to that folder.
 
-**Status 2026-11-04 18:18Z.** The Shield boots Omarchy directly from the NVIDIA bootloader through our shim and loader, with no Lineage, no 4.9 kernel and no kexec, from both the boot and recovery partitions. Wi-Fi, 1 Gb/s Ethernet, Bluetooth, HDMI, the GM20B GPU (nouveau), the fan, sshd and the boot counter, rollback and rescue all work. Details are in [direct-boot/README.md](direct-boot/README.md); the 11-03 outage is described in [AAR-2026-11-03.md](AAR-2026-11-03.md).
+**Status 2026-11-04 19:20Z.** The Shield boots Omarchy directly from the NVIDIA bootloader through our shim and loader, with no Lineage, no 4.9 kernel and no kexec, from both the boot and recovery partitions (direct-v10b). Wi-Fi, 1 Gb/s Ethernet, Bluetooth, HDMI, the GM20B GPU (nouveau), CPU scaling (DFLL, 204-2218.5 MHz), CPU idle, the thermally controlled fan, sshd and the boot counter, rollback and rescue all work. Details are in [direct-boot/README.md](direct-boot/README.md); the 11-03 outage is described in [AAR-2026-11-03.md](AAR-2026-11-03.md).
 
 ## Rules that keep the device bootable
 

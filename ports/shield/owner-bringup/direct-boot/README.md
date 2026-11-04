@@ -1,6 +1,6 @@
 # Direct boot: cboot → shim → mainline Linux
 
-This replaces the Lineage-recovery carrier (Lineage 22.2, the 4.9 kernel and kexec) with a single mainline kernel booted directly by the NVIDIA bootloader (cboot). Status 2026-11-04 18:18Z: both slots (LNX and SOS) run direct-v9 and the Lineage carrier is retired. Omarchy boots from cboot through the shim in normal and recovery mode, with nouveau, Wi-Fi, Ethernet, Bluetooth, the fan and the boot counter all working. Background and evidence: `../AAR-2026-11-03.md`, `../team-2026-11-03/boot-architecture-rethink.md`, `../team-2026-11-03/fastboot.md` (the "DTBO selection" and "Shim boot contract" sections) and `../team-2026-11-03/gpu-smmu-direct.md`.
+This replaces the Lineage-recovery carrier (Lineage 22.2, the 4.9 kernel and kexec) with a single mainline kernel booted directly by the NVIDIA bootloader (cboot). Status 2026-11-04 19:20Z: both slots (LNX and SOS) run direct-v10b and the Lineage carrier is retired. Omarchy boots from cboot through the shim in normal and recovery mode, with nouveau, Wi-Fi, Ethernet, Bluetooth, CPU frequency scaling, CPU idle, the thermally controlled fan and the boot counter all working. Background and evidence: `../AAR-2026-11-03.md`, `../team-2026-11-03/boot-architecture-rethink.md`, `../team-2026-11-03/fastboot.md` (the "DTBO selection" and "Shim boot contract" sections) and `../team-2026-11-03/gpu-smmu-direct.md`.
 
 ## Why a shim
 
@@ -34,10 +34,10 @@ All inputs are existing artifacts; there is no kernel rebuild.
 
 1. **Font:** `../carrier/diag/make-font.py <linux>/lib/fonts/font_8x16.c shim/font8x16.h`.
 2. **Shim:** `make -C shim` (aarch64-linux-gnu-gcc-13). `make -C shim check` confirms the BSS and stack end below the 0x20000 payload offset.
-3. **Shim kernel:** `shim/pack-shim.py shim/shim.bin <Image> <board.dtb> shim-kernel.bin`, then `gzip -9 -n`. Use the deployed Image (sha256 `a317e05d…`) and `../dtb` board.v2 (`c0fef725…`).
+3. **Shim kernel:** `shim/pack-shim.py shim/shim.bin <Image> <board.dtb> shim-kernel.bin`, then `gzip -9 -n`. Use the deployed Image (sha256 `a317e05d…`) and the current board DTB, board.v5a (`fdfae2fb…`): board.v2 (`../dtb`) plus `gpu-fix/board.v2-to-v4a-pinmux-default.diff`, then `cpu-fan/build-board-v5a.sh`. Flags 0: a reset clears the recovery flag, so a hang in SOS falls back to LNX.
 4. **Busybox:** busybox 1.37.0 `defconfig` with `CONFIG_STATIC=y`, and without `CONFIG_TC`, `CONFIG_SHA1_HWACCEL` and `CONFIG_SHA256_HWACCEL` (they fail on aarch64).
 5. **Loader initramfs:** busybox plus `loader/init`, `lib/firmware/nvidia/tegra210/xusb.bin` and `lib/modules/{pci-tegra,r8169}.ko` from the root, packed as newc owned by 0:0 and gzipped.
-6. **Boot image:** `loader/pack-boot.py shim-kernel.bin.gz loader.cpio.gz direct.img`. This is an Android v1 image padded to the 25.5 MiB partition, with the direct cmdline.
+6. **Boot image:** `loader/pack-boot.py shim-kernel.bin.gz loader.cpio.gz direct.img`. This is an Android v1 image padded to the 25.5 MiB partition, with the direct cmdline. Since v10b the cmdline no longer carries `cpuidle.off=1` or `initcall_blacklist=tegra_cpufreq_init`.
 
 ## Test workflow (remote, reversible)
 
@@ -58,6 +58,18 @@ The board DT names its pin table `pinctrl-names = "boot"` (the same as upstream 
 - `pe7`, the fan PWM3. The fan stayed off on every direct boot, and the board idled at 83-86 C.
 
 The fix is `gpu-fix/board.v2-to-v4a-pinmux-default.diff`: one property, `pinctrl-names = "default"`. With it, the kernel routes both pins at boot, the fan runs at about 5900 rpm (34-42 C), VDD_GPU tracks nouveau's DVFS across its hardware 710-1320 mV range, and nouveau with Hyprland ran with zero GPU errors. direct-v9 loads nouveau at boot (no blacklist). Diagnosis: `../team-2026-11-03/gpu-smmu-direct.md`. The VDD_GPU-pinning DTs (v3a-v3e) only masked the missing PWM routing; do not use them.
+
+## CPU scaling, idle and fan (2026-11-04)
+
+The first-probe cmdline disabled CPU idle and the Tegra cpufreq driver, and the board DT disabled the DFLL, so the CPU sat on PLLX at 1017.6 MHz. The fan was not mapped to any CPU thermal zone, so `shield-direct-fan.service` held it at full speed. board.v5a (`cpu-fan/build-board-v5a.sh`, diff `cpu-fan/board.v4a-to-v5a.diff`) changes three things:
+
+- **DFLL enabled.** It uses the upstream P2894 PWM-to-PMIC settings, which the DT already carried. The CPU runs from `dfllCPU_out` with cpufreq-dt and schedutil, from 204 MHz to 2218.5 MHz, the kernel's own CVB limit for CPU speedo ID 2, at up to 1226 mV. Stock Android sets no lower cap. A 4-core, 4-minute load held 2218.5 MHz on every core and peaked at 61 C with no throttling (`cpu-fan/stress-v10a.txt`).
+- **Fan under thermal control.** The pwm-fan has states 0-4 (PWM 0, 80, 127, 191 and 255, or about 0, 2800, 3900, 5000 and 5800 rpm). New active trips in cpu-thermal and gpu-thermal select state 1 at 30 C, 2 at 50 C, 3 at 60 C and 4 at 70 C, each with 3 C hysteresis. Both zones poll every 2 s, and the higher of the two requests wins. At idle the board sits at 45-48 C with the fan at about 2800 rpm.
+- **The fan unit steps aside.** `shield-direct-fan.service` now has `ConditionPathExists=!/proc/device-tree/thermal-zones/cpu-thermal/cooling-maps`. It still pins full speed if an older DT without the maps is booted.
+
+With `cpuidle.off=1` removed, `psci_idle` runs the DT `cpu-sleep` power-down state (`0x40000007`), and the cores spend about 95% of idle time in it. A 10-minute bursty soak on direct-v10b kept the same boot, with no GPU errors and no failed units. `cpu-fan/check.sh` reports all of this in one run: `ssh … 'bash -s' < cpu-fan/check.sh`.
+
+Not done yet: cpufreq is not a cooling device (the CPU node has no `#cooling-cells`). The soctherm hardware throttle and the 102.5 C thermtrip remain the emergency limits, and the stress test never got near them.
 
 ## Open items
 
