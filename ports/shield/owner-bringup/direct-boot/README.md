@@ -1,6 +1,6 @@
 # Direct boot: cboot → shim → mainline Linux
 
-This replaces the Lineage-recovery carrier (Lineage 22.2, the 4.9 kernel and kexec) with a single mainline kernel booted directly by the NVIDIA bootloader (cboot). Status 2026-11-04 01:00Z: direct-v4 runs the full Omarchy root from the recovery partition, stable with nouveau blacklisted, and is staged to go into both slots, replacing the carrier (see "Carrier retirement" below). Background and evidence: `../AAR-2026-11-03.md`, `../team-2026-11-03/boot-architecture-rethink.md`, `../team-2026-11-03/fastboot.md` (the "DTBO selection" and "Shim boot contract" sections) and `../team-2026-11-03/gpu-smmu-direct.md`.
+This replaces the Lineage-recovery carrier (Lineage 22.2, the 4.9 kernel and kexec) with a single mainline kernel booted directly by the NVIDIA bootloader (cboot). Status 2026-11-04 18:18Z: both slots (LNX and SOS) run direct-v9 and the Lineage carrier is retired. Omarchy boots from cboot through the shim in normal and recovery mode, with nouveau, Wi-Fi, Ethernet, Bluetooth, the fan and the boot counter all working. Background and evidence: `../AAR-2026-11-03.md`, `../team-2026-11-03/boot-architecture-rethink.md`, `../team-2026-11-03/fastboot.md` (the "DTBO selection" and "Shim boot contract" sections) and `../team-2026-11-03/gpu-smmu-direct.md`.
 
 ## Why a shim
 
@@ -66,5 +66,5 @@ The fix is `gpu-fix/board.v2-to-v4a-pinmux-default.diff`: one property, `pinctrl
   - The GPU MC client flush/hot-reset state, which nouveau never resets. The fix is `gpu-fix/board.v2-to-v3c-mcreset-only.diff` plus `gpu-fix/0019-nouveau-tegra-gm20b-mc-client-reset.patch`.
 
   Test order: capture nouveau's init log on direct-v4 (`modprobe nouveau` by hand), then v3a, then v3b with the patched `nouveau.ko`. Each test runs in slot B through `reboot --reboot-argument=recovery`.
-- **PMIC watchdog in normal mode.** This is verified by the first boot from LNX after the carrier retirement. The loader and `shield-direct-pmic.service` disable it and keep kicking it.
+- **PMIC watchdog in normal mode: verified 2026-11-04.** direct-v9 in LNX ran 5+ minutes with the loader and `shield-direct-pmic.service` handling it. The earlier power-off came from the v2 image, which had no PMIC handling and a slow byte-copy.
 - **Rescue sshd** runs the root's sshd in a chroot with PAM on. A static dropbear would make rescue independent of the root.
