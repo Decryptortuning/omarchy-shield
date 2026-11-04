@@ -2,7 +2,7 @@
 
 This folder records work on the connected Darcy A04 Shield. It reuses the kernel457, policy555 and carrier 619-622 artifacts that were already built; nothing here is a new kernel. Private inputs (board DTB lineage, stage profile descriptor, LNX images, keys, APP images) stay under `$SHIELD_BUILD/bringup-2026-11-02/`, and the `$WORK` placeholder in the scripts refers to that folder.
 
-**Status 2026-11-04 19:20Z.** The Shield boots Omarchy directly from the NVIDIA bootloader through our shim and loader, with no Lineage, no 4.9 kernel and no kexec, from both the boot and recovery partitions (direct-v10b). Wi-Fi, 1 Gb/s Ethernet, Bluetooth, HDMI, the GM20B GPU (nouveau), CPU scaling (DFLL, 204-2218.5 MHz), CPU idle, the thermally controlled fan, sshd and the boot counter, rollback and rescue all work. Details are in [direct-boot/README.md](direct-boot/README.md); the 11-03 outage is described in [AAR-2026-11-03.md](AAR-2026-11-03.md).
+**Status 2026-11-04 19:57Z.** The Shield boots Omarchy directly from the NVIDIA bootloader through our shim and loader, with no Lineage, no 4.9 kernel and no kexec, from both the boot and recovery partitions (direct-v12). Wi-Fi, 1 Gb/s Ethernet, Bluetooth (factory address from FCT), HDMI, HDMI CEC (adapter up; TV not yet answering), the GM20B GPU (nouveau), CPU scaling (DFLL, 204-2218.5 MHz), CPU idle, the thermally controlled fan, sshd and the boot counter, rollback and rescue all work. Details are in [direct-boot/README.md](direct-boot/README.md); the 11-03 outage is described in [AAR-2026-11-03.md](AAR-2026-11-03.md).
 
 ## Rules that keep the device bootable
 
@@ -52,7 +52,8 @@ The Ethernet SError had one cause: the mainline P2894 DT enabled only root port 
 - **Rescue path.** An unacknowledged boot should land in a networked rescue initramfs instead of the silent Lineage menu (`team-2026-11-03/rescue-architecture.md`, step 1). This needs an owner decision.
 - **Unit guardrail.** Add a `shield-unit-apply` helper that verifies a unit and refuses ordering into the acknowledgement chain, plus a Btrfs snapshot before each change.
 - **Recovery ADB.** Recovery ADB over the PC cable has not worked since 11-03 03:27Z, although fastboot on the same cable works. The leading theory is VBUS sensing in the recovery kernel.
-- **Bluetooth address.** Bluetooth uses the firmware default BD address; read the real one from the stock NCT/nvram partition.
+- **Bluetooth address.** Done 2026-11-04: the factory address comes from FCT `bluetooth/bt_mac.txt` (see `direct-boot/README.md`). Wi-Fi still uses a locally administered MAC; the factory one is `00:04:4B:xx:xx:xx`.
+- **HDMI CEC.** The adapter works; the TV does not acknowledge yet. Check the TV's CEC setting, then add `CONFIG_MEDIA_CEC_RC` for remote keys.
 - **Module blacklist.** The kernel cmdline still carries `modprobe.blacklist=r8169,pci_tegra`, and the unit loads both modules explicitly. On the next boot-set update, drop the blacklist, ship `pci-tegra.ko` in `/lib/modules`, then retire `shield-ethernet.service`.
 - **Ethernet default route.** Ethernet DHCP gave an address but no IPv4 default route on the first attempt; check the router option.
 - **APP space.** About 18 MB of the APP partition is free. Move the unused `e8f146cd…` generation and the `*.bak` files off the device.

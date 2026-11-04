@@ -1,0 +1,14 @@
+[Unit]
+Description=Shield Bluetooth factory address (from the FCT partition)
+ConditionPathExists=/dev/disk/by-partlabel/FCT
+# Set the address before bluetoothd powers the controller on.
+Before=bluetooth.service
+
+[Service]
+Type=oneshot
+TimeoutStartSec=120
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/shield-bt-address
+
+[Install]
+WantedBy=bluetooth.target

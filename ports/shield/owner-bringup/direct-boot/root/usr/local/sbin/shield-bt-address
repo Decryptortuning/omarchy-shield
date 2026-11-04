@@ -1,0 +1,57 @@
+#!/bin/bash
+# Give the BCM4354 its factory Bluetooth address. The chip boots with the placeholder
+# 43:50:C0:00:1F:AC, which btbcm does not recognise as invalid, so the kernel never asks for one.
+# The real address is in the read-only factory partition (FCT, ext4): bluetooth/bt_mac.txt.
+# mgmt Set Public Address stores it in hdev->public_addr; the kernel reapplies it on every power-on.
+set -euo pipefail
+dev=/dev/disk/by-partlabel/FCT
+mnt=/run/shield-fct
+mkdir -p "$mnt"
+mount -o ro,noload "$dev" "$mnt"
+addr=$(tr -d ' \r\n' < "$mnt/bluetooth/bt_mac.txt") || true
+umount "$mnt"
+if [[ ! $addr =~ ^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$ ]]; then
+  echo "no valid address in FCT bluetooth/bt_mac.txt: '$addr'" >&2
+  exit 1
+fi
+# bluetooth.target starts as soon as hci0 registers; the BCM firmware load takes ~10 s more.
+current=
+for _ in $(seq 1 120); do
+  current=$(btmgmt --index 0 info 2>/dev/null | awk '/^\taddr /{print $2; exit}')
+  [[ -n $current ]] && break
+  sleep 0.5
+done
+if [[ -z $current ]]; then
+  echo "hci0 did not become ready" >&2
+  exit 1
+fi
+if [[ ${current^^} == "${addr^^}" ]]; then
+  echo "already $addr"
+  exit 0
+fi
+# The kernel accepts a new public address only while hci0 is powered off, then reopens it and
+# re-announces the index. Right after setup the controller sits up in "auto-off" state for ~2 s:
+# mgmt reports it unpowered, but HCI_UP is still set, and the reopen then takes the already-up
+# path that never re-adds the index (hci0 disappears from mgmt). Power it on and off explicitly
+# so HCI_UP is really clear. At boot this runs before bluetoothd; on a manual restart bluetoothd
+# may power it back on, so retry.
+for _ in $(seq 1 10); do
+  btmgmt --index 0 power on >/dev/null 2>&1 || true
+  btmgmt --index 0 power off >/dev/null 2>&1 || true
+  if btmgmt --index 0 public-addr "$addr" 2>&1 | grep -q 'Set Public Address complete'; then
+    break
+  fi
+  sleep 0.5
+done
+# Setting the address re-registers hci0; wait for it, then make sure it is powered.
+for _ in $(seq 1 20); do
+  info=$(btmgmt --index 0 info 2>/dev/null || true)
+  if [[ ${info^^} == *"ADDR ${addr^^} "* ]]; then
+    [[ $info == *"current settings: powered"* ]] || btmgmt --index 0 power on >/dev/null || true
+    echo "Bluetooth address $current -> $addr"
+    exit 0
+  fi
+  sleep 0.5
+done
+echo "controller did not come back with $addr" >&2
+exit 1

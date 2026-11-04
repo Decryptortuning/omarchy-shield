@@ -1,0 +1,2 @@
+# Configure the Tegra HDMI CEC adapter as a playback device once /dev/cec0 appears.
+SUBSYSTEM=="cec", KERNEL=="cec0", TAG+="systemd", ENV{SYSTEMD_WANTS}+="shield-cec.service"

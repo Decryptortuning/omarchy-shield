@@ -1,0 +1,9 @@
+[Unit]
+Description=Shield HDMI CEC as a playback device
+BindsTo=dev-cec0.device
+After=dev-cec0.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/cec-ctl --device=/dev/cec0 --playback --osd-name=Omarchy

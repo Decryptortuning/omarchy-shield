@@ -1,0 +1,19 @@
+--- a.dts	2026-11-04 12:34:42.234397533 -0700
++++ c.dts	2026-11-04 12:34:42.237533657 -0700
+@@ -2809,12 +2809,15 @@
+ 	};
+ 
+ 	cec@70015000 {
++		reset-names = "cec";
++		resets = <0x03 0x88>;
++		hdmi-phandle = <0x0f>;
+ 		compatible = "nvidia,tegra210-cec";
+ 		reg = <0x00 0x70015000 0x00 0x1000>;
+ 		interrupts = <0x00 0x03 0x04>;
+ 		clocks = <0x03 0x88>;
+ 		clock-names = "cec";
+-		status = "disabled";
++		status = "okay";
+ 	};
+ 
+ 	bpmp@70016000 {

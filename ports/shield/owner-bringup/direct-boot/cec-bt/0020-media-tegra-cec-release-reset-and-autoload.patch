@@ -1,0 +1,48 @@
+--- a/drivers/media/cec/platform/tegra/tegra_cec.c	2026-11-04 12:34:23.025018680 -0700
++++ b/drivers/media/cec/platform/tegra/tegra_cec.c	2026-11-04 12:34:23.035395900 -0700
+@@ -24,6 +24,7 @@
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
++#include <linux/reset.h>
+ #include <linux/clk/tegra.h>
+ 
+ #include <media/cec-notifier.h>
+@@ -33,6 +34,7 @@
+ #define TEGRA_CEC_NAME "tegra-cec"
+ 
+ struct tegra_cec {
++	struct reset_control	*rst;
+ 	struct cec_adapter	*adap;
+ 	struct device		*dev;
+ 	struct clk		*clk;
+@@ -372,6 +374,21 @@
+ 		return ret;
+ 	}
+ 
++	/*
++	 * Firmware may leave the controller in reset, and the Tegra clock
++	 * driver no longer releases peripheral resets on enable. Any register
++	 * access to a CEC block held in reset stalls the bus.
++	 */
++	cec->rst = devm_reset_control_get_optional_exclusive(&pdev->dev, "cec");
++	if (IS_ERR(cec->rst)) {
++		ret = dev_err_probe(&pdev->dev, PTR_ERR(cec->rst),
++				    "Can't get reset for CEC\n");
++		clk_disable_unprepare(cec->clk);
++		return ret;
++	}
++	udelay(2);
++	reset_control_deassert(cec->rst);
++
+ 	/* set context info. */
+ 	cec->dev = &pdev->dev;
+ 
+@@ -458,6 +475,7 @@
+ 	{ .compatible = "nvidia,tegra210-cec", },
+ 	{},
+ };
++MODULE_DEVICE_TABLE(of, tegra_cec_of_match);
+ 
+ static struct platform_driver tegra_cec_driver = {
+ 	.driver = {
