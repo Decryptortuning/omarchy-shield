@@ -1,0 +1,21 @@
+
+# v10: USB device-role fix for PC ADB, and the diagnostic also at boot+60s.
+service shield_usbrole /system/bin/sh /system/bin/shield-usbrole.sh
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on property:sys.usb.ffs.ready=1
+    start shield_usbrole
+
+service shield_diag_boot /system/bin/sh -c "sleep 60; /system/bin/sh /system/bin/shield-diag.sh"
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on boot
+    start shield_diag_boot

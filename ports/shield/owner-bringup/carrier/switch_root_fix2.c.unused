@@ -1,0 +1,42 @@
+/* Bring-up wrapper for the initramfs switch_root (v2). Before handing over to the real
+ * switch_root it DISABLES shield-ethernet.service on the mounted root: it removes the
+ * /etc unit entry and the multi-user.target.wants link (whether symlinks or files), and
+ * replaces the packaged copy under /usr/lib/omarchy/shield/ethernet with the fixed unit
+ * (not enabled). That removes the ordering cycle that dropped sshd. Every action is
+ * logged to /dev/kmsg and to /var/lib/shield-switch-root-fix.log on the root. Any
+ * failure is logged and the normal handoff still happens. */
+#define _GNU_SOURCE
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#define SRC "/etc/shield-owner/shield-ethernet.service"
+static char root[1024]; static int logfd=-1;
+static void say(const char *m){char b[1400];int n=snprintf(b,sizeof b,"<6>shield-switch-root-fix: %s\n",m);
+ int k=open("/dev/kmsg",O_WRONLY|O_CLOEXEC);if(k>=0){(void)!write(k,b,(size_t)n);close(k);}
+ if(logfd>=0)(void)!write(logfd,b+3,(size_t)n-3);}
+static void rm_entry(const char *rel){char p[2048],m[2200];struct stat st;snprintf(p,sizeof p,"%s%s",root,rel);
+ if(lstat(p,&st)!=0){snprintf(m,sizeof m,"absent %s",rel);say(m);return;}
+ int r=unlink(p);snprintf(m,sizeof m,"%s %s (%s) rc=%d errno=%d",r?"FAILED-remove":"removed",rel,S_ISLNK(st.st_mode)?"symlink":"file",r,r?errno:0);say(m);}
+int main(int argc,char **argv){
+ if(argc>=2&&strlen(argv[1])<900){
+  snprintf(root,sizeof root,"%s",argv[1]);char p[2048];
+  snprintf(p,sizeof p,"%s/var/lib/shield-switch-root-fix.log",root);
+  logfd=open(p,O_WRONLY|O_CREAT|O_APPEND|O_NOFOLLOW|O_CLOEXEC,0644);
+  say("v2 start");
+  rm_entry("/etc/systemd/system/multi-user.target.wants/shield-ethernet.service");
+  rm_entry("/etc/systemd/system/shield-ethernet.service");
+  char buf[65536];int in=open(SRC,O_RDONLY|O_CLOEXEC);ssize_t n=in>=0?read(in,buf,sizeof buf):-1;if(in>=0)close(in);
+  if(n>0&&n<(ssize_t)sizeof buf){
+   snprintf(p,sizeof p,"%s/usr/lib/omarchy/shield/ethernet/shield-ethernet.service",root);
+   struct stat st;if(lstat(p,&st)==0&&!S_ISREG(st.st_mode)){say("packaged unit not a regular file; left alone");}
+   else{int o=open(p,O_WRONLY|O_CREAT|O_TRUNC|O_NOFOLLOW|O_CLOEXEC,0644);
+    if(o<0)say("packaged unit open failed");else{ssize_t w=write(o,buf,(size_t)n);(void)fsync(o);close(o);say(w==n?"packaged unit replaced with fixed copy (not enabled)":"packaged unit short write");}}
+  }else say("fixed unit source missing in initramfs");
+  sync();say("v2 done");if(logfd>=0)close(logfd);
+ }
+ execv("/usr/bin/switch_root.real",argv);
+ say("exec of real switch_root failed");return 111;
+}

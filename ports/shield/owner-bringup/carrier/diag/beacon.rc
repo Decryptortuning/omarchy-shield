@@ -1,0 +1,11 @@
+
+# Beacon: classify the stage outcome and draw the evidence on the framebuffer.
+service shield_beacon /system/bin/sh /system/bin/shield-beacon.sh
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on boot
+    start shield_beacon

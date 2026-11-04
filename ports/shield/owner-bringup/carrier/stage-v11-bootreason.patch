@@ -1,0 +1,11 @@
+--- src/owner-internal-stage.c	2026-11-02 16:26:15.257841775 -0700
++++ src-v11/owner-internal-stage.c	2026-11-03 13:14:17.923564516 -0700
+@@ -57,7 +57,7 @@
+  const char *required[]={"/system/bin/toybox","/system/bin/getprop","/system/bin/sh"};for(size_t i=0;i<3;i++){unsigned found=0;for(size_t j=0;j<P->system_tool_count;j++)found+=!strcmp(required[i],P->system_tools[j].path);need(found==1,"required-pinned-system-tool");}
+  /* Watchdog identity is eligible only for the current one-shot diagnostic
+   * retry gate enforced by owner-local-claim after disk/store admission. */
+- char *args[]={"/system/bin/getprop","ro.boot.bootreason",NULL};struct Result r=child(args,3,256,0);need(!memchr(r.out,0,r.out_n),"bootreason-NUL");strip((char*)r.out);need(!strcmp((char*)r.out,bootreason),"bootreason-property-cmdline-identity");watchdog_boot=!strcmp((char*)r.out,"watchdog");unsigned allowed=0;for(size_t i=0;i<P->boot_reason_count;i++)allowed+=!strcmp((char*)r.out,P->boot_reasons[i]);need(allowed==1,"bootreason-policy");free_result(&r);
++ char *args[]={"/system/bin/getprop","ro.boot.bootreason",NULL};struct Result r=child(args,3,256,0);need(!memchr(r.out,0,r.out_n),"bootreason-NUL");strip((char*)r.out);need(!strcmp((char*)r.out,bootreason),"bootreason-property-cmdline-identity");watchdog_boot=!strcmp((char*)r.out,"watchdog");unsigned allowed=0;for(size_t i=0;i<P->boot_reason_count;i++)allowed+=!strcmp((char*)r.out,P->boot_reasons[i]);if(allowed!=1){const char*b=(char*)r.out;size_t bl=strlen(b);need(allowed==0&&bl>0&&bl<64&&strspn(b,"abcdefghijklmnopqrstuvwxyz0123456789_,-")==bl&&strcmp(b,"watchdog"),"bootreason-policy");} /* v11: any well-formed non-watchdog reason is a normal boot */free_result(&r);
+ }
+ static void disk_admission(void){
+  exact_link("/sys/bus/platform/devices/sdhci-tegra.3/driver","/sys/bus/platform/drivers/sdhci-tegra");

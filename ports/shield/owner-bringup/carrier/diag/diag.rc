@@ -1,0 +1,22 @@
+
+# Carrier diagnostic: runs only when the stage exits without kexec handoff.
+service shield_diag /system/bin/sh /system/bin/shield-diag.sh
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on property:init.svc.shield_owner_internal=stopped
+    start shield_diag
+
+# Network ADB over a USB Ethernet adapter in the host port (key-authenticated).
+service shield_netadb /system/bin/sh /system/bin/shield-netadb.sh
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on boot
+    start shield_netadb

@@ -1,0 +1,25 @@
+
+# DIAGNOSTIC-ONLY image (RAM boot): stage not started; report + USB role + network ADB.
+service shield_usbrole /system/bin/sh /system/bin/shield-usbrole.sh
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on property:sys.usb.ffs.ready=1
+    start shield_usbrole
+
+on boot
+    start shield_diag
+
+# PROBE: proves added services run. ~100 s after boot, reboot into the bootloader menu.
+service shield_probe /system/bin/sh -c "sleep 100; echo '<3>shield-probe: rebooting to bootloader' > /dev/kmsg; setprop sys.powerctl reboot,bootloader"
+    disabled
+    oneshot
+    user root
+    group root
+    seclabel u:r:recovery:s0
+
+on boot
+    start shield_probe
