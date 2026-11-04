@@ -2,7 +2,7 @@
 
 This folder records work on the connected Darcy A04 Shield. It reuses the kernel457, policy555 and carrier 619-622 artifacts that were already built; nothing here is a new kernel. Private inputs (board DTB lineage, stage profile descriptor, LNX images, keys, APP images) stay under `$SHIELD_BUILD/bringup-2026-11-02/`, and the `$WORK` placeholder in the scripts refers to that folder.
 
-**Status 2026-11-03 23:40Z.** Omarchy boots from eMMC through the carrier (slot A), with Wi-Fi, 1 Gb/s Ethernet, HDMI audio, Bluetooth, 4K HDMI and sshd working, and survives reboots. A carrier-free direct boot (cboot → our shim → mainline, with a boot counter, rollback and rescue) now runs the same root from the recovery partition (slot B); see [direct-boot/README.md](direct-boot/README.md). The 11-03 outage is described in [AAR-2026-11-03.md](AAR-2026-11-03.md).
+**Status 2026-11-04 01:00Z.** The carrier-free direct boot (cboot → our shim → mainline, with a boot counter, rollback and rescue) runs the full Omarchy root, and is staged to replace the Lineage carrier in both slots, because warm reboots between the two paths hang the old one. Wi-Fi, 1 Gb/s Ethernet, Bluetooth, HDMI, sshd and the fan work on the direct path. GPU acceleration is off there (nouveau blacklisted) until the VDD_GPU or MC-reset fix is tested. Details are in [direct-boot/README.md](direct-boot/README.md); the 11-03 outage is described in [AAR-2026-11-03.md](AAR-2026-11-03.md).
 
 ## Rules that keep the device bootable
 

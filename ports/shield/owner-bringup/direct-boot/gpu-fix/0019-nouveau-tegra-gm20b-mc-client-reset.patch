@@ -1,0 +1,72 @@
+From: Omarchy Shield contributors
+Subject: [PATCH] drm/nouveau/tegra: pulse the optional MC client reset around GPU power
+
+The stock GM20B platform code (nvgpu gm20b_tegra_unrailgate, see
+nvgpu-analysis-2026-10-16/GPU-PARITY-FINDINGS.md GPU-D01) asserts the
+memory-controller client flush for the GPU before rail-gating and pulses
+it (flush, then flush_done) after clamps and CAR reset are released.
+Nouveau only handles the CAR reset, so a GPU client that the bootloader
+left flushed/blocked at the MC is never released, and stale pre-arbitration
+requests are never dropped.
+
+Acquire an optional second reset named "mc" and mirror the stock order:
+assert it before the clocks go down, and assert/deassert it once after
+the CAR reset is released. Boards without the DT entry are unchanged.
+
+--- a/drivers/gpu/drm/nouveau/include/nvkm/core/tegra.h
++++ b/drivers/gpu/drm/nouveau/include/nvkm/core/tegra.h
+@@ -12,6 +12,7 @@ struct nvkm_device_tegra {
+ 	void __iomem *regs;
+ 
+ 	struct reset_control *rst;
++	struct reset_control *rst_mc;
+ 	struct clk *clk;
+ 	struct clk *clk_ref;
+ 	struct clk *clk_pwr;
+--- a/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
++++ b/drivers/gpu/drm/nouveau/nvkm/engine/device/tegra.c
+@@ -61,6 +61,20 @@ nvkm_device_tegra_power_up(struct nvkm_device_tegra *tdev)
+ 
+ 		reset_control_deassert(tdev->rst);
+ 		udelay(10);
++
++		/*
++		 * Stock nvgpu pulses the MC client flush here: block the
++		 * client, wait until it is idle, then unblock it. This drops
++		 * requests sitting before arbitration and releases a client
++		 * the bootloader left flushed.
++		 */
++		if (tdev->rst_mc) {
++			ret = reset_control_assert(tdev->rst_mc);
++			if (ret)
++				dev_warn(&tdev->pdev->dev, "MC client flush failed: %d\n", ret);
++			udelay(10);
++			reset_control_deassert(tdev->rst_mc);
++		}
+ 	}
+ 
+ 	return 0;
+@@ -82,6 +96,10 @@ nvkm_device_tegra_power_down(struct nvkm_device_tegra *tdev)
+ {
+ 	int ret;
+ 
++	/* Block and drain the MC client before the clocks and rail go away. */
++	if (tdev->rst_mc)
++		reset_control_assert(tdev->rst_mc);
++
+ 	clk_disable_unprepare(tdev->clk_pwr);
+ 	clk_disable_unprepare(tdev->clk_ref);
+ 	clk_disable_unprepare(tdev->clk);
+@@ -322,6 +340,12 @@ nvkm_device_tegra_new(const struct nvkm_device_tegra_func *func,
+ 		goto free;
+ 	}
+ 
++	tdev->rst_mc = devm_reset_control_get_optional_exclusive(&pdev->dev, "mc");
++	if (IS_ERR(tdev->rst_mc)) {
++		ret = PTR_ERR(tdev->rst_mc);
++		goto free;
++	}
++
+ 	tdev->clk = devm_clk_get(&pdev->dev, "gpu");
+ 	if (IS_ERR(tdev->clk)) {
+ 		ret = PTR_ERR(tdev->clk);

@@ -1,0 +1,28 @@
+--- a/board.dts (board.v2.dtb, decompiled)
++++ b/board.dts
+@@ -558,8 +558,8 @@
+ 		interrupt-names = "stall\0nonstall";
+ 		clocks = <0x03 0xb8 0x03 0x12b 0x03 0xbd>;
+ 		clock-names = "gpu\0pwr\0ref";
+-		resets = <0x03 0xb8>;
+-		reset-names = "gpu";
++		resets = <0x03 0xb8 0x09 0x16>;
++		reset-names = "gpu\0mc";
+ 		iommus = <0x09 0x11>;
+ 		status = "okay";
+ 		vdd-supply = <0x1f>;
+@@ -4327,11 +4327,12 @@
+ 	};
+ 
+ 	regulator-vdd-gpu {
++		voltage-table = <0xf4240 0x30>;
+ 		compatible = "pwm-regulator";
+ 		pwms = <0x6c 0x01 0x1f40 0x00>;
+ 		regulator-name = "VDD_GPU";
+-		regulator-min-microvolt = <0xad570>;
+-		regulator-max-microvolt = <0x142440>;
++		regulator-min-microvolt = <0xf4240>;
++		regulator-max-microvolt = <0xf4240>;
+ 		enable-gpios = <0x6e 0x06 0x00>;
+ 		regulator-ramp-delay = <0x50>;
+ 		regulator-enable-ramp-delay = <0x7d0>;

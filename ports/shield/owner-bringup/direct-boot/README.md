@@ -1,6 +1,6 @@
 # Direct boot: cboot → shim → mainline Linux
 
-This replaces the Lineage-recovery carrier (Lineage 22.2, the 4.9 kernel and kexec) with a single mainline kernel booted directly by the NVIDIA bootloader (cboot). It is under test as of 2026-11-03 23:40Z: the full Omarchy root runs from the recovery partition (slot B), and the boot partition (slot A) still holds the old carrier v13 until the open items below are done. Background and evidence: `../AAR-2026-11-03.md`, `../team-2026-11-03/boot-architecture-rethink.md` and `../team-2026-11-03/fastboot.md` (the "DTBO selection" and "Shim boot contract" sections).
+This replaces the Lineage-recovery carrier (Lineage 22.2, the 4.9 kernel and kexec) with a single mainline kernel booted directly by the NVIDIA bootloader (cboot). Status 2026-11-04 01:00Z: direct-v4 runs the full Omarchy root from the recovery partition, stable with nouveau blacklisted, and is staged to go into both slots, replacing the carrier (see "Carrier retirement" below). Background and evidence: `../AAR-2026-11-03.md`, `../team-2026-11-03/boot-architecture-rethink.md`, `../team-2026-11-03/fastboot.md` (the "DTBO selection" and "Shim boot contract" sections) and `../team-2026-11-03/gpu-smmu-direct.md`.
 
 ## Why a shim
 
@@ -47,7 +47,16 @@ All inputs are existing artifacts; there is no kernel rebuild.
 4. **Never write an image to LNX that has not run from SOS first.** The bootloader's normal mode differs: it leaves the PMIC watchdog armed. On 11-03 a v2 image in LNX powered the board off after about 2 minutes.
 5. **Hands-on recovery, if both slots are bad:** hold A+B at power-on to reach the bootloader, then `tools/flash-safe.sh` restores carrier v13 to LNX, a direct image to SOS and a clean APP image.
 
-## Open before slot A switches
+## Carrier retirement
 
-- **GPU on the direct path.** nouveau faults (gpusrd read of address 0, then an SError panic) because the GPU and SMMU arrive straight from cboot. It is blacklisted on the direct path for now; the analysis will go in `../team-2026-11-03/gpu-smmu-direct.md`.
-- **PMIC watchdog in normal mode.** The loader and `shield-direct-pmic.service` cover it, but it needs one guarded test from LNX.
+Two warm reboots from the direct path into the old carrier path (2026-11-03 22:21Z and 2026-11-04 00:37Z) both hung the old path's mainline kernel. The watchdog reset the board and the carrier then refused the leftover claim. A cold power-on into the old path worked both times. Hardware state left by the direct boot, most likely the GPU rail and MC client state, survives a warm reset and breaks the kexec path. Alternating between the paths is therefore unsafe, so the carrier is being retired: `tools/flash-direct-v4.sh` writes direct-v4 to both slots and resets APP. Carrier v13 stays in the build folder and can return through fastboot.
+
+## Open items
+
+- **GPU on the direct path.** The analysis is in `../team-2026-11-03/gpu-smmu-direct.md`. The SMMU handoff patches are not the cause: they reach the same end state on both paths, and the cmdline flags must stay. The fault starts on the GPU side, with an untranslated `gpusrd` read of address 0, then PBDMA errors, an LTC flush timeout and an SError. Ranked candidates:
+  - VDD_GPU left at 710 mV. Stock sets 1.0 V; the fix is `gpu-fix/board.v2-to-v3a-vddgpu-1v0.diff`, DT only.
+  - The GPU MC client flush/hot-reset state, which nouveau never resets. The fix is `gpu-fix/board.v2-to-v3c-mcreset-only.diff` plus `gpu-fix/0019-nouveau-tegra-gm20b-mc-client-reset.patch`.
+
+  Test order: capture nouveau's init log on direct-v4 (`modprobe nouveau` by hand), then v3a, then v3b with the patched `nouveau.ko`. Each test runs in slot B through `reboot --reboot-argument=recovery`.
+- **PMIC watchdog in normal mode.** This is verified by the first boot from LNX after the carrier retirement. The loader and `shield-direct-pmic.service` disable it and keep kicking it.
+- **Rescue sshd** runs the root's sshd in a chroot with PAM on. A static dropbear would make rescue independent of the root.
