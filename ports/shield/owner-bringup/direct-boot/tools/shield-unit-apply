@@ -1,0 +1,39 @@
+#!/bin/bash
+# shield-unit-apply <unit-file> [--enable]
+# The only supported way to add or change a system unit on the Shield.
+#  1. Refuses units ordered Before=/RequiredBy=/Conflicts= anything in the boot ACK chain.
+#  2. Verifies the unit together with default.target (catches ordering cycles).
+#  3. Takes a read-only Btrfs snapshot of @root before changing anything.
+#  4. Installs, reloads, and verifies the whole default transaction again.
+set -euo pipefail
+src=${1:?usage: shield-unit-apply <unit-file> [--enable]}
+enable=${2:-}
+name=$(basename "$src")
+dst=/etc/systemd/system/$name
+chain='sshd.service|sshd.socket|network.target|network-online.target|NetworkManager.service|systemd-networkd.service|local-fs.target|sysinit.target|basic.target|shield-owner-[a-z-]*\.service'
+if grep -Eq "^(Before|RequiredBy|Conflicts)=.*($chain)" "$src"; then
+  echo "REFUSED: $name orders itself before/against the boot ACK chain:" >&2
+  grep -En "^(Before|RequiredBy|Conflicts)=" "$src" >&2
+  exit 2
+fi
+tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+cp "$src" "$tmp/$name"
+if ! out=$(SYSTEMD_UNIT_PATH="$tmp:" systemd-analyze verify "$tmp/$name" default.target 2>&1); then
+  echo "$out" >&2; echo "REFUSED: systemd-analyze verify failed" >&2; exit 3
+fi
+if grep -qi 'ordering cycle' <<<"$out"; then echo "$out" >&2; echo "REFUSED: ordering cycle" >&2; exit 3; fi
+ts=$(date -u +%Y%m%dT%H%M%SZ)
+dev=$(findmnt -no SOURCE / | sed 's/\[.*//')
+mkdir -p /run/shield-top
+mount -o subvolid=5 "$dev" /run/shield-top
+mkdir -p /run/shield-top/@snapshots
+btrfs subvolume snapshot -r /run/shield-top/@root "/run/shield-top/@snapshots/root.pre-$ts" >/dev/null
+umount /run/shield-top
+echo "snapshot @snapshots/root.pre-$ts"
+install -m 0644 "$src" "$dst"
+systemctl daemon-reload
+if [[ $enable == "--enable" ]]; then systemctl enable "$name"; fi
+if systemd-analyze verify default.target 2>&1 | grep -qi 'ordering cycle'; then
+  echo "WARNING: ordering cycle after install; roll back with the snapshot above" >&2; exit 4
+fi
+echo "installed $dst"

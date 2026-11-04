@@ -1,0 +1,10 @@
+#!/bin/bash
+# Direct boot: the system reached multi-user with sshd up. Reset the loader's boot counter.
+set -euo pipefail
+d=/boot/shield-boot
+mountpoint -q /boot
+mkdir -p "$d"
+echo 0 > "$d/counter.new" && sync "$d/counter.new" && mv -f "$d/counter.new" "$d/counter"
+date -u +%FT%TZ > "$d/last-ok"
+sync
+echo "<6>shield-boot-ok: counter reset" > /dev/kmsg

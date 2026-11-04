@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable Shield SDIO Wi-Fi (direct boot)
+ConditionKernelCommandLine=shield.boot=direct
+After=local-fs.target systemd-modules-load.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/modprobe brcmfmac alternative_fw_path=shield-wifi582
+ExecStart=/usr/bin/sh -c '[ -e /sys/module/shield_wifi ] || /usr/bin/insmod /usr/lib/omarchy/shield/wifi/shield_wifi.ko overlay_path=shield-wifi582/wifi.dtbo'
+
+[Install]
+WantedBy=multi-user.target

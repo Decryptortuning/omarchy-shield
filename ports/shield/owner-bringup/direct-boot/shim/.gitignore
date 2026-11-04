@@ -1,0 +1,5 @@
+*.o
+libfdt/*.o
+shim.elf
+shim.bin
+font8x16.h

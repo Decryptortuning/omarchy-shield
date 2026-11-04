@@ -2,7 +2,7 @@
 
 This folder records work on the connected Darcy A04 Shield. It reuses the kernel457, policy555 and carrier 619-622 artifacts that were already built; nothing here is a new kernel. Private inputs (board DTB lineage, stage profile descriptor, LNX images, keys, APP images) stay under `$SHIELD_BUILD/bringup-2026-11-02/`, and the `$WORK` placeholder in the scripts refers to that folder.
 
-**Status 2026-11-03 20:41Z.** Omarchy boots from eMMC through the carrier. Wi-Fi, 1 Gb/s Ethernet, HDMI audio, Bluetooth, 4K HDMI and sshd work, and a reboot from Linux comes back in about 60 s. On 11-03 the device was down for most of the day. The causes, the timeline and the lessons are in [AAR-2026-11-03.md](AAR-2026-11-03.md).
+**Status 2026-11-03 23:40Z.** Omarchy boots from eMMC through the carrier (slot A), with Wi-Fi, 1 Gb/s Ethernet, HDMI audio, Bluetooth, 4K HDMI and sshd working, and survives reboots. A carrier-free direct boot (cboot → our shim → mainline, with a boot counter, rollback and rescue) now runs the same root from the recovery partition (slot B); see [direct-boot/README.md](direct-boot/README.md). The 11-03 outage is described in [AAR-2026-11-03.md](AAR-2026-11-03.md).
 
 ## Rules that keep the device bootable
 
@@ -30,6 +30,7 @@ The Ethernet SError had one cause: the mainline P2894 DT enabled only root port 
 ## Layout
 
 - `AAR-2026-11-03.md`: after-action report for the 11-03 outage.
+- `direct-boot/`: the carrier replacement: `shim/` (cboot → mainline), `loader/` (boot counter, rollback, rescue), `root/` (direct-path units) and `tools/` (unit guardrail, partition writers, fastboot recovery).
 - `team-2026-11-03/`: the read-only investigation reports. They cover the boot refusal, USB/ADB in recovery, fastboot capabilities, a deep refusal analysis with the beacon design, and a proposed rescue architecture.
 - `overlay-module/`: source for `shield_overlay.ko`, a generic runtime DT overlay loader (a list of `.dtbo` files plus a guard node). Build it with `build-module.sh` against the prepared kernel457 tree; the script checks for identical `.config` and `Module.symvers`.
 - `overlays/`: the HDMI audio and Bluetooth overlays used for the runtime test. The PCIe root-port-0 overlay could not be applied at runtime because the deployed DTB gives the lane nodes no phandles, so that change went into the DTB instead.

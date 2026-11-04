@@ -1,0 +1,13 @@
+#!/bin/bash
+# Keep @root.lkg as a writable snapshot of a root that has booted cleanly (direct boot).
+# The loader rolls back by renaming subvolumes, so @root.lkg must stay writable.
+set -euo pipefail
+[[ $(cat /boot/shield-boot/counter 2>/dev/null) == 0 ]] || { echo "not a confirmed-good boot; skipping"; exit 0; }
+dev=$(findmnt -no SOURCE / | sed 's/\[.*//')
+mkdir -p /run/shield-top
+mount -o subvolid=5 "$dev" /run/shield-top
+trap 'umount /run/shield-top' EXIT
+if [[ -d /run/shield-top/@root.lkg ]]; then btrfs subvolume delete /run/shield-top/@root.lkg >/dev/null; fi
+btrfs subvolume snapshot /run/shield-top/@root /run/shield-top/@root.lkg >/dev/null
+date -u +%FT%TZ > /boot/shield-boot/lkg-refreshed
+echo "<6>shield-lkg: @root.lkg refreshed" > /dev/kmsg

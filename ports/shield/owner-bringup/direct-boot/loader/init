@@ -1,0 +1,67 @@
+#!/bin/busybox sh
+# Shield direct-boot loader (PID 1 in the initramfs). Replaces the Lineage carrier stage and owner-init.
+#  - boot counter on APP (/shield-boot/counter): +1 here, reset to 0 by shield-direct-boot-ok on the root
+#  - counter 3 and 4: roll the root back to @root.lkg (rename, keeps @root.bad-<n>)
+#  - counter >= 5, a one-shot /shield-boot/next=rescue, or no usable root: rescue (Ethernet + sshd + console shell)
+/bin/busybox --install -s /bin
+mount -t proc proc /proc; mount -t sysfs sys /sys; mount -t devtmpfs dev /dev; mount -t tmpfs -o mode=0755 run /run
+log(){ echo "<1>shield-loader: $*" > /dev/kmsg; echo "$*" >> /run/shield-loader.log; }  # /run moves to the root: log survives in /run/shield-loader.log
+wait_dev(){ i=0; while [ ! -b $1 ] && [ $i -lt 50 ]; do sleep 0.2; i=$((i+1)); done; [ -b $1 ]; }
+APP=/dev/mmcblk0p19; DISK=/dev/mmcblk0p33
+log "start $(cut -d' ' -f1 /proc/uptime)s"
+# MAX77620 PMIC watchdog: cboot kicks it every 30 s and, on the normal (LNX) path, leaves it armed
+# (128 s, then power-off). Nothing in mainline kicks it: disable it (CNFGGLBL2 bit 2 = WDTEN) and
+# kick it once here; shield-direct-pmic.service on the root keeps it disabled and kicked.
+# (No background loop: busybox applets vanish with the initramfs at switch_root.)
+g2=$(i2cget -f -y 2 0x3c 0x01 2>/dev/null); g3=$(i2cget -f -y 2 0x3c 0x02 2>/dev/null)
+[ -n "$g2" ] && i2cset -f -y 2 0x3c 0x01 $(( g2 & ~0x04 )) 2>/dev/null
+[ -n "$g3" ] && i2cset -f -y 2 0x3c 0x02 $(( (g3 & ~3) | 1 )) 2>/dev/null
+log "PMIC CNFGGLBL2 $g2 -> $(i2cget -f -y 2 0x3c 0x01 2>/dev/null) CNFGGLBL3 $g3"
+
+rescue() {
+  log "RESCUE MODE: $1"
+  watchdog -t 20 -T 120 /dev/watchdog0 2>/dev/null
+  insmod /lib/modules/pci-tegra.ko 2>/dev/null; insmod /lib/modules/r8169.ko 2>/dev/null
+  i=0; while ! ip link show eth0 >/dev/null 2>&1 && [ $i -lt 30 ]; do sleep 0.5; i=$((i+1)); done
+  ifconfig eth0 192.168.2.211 netmask 255.255.255.0 up && route add default gw 192.168.2.1 2>/dev/null && log "rescue eth0 192.168.2.211"
+  if mount -t btrfs -o ro,subvol=@root,rescue=nologreplay $DISK /newroot 2>/dev/null || mount -t btrfs -o ro,subvol=@root.lkg $DISK /newroot 2>/dev/null; then
+    mount -t proc proc /newroot/proc; mount -t sysfs sys /newroot/sys; mount --rbind /dev /newroot/dev
+    mount -t tmpfs tmpfs /newroot/run; mount -t tmpfs tmpfs /newroot/tmp; mkdir -p /newroot/run/sshd
+    cp /run/shield-loader.log /newroot/run/ 2>/dev/null
+    chroot /newroot /usr/bin/sshd -e -o PidFile=none && log "rescue sshd up (root key)"
+  else log "rescue: no root mountable for sshd"; fi
+  log "rescue: console shell on tty1; 'shield-rescue-resume' resets the counter and reboots"
+  cat > /bin/shield-rescue-resume <<'R'
+#!/bin/sh
+mount -t ext4 /dev/mmcblk0p19 /app && echo 0 > /app/shield-boot/counter && sync && umount /app; reboot -f
+R
+  chmod 755 /bin/shield-rescue-resume
+  while true; do setsid cttyhack sh -l </dev/tty1 >/dev/tty1 2>&1; sleep 1; done
+}
+
+wait_dev $APP || rescue "APP partition missing"
+mount -t ext4 -o rw,noatime $APP /app || rescue "APP mount failed"
+mkdir -p /app/shield-boot
+n=$(cat /app/shield-boot/counter 2>/dev/null); case "$n" in ''|*[!0-9]*) n=0;; esac; n=$((n+1))
+echo $n > /app/shield-boot/counter.new && mv -f /app/shield-boot/counter.new /app/shield-boot/counter
+next=$(cat /app/shield-boot/next 2>/dev/null); rm -f /app/shield-boot/next
+echo "$(date -u +%FT%TZ 2>/dev/null) attempt=$n next=$next" >> /app/shield-boot/history
+sync; umount /app
+log "attempt $n${next:+ next=$next}"
+[ "$next" = rescue ] && rescue "requested"
+[ $n -ge 5 ] && rescue "$n attempts without a good boot"
+
+wait_dev $DISK || rescue "root disk missing"
+if [ $n -ge 3 ]; then
+  if mount -t btrfs -o subvolid=5 $DISK /top; then
+    if [ -d /top/@root.lkg ]; then
+      t=$(cut -d. -f1 /proc/uptime); mv /top/@root /top/@root.bad-$n-$t && mv /top/@root.lkg /top/@root && log "ROLLED BACK: @root -> @root.bad-$n-$t, @root.lkg -> @root"
+    else log "attempt $n: no @root.lkg to roll back to"; fi
+    umount /top
+  fi
+fi
+mount -t btrfs -o rw,noatime,compress=zstd:1,subvol=@root $DISK /newroot || rescue "root mount failed"
+[ -x /newroot/usr/lib/systemd/systemd ] || { umount /newroot; rescue "no systemd on root"; }
+log "switch_root to @root"
+for m in dev run proc sys; do mount --move /$m /newroot/$m; done
+exec switch_root /newroot /usr/lib/systemd/systemd

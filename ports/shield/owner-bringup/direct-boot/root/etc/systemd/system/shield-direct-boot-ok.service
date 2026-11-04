@@ -1,0 +1,12 @@
+[Unit]
+Description=Mark a direct boot good (reset the loader boot counter)
+ConditionKernelCommandLine=shield.boot=direct
+Requires=sshd.service
+After=sshd.service NetworkManager.service boot.mount
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/shield-boot-ok
+
+# Started by shield-direct-boot-ok.timer: a boot only counts as good after 3 minutes up.

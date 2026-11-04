@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh the last-known-good root 10 minutes after a good direct boot
+ConditionKernelCommandLine=shield.boot=direct
+
+[Timer]
+OnBootSec=13min
+
+[Install]
+WantedBy=timers.target

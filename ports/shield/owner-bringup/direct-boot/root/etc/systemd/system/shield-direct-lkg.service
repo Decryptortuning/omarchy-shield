@@ -1,0 +1,8 @@
+[Unit]
+Description=Refresh the last-known-good root snapshot (direct boot)
+ConditionKernelCommandLine=shield.boot=direct
+After=shield-direct-boot-ok.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/shield-lkg-refresh

@@ -1,0 +1,10 @@
+[Unit]
+Description=Mark a direct boot good after 3 minutes of uptime
+ConditionKernelCommandLine=shield.boot=direct
+
+[Timer]
+OnBootSec=3min
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

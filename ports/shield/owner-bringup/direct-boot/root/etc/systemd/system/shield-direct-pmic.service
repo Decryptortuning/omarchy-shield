@@ -1,0 +1,12 @@
+[Unit]
+Description=Keep the MAX77620 PMIC watchdog disabled and kicked (direct boot; cboot did this)
+ConditionKernelCommandLine=shield.boot=direct
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/sh -c 'while :; do g=$(i2cget -f -y 2 0x3c 0x01) && i2cset -f -y 2 0x3c 0x01 $((g & ~0x04)); w=$(i2cget -f -y 2 0x3c 0x02) && i2cset -f -y 2 0x3c 0x02 $(((w & ~3) | 1)); sleep 20; done'
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=sysinit.target

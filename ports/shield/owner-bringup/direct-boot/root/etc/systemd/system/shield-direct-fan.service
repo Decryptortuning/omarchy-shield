@@ -1,0 +1,12 @@
+[Unit]
+Description=Shield fan at conservative full speed (direct boot)
+ConditionKernelCommandLine=shield.boot=direct
+After=systemd-udev-trigger.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/sh -c 'for h in /sys/class/hwmon/hwmon*; do if [ "$(cat $h/name)" = pwmfan ]; then echo 2 > $h/pwm1_enable; echo 255 > $h/pwm1; fi; done'
+
+[Install]
+WantedBy=multi-user.target
