@@ -31,7 +31,8 @@ extern uint64_t smc_pmc(uint64_t op, uint64_t offset, uint64_t value);
 
 /* Payload flags */
 #define SHIM_NO_WATCHDOG 1ULL
-#define SHIM_TEST_UART 2ULL	/* QEMU virt: also print to the PL011 at 0x09000000 */
+#define SHIM_TEST_UART 2ULL
+#define SHIM_KEEP_BOOTMODE 4ULL	/* leave the PMC recovery flag set: crashes reboot into this slot again */	/* QEMU virt: also print to the PL011 at 0x09000000 */
 
 /* ---------- status output: cboot splash framebuffer (and PL011 under QEMU) ---------- */
 static uint8_t *fb;
@@ -184,7 +185,7 @@ void shim_main(void *cdt, uint64_t base)
 	 * secure-monitor call that mainline uses is needed. Result is reported below. */
 	uint32_t pmc_before = 0, pmc_after = 0;
 	int pmc_smc = 0;
-	if (!uart) {
+	if (!uart && !(pl->flags & SHIM_KEEP_BOOTMODE)) {
 		pmc_before = R32(0x7000e450);
 		R32(0x7000e450) = pmc_before & ~(3u << 30);
 		pmc_after = R32(0x7000e450);

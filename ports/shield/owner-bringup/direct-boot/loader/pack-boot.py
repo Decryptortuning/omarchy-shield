@@ -8,7 +8,7 @@ pad = lambda b: b + b'\0' * (-len(b) % PAGE)
 cmd = (b'console=tty0 loglevel=7 ignore_loglevel rdinit=/init nokaslr clk_ignore_unused regulator_ignore_unused '
        b'maxcpus=4 nr_cpus=4 cpuidle.off=1 initcall_blacklist=tegra_cpufreq_init tegra_smmu.reset_inherited=1 '
        b'tegra_smmu.quarantine_gpub_inherited=1 watchdog.open_timeout=240 watchdog.stop_on_reboot=0 '
-       b'pstore.compress=none modprobe.blacklist=r8169,pci_tegra,nouveau systemd.unit=graphical.target '
+       b'pstore.compress=none modprobe.blacklist=r8169,pci_tegra systemd.unit=graphical.target '
        b'systemd.log_target=kmsg systemd.log_level=info panic=10 shield.boot=direct')
 assert len(cmd) < 512, len(cmd)
 ident = hashlib.sha1(k + struct.pack('<I', len(k)) + r + struct.pack('<I', len(r)) + struct.pack('<I', 0)).digest().ljust(32, b'\0')

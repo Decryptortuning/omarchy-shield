@@ -51,9 +51,17 @@ All inputs are existing artifacts; there is no kernel rebuild.
 
 Two warm reboots from the direct path into the old carrier path (2026-11-03 22:21Z and 2026-11-04 00:37Z) both hung the old path's mainline kernel. The watchdog reset the board and the carrier then refused the leftover claim. A cold power-on into the old path worked both times. Hardware state left by the direct boot, most likely the GPU rail and MC client state, survives a warm reset and breaks the kexec path. Alternating between the paths is therefore unsafe, so the carrier is being retired: `tools/flash-direct-v4.sh` writes direct-v4 to both slots and resets APP. Carrier v13 stays in the build folder and can return through fastboot.
 
+## GPU and fan: root cause and fix (2026-11-04)
+
+The board DT names its pin table `pinctrl-names = "boot"` (the same as upstream `tegra210-p2894.dtsi`). Mainline only applies hog states named `default`/`init`. The old kexec path inherited the stock 4.9 pinmux, but cboot leaves two pins at function 0:
+- `lcd_gpio2_pv4`, the GPU voltage PWM1. With it unrouted, the GPU buck never saw a VID signal and sat at about 710 mV, whatever nouveau asked for. At high clocks the GPU then corrupted its work: a gpusrd read of address 0, MEMACK timeouts, CTXSW timeouts and an SError.
+- `pe7`, the fan PWM3. The fan stayed off on every direct boot, and the board idled at 83-86 C.
+
+The fix is `gpu-fix/board.v2-to-v4a-pinmux-default.diff`: one property, `pinctrl-names = "default"`. With it, the kernel routes both pins at boot, the fan runs at about 5900 rpm (34-42 C), VDD_GPU tracks nouveau's DVFS across its hardware 710-1320 mV range, and nouveau with Hyprland ran with zero GPU errors. direct-v9 loads nouveau at boot (no blacklist). Diagnosis: `../team-2026-11-03/gpu-smmu-direct.md`. The VDD_GPU-pinning DTs (v3a-v3e) only masked the missing PWM routing; do not use them.
+
 ## Open items
 
-- **GPU on the direct path.** The analysis is in `../team-2026-11-03/gpu-smmu-direct.md`. The SMMU handoff patches are not the cause: they reach the same end state on both paths, and the cmdline flags must stay. The fault starts on the GPU side, with an untranslated `gpusrd` read of address 0, then PBDMA errors, an LTC flush timeout and an SError. Ranked candidates:
+- **GPU on the direct path: fixed by the pinmux (see above).** Earlier analysis notes, kept for reference: The analysis is in `../team-2026-11-03/gpu-smmu-direct.md`. The SMMU handoff patches are not the cause: they reach the same end state on both paths, and the cmdline flags must stay. The fault starts on the GPU side, with an untranslated `gpusrd` read of address 0, then PBDMA errors, an LTC flush timeout and an SError. Ranked candidates:
   - VDD_GPU left at 710 mV. Stock sets 1.0 V; the fix is `gpu-fix/board.v2-to-v3a-vddgpu-1v0.diff`, DT only.
   - The GPU MC client flush/hot-reset state, which nouveau never resets. The fix is `gpu-fix/board.v2-to-v3c-mcreset-only.diff` plus `gpu-fix/0019-nouveau-tegra-gm20b-mc-client-reset.patch`.
 

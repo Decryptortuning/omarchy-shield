@@ -1,0 +1,17 @@
+--- a/board.dts (board.v2.dtb, decompiled)
++++ b/board.dts
+@@ -4327,11 +4327,12 @@
+ 	};
+ 
+ 	regulator-vdd-gpu {
++		voltage-table = <0x10b558 0x3f>;
+ 		compatible = "pwm-regulator";
+ 		pwms = <0x6c 0x01 0x1f40 0x00>;
+ 		regulator-name = "VDD_GPU";
+-		regulator-min-microvolt = <0xad570>;
+-		regulator-max-microvolt = <0x142440>;
++		regulator-min-microvolt = <0x10b558>;
++		regulator-max-microvolt = <0x10b558>;
+ 		enable-gpios = <0x6e 0x06 0x00>;
+ 		regulator-ramp-delay = <0x50>;
+ 		regulator-enable-ramp-delay = <0x7d0>;

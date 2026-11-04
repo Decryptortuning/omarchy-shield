@@ -1,0 +1,11 @@
+--- a/board.dts (board.v2.dtb, decompiled)
++++ b/board.dts
+@@ -642,7 +642,7 @@
+ 		compatible = "nvidia,tegra210-pinmux";
+ 		reg = <0x00 0x700008d4 0x00 0x29c 0x00 0x70003000 0x00 0x294>;
+ 		status = "okay";
+-		pinctrl-names = "boot";
++		pinctrl-names = "default";
+ 		pinctrl-0 = <0x22>;
+ 
+ 		pinmux-sdmmc1-1v8-drv {
