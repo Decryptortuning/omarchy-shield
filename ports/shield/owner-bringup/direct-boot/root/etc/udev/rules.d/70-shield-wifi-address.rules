@@ -1,0 +1,2 @@
+# Set the factory MAC on the built-in BCM4354 Wi-Fi when its interface appears.
+ACTION=="add", SUBSYSTEM=="net", DRIVERS=="brcmfmac", TAG+="systemd", ENV{SYSTEMD_WANTS}+="shield-wifi-address@$name.service"

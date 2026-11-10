@@ -1,0 +1,23 @@
+#!/bin/bash
+# Give wlan0 its factory MAC address. The Wi-Fi nvram carries Broadcom's placeholder address, so
+# every Shield would otherwise share one. The real address is in the read-only factory partition
+# (FCT, ext4): wifi/wifi_mac.txt. Runs from udev when the interface appears, before NetworkManager
+# brings it up.
+set -euo pipefail
+ifc=${1:?usage: shield-wifi-address <interface>}
+mnt=/run/shield-fct-wifi
+mkdir -p "$mnt"
+mount -o ro,noload /dev/disk/by-partlabel/FCT "$mnt"
+addr=$(tr -d ' \r\n' < "$mnt/wifi/wifi_mac.txt") || true
+umount "$mnt"
+if [[ ! $addr =~ ^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$ ]]; then
+  echo "no valid address in FCT wifi/wifi_mac.txt" >&2
+  exit 1
+fi
+current=$(< "/sys/class/net/$ifc/address")
+if [[ ${current,,} == "${addr,,}" ]]; then
+  exit 0
+fi
+ip link set dev "$ifc" down
+ip link set dev "$ifc" address "$addr"
+echo "$ifc address $current -> $addr"

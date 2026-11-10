@@ -1,6 +1,8 @@
 [Unit]
-Description=Enable Shield SDIO Wi-Fi (direct boot)
+Description=Enable Shield SDIO Wi-Fi by runtime overlay (older board DTs)
 ConditionKernelCommandLine=shield.boot=direct
+# A board DT that already enables the SDIO Wi-Fi needs neither the runtime overlay nor the private firmware path.
+ConditionPathExists=!/proc/device-tree/mmc@700b0200/wifi@1/brcm,board-type
 After=local-fs.target systemd-modules-load.service
 
 [Service]

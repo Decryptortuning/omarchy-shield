@@ -6,8 +6,11 @@
 /bin/busybox --install -s /bin
 mount -t proc proc /proc; mount -t sysfs sys /sys; mount -t devtmpfs dev /dev; mount -t tmpfs -o mode=0755 run /run
 log(){ echo "<1>shield-loader: $*" > /dev/kmsg; echo "$*" >> /run/shield-loader.log; }  # /run moves to the root: log survives in /run/shield-loader.log
-wait_dev(){ i=0; while [ ! -b $1 ] && [ $i -lt 50 ]; do sleep 0.2; i=$((i+1)); done; [ -b $1 ]; }
-APP=/dev/mmcblk0p19; DISK=/dev/mmcblk0p33
+# Partitions are found by GPT name, never by device number: the eMMC is mmcblk0 or mmcblk1
+# depending on which SD/MMC controllers the device tree enables.
+find_part(){ for u in /sys/class/block/*/uevent; do grep -qx "PARTNAME=$1" $u 2>/dev/null && { d=${u%/uevent}; echo /dev/${d##*/}; return 0; }; done; return 1; }
+wait_part(){ i=0; while [ $i -lt 50 ]; do find_part $1 && return 0; sleep 0.2; i=$((i+1)); done; return 1; }
+APP=; DISK=
 log "start $(cut -d' ' -f1 /proc/uptime)s"
 # MAX77620 PMIC watchdog: cboot kicks it every 30 s and, on the normal (LNX) path, leaves it armed
 # (128 s, then power-off). Nothing in mainline kicks it: disable it (CNFGGLBL2 bit 2 = WDTEN) and
@@ -18,28 +21,44 @@ g2=$(i2cget -f -y 2 0x3c 0x01 2>/dev/null); g3=$(i2cget -f -y 2 0x3c 0x02 2>/dev
 [ -n "$g3" ] && i2cset -f -y 2 0x3c 0x02 $(( (g3 & ~3) | 1 )) 2>/dev/null
 log "PMIC CNFGGLBL2 $g2 -> $(i2cget -f -y 2 0x3c 0x01 2>/dev/null) CNFGGLBL3 $g3"
 
+# Rescue keeps the hardware watchdog fed for RESCUE_HOLD_S seconds only. If nobody has logged in by
+# then (/run/rescue-hold absent), it reboots, so a device stranded with no way in returns to the
+# other boot slot instead of sitting here for ever. Typing 'hold' on the console, or any SSH login
+# to the root's sshd, keeps it.
+RESCUE_HOLD_S=900
+for a in $(cat /proc/cmdline); do case $a in shield.rescue_hold=*) RESCUE_HOLD_S=${a#*=};; esac; done
 rescue() {
   log "RESCUE MODE: $1"
+  echo "RESCUE MODE: $1" > /dev/tty1
   watchdog -t 20 -T 120 /dev/watchdog0 2>/dev/null
+  ( sleep $RESCUE_HOLD_S; [ -e /run/rescue-hold ] || { echo "rescue: no login in ${RESCUE_HOLD_S}s, rebooting" > /dev/tty1; sync; reboot -f; } ) &
+  DISK=${DISK:-$(find_part UDA)}
   insmod /lib/modules/pci-tegra.ko 2>/dev/null; insmod /lib/modules/r8169.ko 2>/dev/null
   i=0; while ! ip link show eth0 >/dev/null 2>&1 && [ $i -lt 30 ]; do sleep 0.5; i=$((i+1)); done
   ifconfig eth0 192.168.2.211 netmask 255.255.255.0 up && route add default gw 192.168.2.1 2>/dev/null && log "rescue eth0 192.168.2.211"
   if mount -t btrfs -o ro,subvol=@root,rescue=nologreplay $DISK /newroot 2>/dev/null || mount -t btrfs -o ro,subvol=@root.lkg $DISK /newroot 2>/dev/null; then
+    mkdir -p /dev/pts; mount -t devpts devpts /dev/pts 2>/dev/null
     mount -t proc proc /newroot/proc; mount -t sysfs sys /newroot/sys; mount --rbind /dev /newroot/dev
     mount -t tmpfs tmpfs /newroot/run; mount -t tmpfs tmpfs /newroot/tmp; mkdir -p /newroot/run/sshd
     cp /run/shield-loader.log /newroot/run/ 2>/dev/null
-    chroot /newroot /usr/bin/sshd -e -o PidFile=none && log "rescue sshd up (root key)"
+    # ForceCommand would break scp; a login marks the hold through the shell profile instead.
+    chroot /newroot /usr/bin/sshd -e -o PidFile=none -o SetEnv=SHIELD_RESCUE=1 && log "rescue sshd up (root key)"
+    # More than the listening sshd means a session is open: keep rescue up.
+    ( while sleep 5; do [ "$(ps | grep -c '[s]shd')" -gt 1 ] && { touch /run/rescue-hold; break; }; done ) &
   else log "rescue: no root mountable for sshd"; fi
   log "rescue: console shell on tty1; 'shield-rescue-resume' resets the counter and reboots"
-  cat > /bin/shield-rescue-resume <<'R'
+  cat > /bin/shield-rescue-resume <<R
 #!/bin/sh
-mount -t ext4 /dev/mmcblk0p19 /app && echo 0 > /app/shield-boot/counter && sync && umount /app; reboot -f
+mount -t ext4 ${APP:-\$(for u in /sys/class/block/*/uevent; do grep -qx PARTNAME=APP \$u && { d=\${u%/uevent}; echo /dev/\${d##*/}; }; done)} /app && echo 0 > /app/shield-boot/counter && sync && umount /app; reboot -f
 R
-  chmod 755 /bin/shield-rescue-resume
+  printf '#!/bin/sh\ntouch /run/rescue-hold; echo "rescue will stay up"\n' > /bin/hold
+  chmod 755 /bin/shield-rescue-resume /bin/hold
+  ip -4 addr show eth0 2>/dev/null | grep inet > /dev/tty1
+  echo "Rescue reboots in $((RESCUE_HOLD_S/60)) min unless you type 'hold' or log in over SSH. 'shield-rescue-resume' resets the boot counter and reboots." > /dev/tty1
   while true; do setsid cttyhack sh -l </dev/tty1 >/dev/tty1 2>&1; sleep 1; done
 }
 
-wait_dev $APP || rescue "APP partition missing"
+APP=$(wait_part APP) || rescue "APP partition missing"
 mount -t ext4 -o rw,noatime $APP /app || rescue "APP mount failed"
 mkdir -p /app/shield-boot
 n=$(cat /app/shield-boot/counter 2>/dev/null); case "$n" in ''|*[!0-9]*) n=0;; esac; n=$((n+1))
@@ -51,7 +70,7 @@ log "attempt $n${next:+ next=$next}"
 [ "$next" = rescue ] && rescue "requested"
 [ $n -ge 5 ] && rescue "$n attempts without a good boot"
 
-wait_dev $DISK || rescue "root disk missing"
+DISK=$(wait_part UDA) || rescue "root disk missing"
 if [ $n -ge 3 ]; then
   if mount -t btrfs -o subvolid=5 $DISK /top; then
     if [ -d /top/@root.lkg ]; then

@@ -1,0 +1,11 @@
+[Unit]
+Description=Shield Wi-Fi factory address on %i (from the FCT partition)
+ConditionPathExists=/dev/disk/by-partlabel/FCT
+Before=NetworkManager.service
+DefaultDependencies=no
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/shield-wifi-address %i
