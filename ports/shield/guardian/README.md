@@ -1,5 +1,7 @@
 # Finite Shield guardian draft
 
+> **Historical record.** This document describes the earlier bring-up, which booted through LineageOS recovery and kexec. That path is retired. For the current system, start at the [port README](../README.md).
+
 This source is for the restricted A04 diagnostic candidate. `profile.h` deliberately disables both roles. The host checks in [the receipt](../validation-guardian-host.json) exercise actual pure state/wire code and a disabled ARM entrypoint; the enabled native guardian remains unqualified. This is not an indefinite desktop watchdog service or an AUTO fan policy. Source-bound profile production, systemd units and the recovery broker now have [host installation evidence](../validation-systemd-installation.json); physical installation, boot-controller integration and native qualification remain open. No Shield device access accompanied these host checks.
 
 Only `--run` is accepted. Role, candidate digest, kernel release, identity, register addresses and timing are compile-time inputs; neither arguments nor control packets can select them. A reviewed producer must replace the disabled profile as part of a candidate-bound build. The candidate string is an integration identity, not an independent runtime measurement of the executable, kernel, DTB or root filesystem. The outside qualification/controller cohort must bind those artifacts and the recovery contract before enabling it. A profile without that binding is a gap, not qualified coverage.

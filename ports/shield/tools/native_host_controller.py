@@ -329,7 +329,7 @@ class Attempt:
             and signal.getsignal(signal.SIGCHLD) == signal.SIG_DFL, 'One single-threaded attempt required')
     self.started = True
     source_check(dict(self.spec.source_pins))
-    require(self.directory.is_absolute() and self.directory.is_relative_to(Path('$SHIELD_BUILD'))
+    require(self.directory.is_absolute() and self.directory.is_relative_to(Path(os.environ.get('SHIELD_BUILD', os.path.expanduser('~/build/omarchy-shield'))))
             and self.directory.parent.resolve(strict=True) == self.directory.parent, 'Unsafe private attempt location')
     self.directory.mkdir(mode=0o700)
     for epoch in self.spec.contexts: (self.directory / epoch).mkdir(mode=0o700)

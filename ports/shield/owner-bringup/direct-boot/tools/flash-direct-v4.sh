@@ -1,7 +1,7 @@
 #!/bin/bash
 # boot (LNX) + recovery (SOS) <- direct-boot v2; system (APP) <- last-known-good RAW-only sparse (clears pending 15).
 # Old carrier v13 kept at carrier/build/v13-lnx; original SOS at desktop-ready-2026-10-16/primary-recovery/SOS-readback.bin
-W=$WORK; FB=$WINHOME/AppData/Local/Android/Sdk/platform-tools/fastboot.exe; SER=SHIELD_SERIAL_REDACTED
+W=$WORK; FB=$WINHOME/AppData/Local/Android/Sdk/platform-tools/fastboot.exe; SER=${SHIELD_SERIAL:?set SHIELD_SERIAL to the fastboot serial of your Shield}
 BOOTIMG=$W/loader/direct-v4.img; IMG=$W/loader/direct-v4.img; APP=$W/fastboot/APP.lkg.rawsparse.img; LOG=$W/fastboot/flash-direct-v4.log; : > $LOG
 log(){ echo "[$(date -u +%H:%M:%S)] $*" | tee -a $LOG; }
 log "boot $(sha256sum $BOOTIMG | cut -c1-16) img $(sha256sum $IMG | cut -c1-16) app $(sha256sum $APP | cut -c1-16)"

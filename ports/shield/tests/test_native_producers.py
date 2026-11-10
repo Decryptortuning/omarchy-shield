@@ -354,7 +354,7 @@ class ReadonlyWitnessDescriptorTests(unittest.TestCase):
 # Cross-component inventory checks use an explicitly reviewed fixture manifest.
 # Synthetic predecessor records below are disposable TEST DATA, never native evidence.
 class RootRuntimeReceiverIntegrationTests(unittest.TestCase):
-  BASE = Path('$SHIELD_BUILD')
+  BASE = Path(os.environ.get('SHIELD_BUILD', os.path.expanduser('~/build/omarchy-shield')))
   FIXTURE_ENV = 'SHIELD_NATIVE_TEST_FIXTURE'
   FIXTURE_SHA_ENV = 'SHIELD_NATIVE_TEST_FIXTURE_SHA256'
 
@@ -384,7 +384,7 @@ class RootRuntimeReceiverIntegrationTests(unittest.TestCase):
         or fixture['format_version'] != 1 or fixture['purpose'] != 'native systemd inventory test fixture'):
       raise ValueError('Wrong native fixture manifest purpose')
     raw = capsule.pinned(fixture['capsule_contract'], 128 * 1024)
-    cls.workspace = tempfile.TemporaryDirectory(prefix='shield-receiver-fixture-', dir='$HOME/build')
+    cls.workspace = tempfile.TemporaryDirectory(prefix='shield-receiver-fixture-', dir=os.path.expanduser('~/build'))
     cls.addClassCleanup(cls.workspace.cleanup)
     cls.fixture_root = Path(cls.workspace.name)
     cls.counter = 0

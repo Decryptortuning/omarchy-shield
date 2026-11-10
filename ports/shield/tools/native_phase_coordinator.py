@@ -213,7 +213,7 @@ def host_pin(item, maximum):
           and type(item['bytes']) is int and 0 < item['bytes'] <= maximum, 'Wrong fixed host input pin')
   sha(item['sha256'])
   path = Path(item['path'])
-  require(path.is_absolute() and path.is_relative_to(Path('$SHIELD_BUILD'))
+  require(path.is_absolute() and path.is_relative_to(Path(os.environ.get('SHIELD_BUILD', os.path.expanduser('~/build/omarchy-shield'))))
           and path.parent.resolve(strict=True) == path.parent, 'Host input outside private build namespace')
   fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
   try:

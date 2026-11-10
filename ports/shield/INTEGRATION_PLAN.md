@@ -1,5 +1,7 @@
 # Shield Omarchy integration plan
 
+> **Historical record.** This document describes the earlier bring-up, which booted through LineageOS recovery and kexec. That path is retired. For the current system, start at the [port README](README.md).
+
 Integrate the available Shield and Tegra work into a portable Arch Linux ARM desktop with the full Omarchy environment, using an external USB SSD. The primary target is the connected original-Tegra210 Darcy. The bootloader-selected and independently backed-up stock DTB identify its A04 configuration. The retained B01 profile has its own board and firmware inputs.
 
 Use the existing modern kernel, Nouveau/Mesa and Omarchy packages as the main implementation. Adapt board definitions, firmware mappings and relevant fixes from the other projects after checking their hardware and software interfaces. Every capability actually present on this Shield stays in the acceptance scope. Full hardware support can be claimed only after its applicable physical tests pass.

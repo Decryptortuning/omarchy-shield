@@ -1,6 +1,6 @@
 #!/bin/bash
 # Rewrite APP with a RAW-only sparse image (no FILL chunks) to avoid suspected cboot FILL corruption.
-W=$WORK; FB=$WINHOME/AppData/Local/Android/Sdk/platform-tools/fastboot.exe; SER=SHIELD_SERIAL_REDACTED
+W=$WORK; FB=$WINHOME/AppData/Local/Android/Sdk/platform-tools/fastboot.exe; SER=${SHIELD_SERIAL:?set SHIELD_SERIAL to the fastboot serial of your Shield}
 APP=$W/fastboot/APP.lkg.rawsparse.img; LOG=$W/fastboot/flash-app-raw.log; : > $LOG; log(){ echo "[$(date -u +%H:%M:%S)] $*" | tee -a $LOG; }
 log "app $(sha256sum $APP|cut -c1-16)"
 start=$(date +%s); while :; do timeout 10s "$FB" devices 2>/dev/null | tr -d '\r' | grep -q "^$SER.*fastboot" && break

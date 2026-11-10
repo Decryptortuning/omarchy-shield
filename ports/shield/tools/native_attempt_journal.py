@@ -22,7 +22,7 @@ from native_recovery_observer import Observer
 from usb_root_profile import require
 
 SECOND = 1_000_000_000
-ROOT = Path('$SHIELD_BUILD')
+ROOT = Path(os.environ.get('SHIELD_BUILD', os.path.expanduser('~/build/omarchy-shield')))
 
 
 def now():

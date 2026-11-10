@@ -1,78 +1,91 @@
-# NVIDIA Shield TV port
+# Omarchy on the NVIDIA Shield TV (2017)
 
-**Status 2026-11-03.** The connected Darcy A04 boots Omarchy from the internal eMMC through the Lineage-recovery carrier, with Wi-Fi, 1 Gb/s Ethernet, HDMI audio, Bluetooth, 4K HDMI and the GM20B GPU working, and survives reboots. An outage on 2026-11-03 had two causes: a systemd ordering cycle, and APP images corrupted by `fastboot flash system`. It is documented in [owner-bringup/AAR-2026-11-03.md](owner-bringup/AAR-2026-11-03.md), and the rules that prevent a repeat are in [owner-bringup/README.md](owner-bringup/README.md). The sections below predate that work and describe the October 14-18 qualification history.
+This port runs [Omarchy](https://omarchy.org) — Arch Linux ARM with Hyprland — on the 2017 NVIDIA Shield TV, booted from the internal eMMC by the stock NVIDIA bootloader. Android is replaced; there is no dual boot.
 
-[Full-system ARM VM core qualification](validation-systemd-vm.json) now passes with the matched root: real systemd PID1, three Btrfs mounts, a modern virtual DRM card, active local PAM/logind session, user manager/bus, setuid elevation/drop and 25 explicit power-policy denials. The normal suite passed 175 checks with 11 root-only skips, and all 37 fenced root transaction/profile checks passed separately. Graphical UWSM/compositor rendering remains blocked in this virtual fixture; native systemd desktop and hardware parity remain unqualified.
+It is experimental. It has run on exactly one device, the author's, and **there is no ready-made installer yet**. Read [Status](#status) before you plan anything around it.
 
-[Fresh host preparation and artifact installation](validation-systemd-installation.json) and the [private qualification-layer producer/reader](validation-native-layer.json) also pass. The layer contains the complete themed home, account/policy/mask metadata and nine bound runtime/profile files. Its native materializer, actual USB preimage admission and boot handoff are still pending. The [qualification contract](qualification/README.md) describes the phased native plan. The physical USB and boot partitions are unchanged; the [earlier preparation receipt](validation-systemd-preparation.json) remains available.
+## Supported hardware
 
-[The matched runtime qualification](validation-runtime-closure.json) records the maintained kernel, full Mesa and paired desktop packages installed together in an isolated ARM root: 72 port tests, exact graphics/kernel/1,561-module payload checks, ARM loader/dependency checks and full-root QEMU acceptance passed. The physical USB root remains unchanged; this software result does not establish permanent boot or additional hardware parity.
+| Model | Board | SoC | State |
+| --- | --- | --- | --- |
+| Shield TV 2017, 16 GB | Darcy, P2894 revision A04 | Tegra X1 (T210) | Runs. Everything below was measured on this board. |
+| Shield TV 2017, other board revisions | Darcy, P2894 A08 | Tegra X1 (T210) | A kernel profile exists. It has never been booted. |
+| Shield TV Pro 2019 | mdarcy, P2894 B00 | Tegra X1+ (T210B01) | A kernel profile exists. It has never been booted, and the boot method here does not apply as written. |
+| Shield TV 2015, Shield TV 2019 "tube", Jetson, Switch | — | — | Not supported. |
 
-This experimental Omarchy port targets the owner's connected `darcy` / original Tegra210 A02 Shield with its bootloader-selected **A04** board definition. The earlier `mdarcy` / Tegra210B01 candidate remains a separate profile. Full hardware support remains the acceptance goal in [hardware-darcy.json](hardware-darcy.json) and [hardware.json](hardware.json).
+The bootloader must be unlocked (`fastboot oem unlock`), which erases Android's data.
 
-Linux 7.1 boots on the physical Shield and reads the prepared USB root without writes. GM20B clear/shader tests, HDMI, unprivileged Hyprland and a visible Omarchy bar/themed terminal now pass at 1280×720 using the complete patched Mesa library set. [The desktop receipt](validation-desktop-bringup.json) and [native Omarchy capture](validation/omarchy-720p.jpg) record the measured visual result. Shell IPC still times out in that native graphical session; interaction, a normal native systemd session, sustained operation and independent Linux boot remain incomplete. There is no flashable installer. The [package receipt](validation-desktop-package.json) records an isolated ARM installation of the full Mesa package with kernel release7; the owner's USB root has not been updated.
+## Status
 
-[Automatic recovery control](validation-recovery-control.json) now returns authenticated root access after ordinary reboots and planned RAM tests without Android setup, controller menus or new authorization prompts. The owner-authorized default boot entry is the verified key-enrolled Lineage recovery. The original Android boot backup remains private. Physical cold power cycling and a modern owned watchdog remain unqualified.
+Measured on the Darcy A04 on 2026-11-09, after five days of continuous uptime.
 
-The [latest integration build](INTEGRATION.md) adds the Shield controller driver, the reviewed fan/PWM candidate, verified inactive firmware staging and diagnostic component validation. Four matching ARM packages and the complete filesystem VM test pass; [validation-darcy-integration.json](validation-darcy-integration.json) records exact hashes and scope. The [earlier Darcy report](DARCY.md#verified-build-2026-10-14) and [pre-USB B01 report](VALIDATION.md) remain separate historical builds.
+| Area | State | Notes |
+| --- | --- | --- |
+| Boot from eMMC | Working | The stock bootloader starts a mainline kernel directly. No Android, no LineageOS, no kexec. |
+| Boot safety | Working | Hardware watchdog, a boot counter, automatic rollback to the last good root, and a network rescue mode. |
+| CPU | Working | Four Cortex-A57 cores, frequency scaling from 204 MHz to 2.2 GHz, and the power-down idle state. |
+| Memory | Working | 3 GB fitted, about 2.4 GB usable by Linux. This is tight for a desktop with a browser. |
+| Storage | Working | Root is Btrfs on the internal eMMC, with snapshots. |
+| HDMI video | Working | The desktop runs at 1280×720 by default. 1080p has been driven; 4K modes are offered but not qualified. |
+| GPU | Working | Hardware-rendered Hyprland through Mesa's nouveau driver (GM20B). Vulkan (NVK) is installed but not qualified. |
+| HDMI audio | Working | PipeWire's default sink. |
+| Wi-Fi | Working | BCM4354, 5 GHz, 866 Mbit/s link rate. |
+| Ethernet | Working | 1 Gbit/s. |
+| Bluetooth | Partly verified | The controller starts with its factory address. Pairing a device has not been tested. |
+| USB host port | Partly verified | Keyboards and receivers work. USB storage has not been retested on the current boot path. |
+| USB OTG port | Bootloader only | Used for fastboot. Not qualified from Linux. |
+| Fan and thermals | Working | The kernel sets the fan from CPU and GPU temperature. Idle is about 47 °C; four cores at full load peak at 61 °C. |
+| HDMI CEC | Untested end to end | The adapter registers and reads its address from the TV. The test TV has no CEC. |
+| Shield controller and remote | Untested | |
+| Hardware video decode and encode | Not available | Video plays through software decoding only. |
+| Suspend and resume | Untested | |
+| Installer for other owners | Not available yet | See [Roadmap](#roadmap). |
 
-USB inspection identifies original Tegra210 silicon, Android 11 and the bootloader-selected **Darcy A04** DTB. On October 15, owner-approved unlocking completed and fastboot verified `unlocked: Yes`. The [stock-kernel inventory candidate](STOCK_BOOTSTRAP.md) returned to Android through both RAM and recovery-partition entry. Matching stock recovery restoration succeeded, followed by verified official Lineage recovery entry and a working root ADB shell. A guarded read-only session captured the live device tree, memory map, boot arguments, thermal/module state and physical boot/recovery/DTB backups privately. Android boot and stored A04 DTB payloads match the harvested NVIDIA inputs. [validation-native-entry.json](validation-native-entry.json) records the measured scope; the default modern lock now selects a separate A04 definition, whose kernel/modules and QEMU diagnostic boot pass in [validation-a04.json](validation-a04.json); subsequent physical handoff is recorded below. See [DARCY.md](DARCY.md) for the current scope.
+## How it boots
 
-The [RAM handoff follow-up](DARCY.md#ram-handoff-measurements--october-15) records successful physical initramfs userspace after a separately gated GPU-disabled SMMU handoff. The maintained PHY supplier fix now sends 71,639 bytes of live logs over SuperSpeed USB serial with the original probe DT, collects 30 readings from each temperature channel, reaches 5,835 fan RPM and restarts into recovery at 29.03 seconds. Recovery returns authenticated root ADB without controller menu input. [validation-xusb-supplies.json](validation-xusb-supplies.json) pins the fresh kernel build, actual-source failure/refcount tests, QEMU checks and bounded physical result. Full hardware acceptance remains 0/19.
+```
+stock NVIDIA bootloader (cboot)
+        │  loads the "boot" or "recovery" partition as if it were an Android kernel
+        ▼
+shim  (30 KB, this repo)
+        │  swaps in the mainline device tree, arms the watchdog, hands over memory and command line
+        ▼
+mainline Linux 7.1 kernel
+        ▼
+loader initramfs (busybox, this repo)
+        │  counts boots, rolls back or enters rescue after repeated failures
+        ▼
+Omarchy root filesystem (Btrfs on eMMC)
+```
 
-Seven [USB host/storage follow-ups](validation-usb-storage-probes.json) started both root hubs and captured SuperSpeed PC logs, but none detected the prepared flash drive. Normal power-management holds, a host-only startup window, two specifically matched Tegra210 firmware versions and the complete board PHY bindings did not resolve enumeration. Read-only register observations establish released host/SS/source resets and enabled hardware sequencers; they do not establish a firmware crash. An [attended reconnect probe](validation-usb-hotplug-probe.json) also returned automatically without detecting the drive, but late cue delivery and unconfirmed reconnect timing make its controlled-hotplug result inconclusive. These historical runs performed no filesystem mount or write; the successful follow-up is recorded below.
+The shim exists because this bootloader always passes Android's own device tree to whatever it boots. The mainline kernel needs a different one, so the bootloader starts the shim instead, and the shim starts Linux. Both the `boot` and `recovery` partitions hold a complete copy, which gives two independent boot slots: a test image goes into `recovery`, and if it hangs the watchdog returns the board to `boot`.
 
-Current source also includes an [offline-qualified OTG VBUS ownership fix](validation-usb-vbus-ownership.json). The actual-source regression, fresh full kernel/module build and QEMU boot passed. The original six-patch bundle had offline qualification; its driver change is also included in the subsequently tested eight-patch Image below. It leaves the fixed-host drive path unchanged and does not by itself establish an external-storage fix.
+The design, the reasons behind it and the build steps are in [owner-bringup/direct-boot/README.md](owner-bringup/direct-boot/README.md).
 
-Timed manual reconnects have been retired. Four [automatic drive-port tests](validation-usb-vbus-gpio.json) returned to authenticated recovery without controller input. They found and corrected missing explicit open-drain flags on both VBUS enables; live DT checks and raw GPIO readings now match working recovery. The maintained A04 DT compiles, and the builder rejects incorrect VBUS GPIO definitions. Those runs still did not enumerate the drive; they supplied the electrical correction used by the successful follow-up below.
+## Where things are
 
-The [USB-root follow-up](validation-usb-root-userspace.json) identified a missing XUSB host memory-client reset after normal recovery-driver shutdown. The maintained A04 board now requests that reset through the existing PMC framework. Bounded native tests detect the SanDisk at SuperSpeed, verify the exact owner partition, enforce block read-only mode and mount Btrfs with log replay disabled. Arch package queries and `Hyprland --version` run successfully as an unprivileged user from that filesystem, followed by clean unmount and automatic recovery return. A fresh eight-patch kernel, all 1,561 matching ARM64 modules, compiled-DT checks and both QEMU checks pass. The fresh eight-patch Image and its matching unmodified USB modules also passed the same native mount/query/unmount test with the bounded GPU-disabled probe DT and initramfs. The full enabled board DT still needs qualification. Offscreen hardware graphics now pass in the follow-up below; independent root boot, HDMI and a usable desktop remain open.
+| Path | Contents |
+| --- | --- |
+| [owner-bringup/direct-boot/](owner-bringup/direct-boot/README.md) | The current boot chain: shim, loader, system units, device-tree changes and the tools that write the boot partitions. |
+| [TROUBLESHOOTING.md](TROUBLESHOOTING.md) | What to do when the Shield does not come up, and the rules that keep it bootable. |
+| [kernel-patches/](kernel-patches) | Patches on top of the pinned Tegra kernel tree. |
+| [kernel.lock.json](kernel.lock.json), [kernel.fragment](kernel.fragment) | The pinned kernel source and the Shield configuration. |
+| [linux-shield/](linux-shield), [mesa-shield/](mesa-shield), [omarchy-shield/](omarchy-shield) | Package recipes for the kernel modules, the patched Mesa and the platform package. |
+| [owner-bringup/AAR-2026-11-03.md](owner-bringup/AAR-2026-11-03.md) | After-action report for the outage that led to the current boot design. |
+| [owner-bringup/team-2026-11-03/](owner-bringup/team-2026-11-03) | Investigation reports: the bootloader's fastboot behaviour, the GPU fault, and the boot redesign. |
+| [DARCY.md](DARCY.md), [BUILD.md](BUILD.md), `INTEGRATION*.md`, `validation*.json`, [qualification/](qualification) | Records from the earlier bring-up, which booted through LineageOS recovery and kexec. That path is retired. These files are history, not instructions. |
 
-The [GPU follow-up](validation-gpu-rendering.json) replaces inherited GPU mappings with a verified denied ASID zero, reserves it, and limits Nouveau instance allocations to the SMMU's 4 GiB aperture. The maintained nine-patch kernel initializes the GM20B with IOMMU-backed instance memory and creates its render node. A fixed diagnostic runs as UID 65534 from the read-only USB root, using isolated RAM device/runtime mounts and read-only sysfs/procfs. It renders through GBM/GLES, verifies two pixel values, unmounts and returns automatically to authenticated recovery. The GPU firmware includes the shared initialization-table target, resolved into the RAM image. The broader 19-subsystem matrix remains open; HDMI, Hyprland, Vulkan, sustained load and independent boot are separate checks.
+## Roadmap
 
-The [display/compositor follow-up](validation-desktop-bringup.json) enables the existing A04 host1x/DC/SOR path at 720p. Mesa’s Tegra wrapper needed repairs for its optional reset callback and current Gallium framebuffer/surface API. The locked [Mesa patch](mesa-patches/0001-tegra-current-gallium-api.patch) now produces a minimal hardware-rendered Hyprland session through Tegra KMS. It ran as UID 65534, captured the actual screen and returned automatically to recovery. The full paired Mesa build later produced the visible Omarchy bar and terminal above. Planned90s/120s recovery returns now work after explicit legacy watchdog preparation. Graphical shell control still fails, and the complete hardware matrix remains open.
+1. A kernel, device tree and boot image that anyone can rebuild from public sources with one script.
+2. An install guide and a first-install procedure for another Darcy owner, tested by wiping and reinstalling the reference device.
+3. Hardware still to qualify: Bluetooth pairing, USB storage, the Shield controller, suspend, 4K output.
+4. Hardware video decode.
 
-The [reusable board-source map](BOARD_SOURCES.md) identifies the original Darcy definitions inside LineageOS's T210 Foster hardware project, its compressed-kernel boot recipe and specific Linux radio firmware mappings. [board-sources.lock.json](board-sources.lock.json) pins these research inputs independently of the built kernel/component lock.
+## Risks
 
-The [integration plan](INTEGRATION_PLAN.md) orders the remaining board/firmware work, recovery and boot handoff, reproducible builds, native diagnostics, full hardware qualification and owner installation/update support. It includes the first implementation batch and acceptance checks for all 19 subsystems.
+Flashing replaces Android. The stock bootloader stays in place and fastboot remains reachable (hold A and B on the controller at power-on, with a PC attached to the USB port farther from HDMI), so a bad flash is recoverable, but returning to stock Android needs NVIDIA's recovery image for your exact model. Nothing here touches the bootloader itself.
 
-The [completed source and firmware harvest](HARVEST.md) records 728 verified local files, including exact installed-build boot/recovery inputs, four stock DT variants and specifically mapped radio firmware. It also identifies fan startup semantics, a disabled Shield controller driver, NVK's default Tegra rejection and the vendor/modern media interface gap. These are staged research inputs; the built runtime and physical acceptance remain unchanged.
+## Licence
 
-## Current implementation
-
-- The `aarch64-shield` detector recognizes distinct A04 and A08 profiles with original Tegra210, and B00 with Tegra210B01. Cross-generation pairs, conflicting proc/sysfs identities, 2015 Shields, Switches and Jetsons are rejected. Compatible strings identify supported evaluation DTs; they do not qualify the physical unit.
-- Package composition retains Omarchy's base and ARM defaults and adds the Shield platform, firmware candidates, Nouveau/Mesa/NVK and hardware diagnostics. The existing ARM edge repository supplies the desktop packages.
-- Image manifests and pacman templates understand the Shield platform. Boot, provisioning, reset and update operations dispatch to the local `omarchy-shield` package, whose unfinished boot-changing operations refuse to run rather than use a PC boot path.
-- The pinned ACK Tegra 7.1 kernel and diagnostic initramfs have compiled and booted under QEMU `virt`. The hardware configuration enables PCIe Wi-Fi, USB host/device mode, UAS storage, Bluetooth HID, HDMI audio, CEC, Nouveau and the host1x userspace interface. The matching kernel modules have been built. QEMU's virtual board does not exercise the Shield DTB or physical peripherals.
-- Each board profile selects its own DTB, acceptance matrix and CEC overlay. The original Darcy profile includes PCIe Ethernet and PWM regulator requirements; B01 retains its own USB firmware and radio requirements. Further firmware matching and peripheral qualification remain open; the bounded GPU and USB measurements above establish their stated scope.
-- The kernel profile includes Omarchy's zstd compressed swap and encrypted-root driver requirements. `linux-shield` owns the custom kernel modules without installing a boot image. Btrfs and Snapper are included; native snapshot boot integration remains unfinished.
-
-The firmware audit finds GM20B ACR, VIC and original Tegra210 XUSB files in the signed Linux firmware packages. Tegra210B01 XUSB, matching Bluetooth HCD files, and NVDEC/NVENC blobs remain absent from the development runtime. Tegra210 XUSB is not a B01 replacement. Exact current-OTA Darcy calibration/HCD/media payloads and pinned upstream firmware are now staged locally with hashes and mappings; activation, license review and physical qualification remain open. Older L4T candidates stay separate and inactive. Stock Android denied direct firmware and raw boot-partition reads. Later Lineage Recovery root ADB obtained verified private LNX/SOS/DTB captures; SOS contains the current Lineage control.
-
-## Boot design
-
-NVIDIA early boot firmware → a matched custom Linux Android-format boot image → an ARM Linux filesystem on external USB storage → Omarchy/Hyprland. Boot-image headers, DT handoff, actual board revision, required firmware and a stock recovery route must be established before installation. A Switch Hekate payload, Jetson flash configuration or desktop NVIDIA DKMS package is not a Shield boot configuration.
-
-The initial target keeps native kernel/boot-image installation outside desktop updates. Encrypted owner setup, factory reset and boot-update verification are unfinished: their lifecycle entrypoints currently report that requirement and fail. This is a visible capability gap, not a production update path.
-
-## Inputs
-
-- [kernel.lock.json](kernel.lock.json): default original Tegra210 Darcy A04 candidate, with pinned kernel, matrix and CEC overlay.
-- [kernel-darcy-a08.lock.json](kernel-darcy-a08.lock.json): separate original-Tegra210 A08 evaluation profile and acceptance matrix.
-- [kernel-mdarcy.lock.json](kernel-mdarcy.lock.json): separate Tegra210B01 B00 candidate; never substitute it for the connected original-X1 device.
-- [kernel.fragment](kernel.fragment): additional Shield hardware configuration, merged after a normal ARM64 diagnostic configuration.
-- [tegra210b01-shield-cec.dtso](tegra210b01-shield-cec.dtso): B00 evaluation board overlay; it is not confirmation of the owner's actual board revision.
-- [userspace.lock.json](userspace.lock.json): upstream source, packaging, ARM repository metadata and signed rootfs provenance. It records the upstream base rather than claiming that the public binary packages include this fork's changes.
-- [omarchy-shield](omarchy-shield/PKGBUILD): local ARM platform package. Build on Arch Linux ARM with `makepkg` after building/installing this fork's paired `omarchy` and `omarchy-settings` packages from the same source checkout through `OMARCHY_SRC` in the pinned upstream packaging recipes.
-- [BUILD.md](BUILD.md): checked build tools for the kernel/modules, signed ARM filesystem, five local packages, and isolated whole-filesystem QEMU tests.
-- [collect-shield-linux.py](collect-shield-linux.py): bounded evidence collection on either supported Shield board/SoC pair. Run `sudo python3 collect-shield-linux.py --output hardware-report.json` after a native boot and basic cooling verification. `--graphics` additionally initializes EGL/Vulkan. Generated device reports must be reviewed before publishing.
-
-The source branch reports `4.0.0.alpha`. The latest paired runtime/settings packages use release `99.6`; earlier integration, Darcy and pre-USB packages use `99.4`, `99.3` and `99.2`. The new logging kernel is a separately validated diagnostic build; matching desktop packages have not been rebuilt from it. Do not mix runtime/settings source commits or board kernel inputs. The upstream MIT license applies to Omarchy; copied kernel and device-tree inputs retain their stated GPL licenses.
-
-## Qualification
-
-[Latest bounded physical milestones](DARCY.md) record hardware-rendered Omarchy, corrected display MC reset ownership, watchdog expiry, read-only eMMC, clean-unmount CAC durability and a passive init-owned boot-context probe. [The machine-readable receipt](validation-native-milestones.json) distinguishes these results from unattended boot and full hardware parity; complete integration of those later private candidates into the public build recipes remains pending.
-
-The acceptance matrix covers CPU/RAM, eMMC, both USB ports and role switching, SSD, Ethernet, Wi-Fi, Bluetooth/remote/microphone, HDMI/audio/CEC, GPU rendering/Vulkan, video decode/encode/VIC, cooling, clocks/power, suspend/wake and independent boot/recovery. Hardware-rendered Hyprland is required; a software renderer is not a GPU pass. HDR, Dolby, protected playback and NVIDIA AI upscaling need separate vendor/userspace/licensing feasibility work.
-
-The source currently has focused automated coverage for platform detection, package composition, manifests, repository templates and lifecycle boundaries. Desktop and hardware qualification requires the real Shield; the matrix stays untested until evidence is available.
+The Omarchy parts are MIT, as upstream. The shim and the device-tree sources derive from the Linux kernel and libfdt and carry their licences in the file headers.

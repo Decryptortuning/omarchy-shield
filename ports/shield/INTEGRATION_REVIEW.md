@@ -1,5 +1,7 @@
 # Darcy integration candidate review
 
+> **Historical record.** This document describes the earlier bring-up, which booted through LineageOS recovery and kexec. That path is retired. For the current system, start at the [port README](README.md).
+
 Review date: October 14, 2026. Scope: inactive firmware staging, controller configuration, fan/PWM producer and consumers, diagnostic component validation and a static ARM64 kexec helper. The source/interface review is complete for this candidate; [build and test evidence](validation-darcy-integration.json) records the resulting artifacts separately. No native execution, firmware activation, bootloader change or device write is part of this batch.
 
 ## Reviewed interfaces

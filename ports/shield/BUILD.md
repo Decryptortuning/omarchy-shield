@@ -1,5 +1,7 @@
 # Offline build workflow
 
+> **Partly historical.** The kernel, root filesystem and Mesa build sections still apply. The carrier, capsule and qualification sections describe the retired LineageOS-recovery boot path. For the current system, start at the [port README](README.md).
+
 These tools build Linux components and an ARM development filesystem on an x86-64 Linux/WSL host. They do not create a Shield installer, unlock a device, partition a disk or flash anything. Keep the native build directory on Linux storage rather than NTFS. The prepared filesystem contains development accounts and a build signing keyring; do not deploy or distribute it without owner/account, machine-key and boot finalization.
 
 ## Host and source inputs

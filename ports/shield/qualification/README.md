@@ -1,5 +1,7 @@
 # Full-systemd qualification preparation
 
+> **Historical record.** This document describes the earlier bring-up, which booted through LineageOS recovery and kexec. That path is retired. For the current system, start at the [port README](../README.md).
+
 The published qualification checkpoint prepares a separate matched ARM root and binds a finite guardian/recovery pair. The [full-system ARM VM receipt](../validation-systemd-vm.json) qualifies that checkpoint's systemd/session core. The existing secure recovery control and physical USB remain separate until the native broker, materializer and root handoff complete qualification.
 
 The working native pipeline has current source producers for bootstrap helpers, early runtime, capsules, package maintenance, layer materialization and full-systemd handoff. Retained full-system ARM systemd and maintenance VM runs passed their stated software scopes. A real recovery-RAM transfer exposed a remote writer-completion race; the corrected exact-byte reader now requires a size/hash/inode completion fence, and a full archive plus immediate ARM loader version check passed over the actual USB connection. The first attempted package run stopped before loader execution, watchdog arming or USB filesystem writes; that boot set remains consumed.

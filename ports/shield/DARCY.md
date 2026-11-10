@@ -1,5 +1,7 @@
 # Connected Darcy target
 
+> **Historical record.** This document describes the earlier bring-up, which booted through LineageOS recovery and kexec. That path is retired. For the current system, start at the [port README](README.md).
+
 ## Current physical qualification — October 16 local / October 17 UTC
 
 [The current milestone receipt](validation-native-milestones.json) supersedes the earlier capability gaps below for its exact bounded scope. The owner device is Darcy A04 with original Tegra210 A02; these results do not establish 2019 B01 support. The physical probes retain their exact private kernel/DT identities. Their maintained kernel/package integration and matched-root VM qualification are recorded below; they do not extend physical acceptance to the new root.

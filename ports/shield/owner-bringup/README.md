@@ -6,6 +6,8 @@ This folder records work on the connected Darcy A04 Shield. It reuses the kernel
 
 ## Rules that keep the device bootable
 
+The current rules are in [../TROUBLESHOOTING.md](../TROUBLESHOOTING.md). The list below dates from the retired carrier path; rules 2 and 5 apply only to it.
+
 1. **Never `fastboot flash system` a raw image.** The Shield bootloader corrupts the FILL chunks that host fastboot generates, and the kernel Image on APP then fails the carrier's hash check. Convert the image with `carrier/make-rawsparse.py` first, or write APP with `dd` from Linux. `fastboot flash boot` and `fastboot flash recovery` with padded raw images are fine.
 2. **Keep the Shield's USB host port empty while it boots.** The carrier handoff refuses kexec when any USB device besides the root hubs is present.
 3. **Check every systemd unit before enabling it.** Run `systemd-analyze verify <unit> default.target`, and never order an optional unit `Before=` anything in the acknowledgement chain (sshd, network.target, NetworkManager, `shield-owner-*`).

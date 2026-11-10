@@ -23,7 +23,7 @@ from native_host_controller import Attempt, Spec
 from native_phase_plan import RECEIPT_FIELDS, decode
 from usb_root_profile import require
 
-ADB = Path('$WINHOME/AppData/Local/Android/Sdk/platform-tools/adb.exe')
+ADB = Path(os.environ.get('WINHOME', '/mnt/c/Users/Public')) / 'AppData/Local/Android/Sdk/platform-tools/adb.exe'
 SECOND = 1_000_000_000
 LEGACY_KERNEL = '4.9.141-g9d1bd583388e'
 PARTITIONS = {'LNX': 18, 'SOS': 16}

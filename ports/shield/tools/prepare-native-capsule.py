@@ -70,7 +70,7 @@ def pinned(item, limit):
           and item['mode'] in {0o600, 0o644, 0o700, 0o755}, 'Wrong host input pin')
   sha(item['sha256'])
   path = Path(item['path'])
-  require(path.is_absolute() and path.is_relative_to(Path('$HOME'))
+  require(path.is_absolute() and path.is_relative_to(Path.home())
           and path.parent.resolve(strict=True) == path.parent, 'Host input outside native workspace')
   descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC)
   try:
@@ -383,7 +383,7 @@ def main():
   require(0 < len(raw) <= 512 * 1024 and digest(raw) == sha(args.contract_sha256), 'Contract pin differs')
   contract = json_bytes(raw)
   blobs, receipt = assemble(contract)
-  require(args.output.is_absolute() and args.output.is_relative_to(Path('$SHIELD_BUILD'))
+  require(args.output.is_absolute() and args.output.is_relative_to(Path(os.environ.get('SHIELD_BUILD', os.path.expanduser('~/build/omarchy-shield'))))
           and args.output.parent.resolve(strict=True) == args.output.parent, 'Unsafe host output location')
   args.output.mkdir(mode=0o700)  # Existing/uncertain outputs are never adopted.
   for name, data in blobs.items():

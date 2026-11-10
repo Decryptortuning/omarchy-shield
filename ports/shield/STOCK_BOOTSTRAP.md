@@ -1,5 +1,7 @@
 # Stock-kernel inventory entry candidate
 
+> **Historical record.** This document describes the earlier bring-up, which booted through LineageOS recovery and kexec. That path is retired. For the current system, start at the [port README](README.md).
+
 ## Native entry results
 
 On October 15, owner-approved unlocking completed in 394.918 seconds and subsequent fastboot queries verified `unlocked: Yes` on the same A04-selected Darcy. Temporary boot commands for both this candidate and the untouched matching NVIDIA recovery returned `OKAY`, but both attempts reached Android welcome/setup. Installed stock recovery then worked through **Boot recovery kernel**. Its ADB update mode provided sideload transport, but no shell; no update package was sent.

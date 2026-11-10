@@ -1,12 +1,14 @@
 # Omarchy — NVIDIA Shield TV port
 
-Experimental fork for the owner's connected **Shield TV (`darcy`, original Tegra210 A02)**, retaining the earlier **2019 Pro (`mdarcy`, Tegra210B01)** candidate as a separate profile. The target is the full Omarchy desktop with complete hardware enablement. **Physical Linux 7.1 userspace, bounded cooling diagnostics and SuperSpeed USB serial logs now work. The native desktop and full hardware support remain unqualified; there is no ready-to-flash installation image.**
+An experimental fork of [Omarchy](https://github.com/omacom/omarchy) that runs the full Omarchy desktop on the **2017 NVIDIA Shield TV** (Darcy A04, Tegra X1), installed on the internal storage in place of Android.
 
-This branch adds `aarch64-shield`, Arch Linux ARM integration and guarded Shield lifecycle handling. Start with [port status and build inputs](ports/shield/README.md), [connected Darcy findings](ports/shield/DARCY.md), its [hardware acceptance matrix](ports/shield/hardware-darcy.json) and [platform integration notes](docs/shield-port.md).
+**What works on the reference device:** booting straight from the stock bootloader into a mainline Linux 7.1 kernel, hardware-accelerated Hyprland over HDMI, HDMI audio, Wi-Fi, gigabit Ethernet, the Bluetooth controller, CPU frequency scaling, the fan, and automatic recovery from a failed boot.
 
-The current boot blocker is external USB drive enumeration: the host controller starts, while seven bounded tests have not detected the prepared drive. Each test returned to authenticated recovery automatically. [Storage investigation results](ports/shield/validation-usb-storage-probes.json) record the tested variants and remaining limits.
+**What does not exist yet:** an installer. The port has run on one device, and the steps to put it on another are still being written and tested. Hardware video decoding, suspend and the Shield controller are untested or unavailable.
 
-Upstream: [omacom/omarchy](https://github.com/omacom/omarchy). Omarchy's desktop, applications and themes remain the basis of this port.
+Start with the [port README](ports/shield/README.md) for the hardware support table and how the boot chain works. [Troubleshooting](ports/shield/TROUBLESHOOTING.md) covers recovery. [Platform integration notes](docs/shield-port.md) describe how the `aarch64-shield` platform fits into Omarchy.
+
+Omarchy's desktop, applications and themes are unchanged. This branch adds the `aarch64-shield` platform and everything under [`ports/shield/`](ports/shield).
 
 ## Upstream Omarchy
 
